@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">HMQL_EBookApp</string>
+    <string-array name="SearchType">
+        <item>Theo tên sách</item>
+        <item>Theo tên tác giả</item>
+    </string-array>
 </resources>
