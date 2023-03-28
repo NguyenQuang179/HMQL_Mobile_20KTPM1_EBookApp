@@ -4,4 +4,11 @@
         <item>Theo tên sách</item>
         <item>Theo tên tác giả</item>
     </string-array>
+    <string-array name="recentSearch">
+        <item>Tôi thấy hoa vàng trên cỏ xanh</item>
+        <item>Harry Potter</item>
+        <item>Nguyễn Nhật Ánh</item>
+        <item>5cm/s</item>
+        <item>Chúa tể của những chiếc nhẫn</item>
+    </string-array>
 </resources>

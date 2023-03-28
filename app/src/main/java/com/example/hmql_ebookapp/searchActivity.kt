@@ -1,19 +1,30 @@
 package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+
 
 class searchActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        val listOfString = resources.getStringArray(R.array.recentSearch);
+        var customRecyclerView = findViewById<RecyclerView>(R.id.recentSearchRecyclerView)
+        var adapter = MyRecyclerViewForRecentSearchs(listOfString)
+        customRecyclerView!!.adapter = adapter
+        val layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        customRecyclerView.layoutManager = layoutManager
 
         var listOfTypeSearch =  resources.getStringArray(R.array.SearchType)
         var spinner = findViewById<Spinner>(R.id.searchTypeSpinner);
