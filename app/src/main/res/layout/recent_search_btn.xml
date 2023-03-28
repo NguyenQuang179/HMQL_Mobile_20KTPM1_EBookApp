@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/recentSearchBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#F2F7FF"
+        android:paddingLeft="8dp"
+        android:paddingTop="0dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="0dp"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:text="Tôi thấy hoa vàng trên cỏ xanh"
+        android:textAllCaps="false"
+        android:textColor="#BF152238"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="#66152238"
+        app:strokeWidth="1dp" />
+
+    <Button
+        android:id="@+id/deleteRecentSearchBTN"
+        android:layout_width="40dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="-8dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="#F2F7FF"
+        android:paddingLeft="0dp"
+        android:paddingTop="0dp"
+        android:paddingRight="0dp"
+        android:paddingBottom="0dp"
+        android:text="X"
+        android:textColor="#66152238"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/recentSearchBTN"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/recentSearchBTN"
+        app:layout_constraintTop_toTopOf="@+id/recentSearchBTN"
+        app:strokeColor="#66152238"
+        app:strokeWidth="1dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
