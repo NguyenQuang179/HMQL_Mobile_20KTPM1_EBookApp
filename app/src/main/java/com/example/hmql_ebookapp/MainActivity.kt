@@ -17,5 +17,12 @@ class MainActivity : AppCompatActivity() {
             var intent = Intent(this, searchActivity::class.java)
             startActivity(intent);
         })
+
+        var huybtn = findViewById<Button>(R.id.huyButton);
+        huybtn.setOnClickListener({
+            var intent = Intent(this, MyBooksListActivity::class.java)
+            startActivity(intent);
+        })
+
     }
 }
