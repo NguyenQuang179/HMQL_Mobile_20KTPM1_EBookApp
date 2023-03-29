@@ -17,5 +17,11 @@ class MainActivity : AppCompatActivity() {
             var intent = Intent(this, searchActivity::class.java)
             startActivity(intent);
         })
+
+        var bookintroductionbutton = findViewById<Button>(R.id.bookintrobtn);
+        bookintroductionbutton.setOnClickListener({
+            var intent = Intent(this, BookIntroductionActivity::class.java)
+            startActivity(intent);
+        })
     }
 }
