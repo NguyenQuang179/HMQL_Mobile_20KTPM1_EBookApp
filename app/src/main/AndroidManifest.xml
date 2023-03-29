@@ -15,9 +15,7 @@
         <activity
             android:name=".MyBooksListActivity"
             android:exported="false" />
-        <activity
-            android:name=".myBooksActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ReadingScreen"
             android:exported="false" >
@@ -41,7 +39,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing"><!--keyboard adjustment-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,6 +50,8 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
+
         </activity>
     </application>
 

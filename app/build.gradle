@@ -45,4 +45,12 @@ dependencies {
 
     //Huy
     implementation "androidx.viewpager:viewpager:1.0.0"
+
+
+
+    // Java language implementation
+    implementation("androidx.fragment:fragment:1.5.6")
+    // Kotlin
+    implementation("androidx.fragment:fragment-ktx:1.5.6")
+
 }
