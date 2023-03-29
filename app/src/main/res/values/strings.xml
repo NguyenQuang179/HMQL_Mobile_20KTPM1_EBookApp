@@ -4,11 +4,38 @@
         <item>Theo tên sách</item>
         <item>Theo tên tác giả</item>
     </string-array>
+
     <string-array name="recentSearch">
         <item>Tôi thấy hoa vàng trên cỏ xanh</item>
         <item>Harry Potter</item>
         <item>Nguyễn Nhật Ánh</item>
         <item>5cm/s</item>
         <item>Chúa tể của những chiếc nhẫn</item>
+    </string-array>
+
+    <string-array name="category">
+        <item>Hành động</item>
+        <item>Kịch tính</item>
+        <item>Fiction</item>
+        <item>Non-finction</item>
+        <item>Chính trị</item>
+        <item>Pháp luật</item>
+        <item>Novel</item>
+        <item>Light novel</item>
+        <item>Thiếu nhi</item>
+        <item>Self-help</item>
+        <item>Tiểu sử</item>
+        <item>Tài liệu</item>
+        <item>Tiểu thuyết</item>
+        <item>Aventure</item>
+        <item>Adult</item>
+        <item>Trinh thám</item>
+        <item>Lãng mạn</item>
+        <item>Học đường</item>
+        <item>Đam mỹ</item>
+        <item>Harem</item>
+        <item>Thể thao</item>
+        <item>Bí ẩn</item>
+        <item>Dành cho Quang (truyện dơ)</item>
     </string-array>
 </resources>
