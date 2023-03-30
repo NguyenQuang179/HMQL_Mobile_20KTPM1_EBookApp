@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -48,6 +49,19 @@ class MyBooksFragment : Fragment() {
         val tabLayout = view.findViewById<TabLayout>(R.id.myBooksTabFragmentLayout)
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
+                TabLayoutMediator(tab, viewPager2) { tab, position ->
+                    when (position) {
+                        0 -> {
+                            tab.text = "Liked Books"
+                        }
+                        1 -> {
+                            tab.text = "Download Books"
+                        }
+                        2 -> {
+                            tab.text = "History Books"
+                        }
+                    }
+                }.attach()
                 // Handle tab select
                 Toast.makeText(view.context, tab.toString(), Toast.LENGTH_LONG).show()
             }
@@ -59,6 +73,11 @@ class MyBooksFragment : Fragment() {
             }
         })
     }
+    //use TabLayoutMediator to link the TabLayout and ViewPager2 together
+    //TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
+//    tab.text = "OBJECT ${(position + 1)}"
+//}.attach()
+
     companion object {
         /**
          * Use this factory method to create a new instance of
