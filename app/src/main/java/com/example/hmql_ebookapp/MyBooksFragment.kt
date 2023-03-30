@@ -47,16 +47,13 @@ class MyBooksFragment : Fragment() {
 
         val tabLayout = view.findViewById<TabLayout>(R.id.myBooksTabFragmentLayout)
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 // Handle tab select
                 Toast.makeText(view.context, tab.toString(), Toast.LENGTH_LONG).show()
             }
-
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 // Handle tab reselect
             }
-
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 // Handle tab unselect
             }
