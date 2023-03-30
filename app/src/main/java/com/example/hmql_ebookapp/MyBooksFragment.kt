@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -21,6 +22,10 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class MyBooksFragment : Fragment() {
+    lateinit var tabLayout: TabLayout
+
+    lateinit var myViewPagerAdapter: MyViewPagerAdapter
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -46,24 +51,16 @@ class MyBooksFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState);
 
-        val tabLayout = view.findViewById<TabLayout>(R.id.myBooksTabFragmentLayout)
+
+        tabLayout = view.findViewById<TabLayout>(R.id.myBooksTabFragmentLayout)
+        val viewPager2 = view.findViewById<ViewPager2>(R.id.myBooksViewPager2)
+        myViewPagerAdapter = MyViewPagerAdapter(this);
+        viewPager2.setAdapter(myViewPagerAdapter)
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                TabLayoutMediator(tab, viewPager2) { tab, position ->
-                    when (position) {
-                        0 -> {
-                            tab.text = "Liked Books"
-                        }
-                        1 -> {
-                            tab.text = "Download Books"
-                        }
-                        2 -> {
-                            tab.text = "History Books"
-                        }
-                    }
-                }.attach()
+                viewPager2.setCurrentItem(tab!!.position)
                 // Handle tab select
-                Toast.makeText(view.context, tab.toString(), Toast.LENGTH_LONG).show()
+
             }
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 // Handle tab reselect
@@ -72,6 +69,13 @@ class MyBooksFragment : Fragment() {
                 // Handle tab unselect
             }
         })
+
+        viewPager2.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int){
+                tabLayout.selectTab(tabLayout.getTabAt(position));
+            }
+        })
+
     }
     //use TabLayoutMediator to link the TabLayout and ViewPager2 together
     //TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
