@@ -5,6 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,12 +26,21 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var sampleBookList : ArrayList<SampleBook>
+    lateinit var bookNameList : Array<String>
+    lateinit var authorNameList : Array<String>
+    lateinit var bookImgIdList : Array<Int>
+
+    lateinit var popularAuthorNameList : ArrayList<String>
+    lateinit var popularAuthorImgList : ArrayList<Int>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
     }
 
     override fun onCreateView(
@@ -35,6 +49,39 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        sampleDataInit()
+
+        val favBookRv = view.findViewById<RecyclerView>(R.id.favouriteBooksRv)
+        val favBookRvAdapter = FavouriteBookAdapter(sampleBookList)
+        val popularAuthorRv = view.findViewById<RecyclerView>(R.id.popularAuthorsRv)
+        val popularAuthorRvAdapter = PopularAuthorAdapter(popularAuthorNameList, popularAuthorImgList)
+        val avaBtn = view.findViewById<ImageButton>(R.id.avatarIBtn)
+        val favBookMoreBtn = view.findViewById<Button>(R.id.favouriteBooksMoreBtn)
+        val popularAuthorMoreBtn = view.findViewById<Button>(R.id.popularAuthorsMoreBtn)
+
+        favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        favBookRv.adapter = favBookRvAdapter
+
+        popularAuthorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        popularAuthorRv.adapter = popularAuthorRvAdapter
+
+        avaBtn!!.setOnClickListener(){
+            Toast.makeText(context, "Avatar Button Clicked", Toast.LENGTH_SHORT).show()
+        }
+
+
+        favBookMoreBtn!!.setOnClickListener(){
+            Toast.makeText(context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
+        }
+
+
+        popularAuthorMoreBtn!!.setOnClickListener(){
+            Toast.makeText(context, "See More Author Button Clicked", Toast.LENGTH_SHORT).show()
+        }
     }
 
     companion object {
@@ -55,5 +102,81 @@ class HomeFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    private fun sampleDataInit() {
+        // Favourite Books
+        sampleBookList = arrayListOf<SampleBook>()
+
+        bookNameList = arrayOf(
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S..."
+        )
+
+        authorNameList = arrayOf(
+            "Alice Schertle, Jill McElmurry",
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory",
+            "Alice Schertle, Jill McElmurry",
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory"
+        )
+
+        bookImgIdList = arrayOf(
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1
+        )
+
+        for(i in bookNameList.indices) {
+            val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
+            sampleBookList.add(sampleBook)
+        }
+
+        // Popular Authors
+        popularAuthorNameList = arrayListOf(
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory",
+            "Neil Giamen",
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory",
+            "Neil Giamen"
+        )
+
+        popularAuthorImgList = arrayListOf(
+            R.drawable.sampleauthor1,
+            R.drawable.sampleauthor2,
+            R.drawable.sampleauthor3,
+            R.drawable.sampleauthor1,
+            R.drawable.sampleauthor2,
+            R.drawable.sampleauthor3,
+            R.drawable.sampleauthor1,
+            R.drawable.sampleauthor2,
+            R.drawable.sampleauthor3,
+            R.drawable.sampleauthor1
+        )
     }
 }

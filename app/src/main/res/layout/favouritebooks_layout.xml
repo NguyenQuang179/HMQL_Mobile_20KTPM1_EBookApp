@@ -2,14 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/favBookImgView"
         android:layout_width="128dp"
         android:layout_height="160dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
@@ -18,46 +20,32 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/favBookAuthorNameTv"
         android:layout_width="128dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
         android:text="Alice Schertle, Jill McElmurry"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/favBookImgView"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="128dp"
-        android:layout_height="36dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/roundedbutton"
-        android:backgroundTint="#00FFFFFF"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="Read"
-        android:textColor="@color/lightBackground"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintStart_toStartOf="@+id/favBookImgView"
+        app:layout_constraintTop_toBottomOf="@+id/favBookNameTv" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/favBookNameTv"
         android:layout_width="128dp"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/inter_semibold"
         android:text="Little Blue Truck's Halloween"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/favBookImgView"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintStart_toStartOf="@+id/favBookImgView"
+        app:layout_constraintTop_toBottomOf="@+id/favBookImgView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
