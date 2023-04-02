@@ -5,11 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.Toast
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -20,10 +15,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
+ * Use the [AuthorInfoFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomeFragment : Fragment() {
+class AuthorInfoFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -33,16 +28,12 @@ class HomeFragment : Fragment() {
     lateinit var authorNameList : Array<String>
     lateinit var bookImgIdList : Array<Int>
 
-    lateinit var popularAuthorNameList : ArrayList<String>
-    lateinit var popularAuthorImgList : ArrayList<Int>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
     }
 
     override fun onCreateView(
@@ -50,47 +41,18 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_author_info, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sampleDataInit()
 
-        val favBookRv = view.findViewById<RecyclerView>(R.id.favouriteBooksRv)
-        val favBookRvAdapter = FavouriteBookAdapter(sampleBookList)
-        val popularAuthorRv = view.findViewById<RecyclerView>(R.id.popularAuthorsRv)
-        val popularAuthorRvAdapter = PopularAuthorAdapter(popularAuthorNameList, popularAuthorImgList)
-        val avaBtn = view.findViewById<ImageButton>(R.id.avatarIBtn)
-        val favBookMoreBtn = view.findViewById<Button>(R.id.favouriteBooksMoreBtn)
-        val popularAuthorMoreBtn = view.findViewById<Button>(R.id.popularAuthorsMoreBtn)
+        val authorWorksRv = view.findViewById<RecyclerView>(R.id.authorWorksRv)
+        val authorWorksRvAdapter = FavouriteBookAdapter(sampleBookList)
 
-        favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        favBookRv.adapter = favBookRvAdapter
-
-        popularAuthorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        popularAuthorRv.adapter = popularAuthorRvAdapter
-        popularAuthorRvAdapter.onItemClick = { authorName, authorImg ->  
-            requireActivity().supportFragmentManager.commit {
-                replace<AuthorInfoFragment>(R.id.fragment_container_view)
-                setReorderingAllowed(true)
-                addToBackStack("name") // name can be null
-            }
-        }
-
-        avaBtn!!.setOnClickListener(){
-            Toast.makeText(context, "Avatar Button Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-
-        favBookMoreBtn!!.setOnClickListener(){
-            Toast.makeText(context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-
-        popularAuthorMoreBtn!!.setOnClickListener(){
-            Toast.makeText(context, "See More Author Button Clicked", Toast.LENGTH_SHORT).show()
-        }
+        authorWorksRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        authorWorksRv.adapter = authorWorksRvAdapter
     }
 
     companion object {
@@ -100,12 +62,12 @@ class HomeFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
+         * @return A new instance of fragment AuthorInfoFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
+            AuthorInfoFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
@@ -131,16 +93,16 @@ class HomeFragment : Fragment() {
         )
 
         authorNameList = arrayOf(
-            "Alice Schertle, Jill McElmurry",
             "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Alice Schertle, Jill McElmurry",
             "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory"
+            "Alice Schertle",
+            "Alice Schertle",
+            "Alice Schertle",
+            "Alice Schertle",
+            "Alice Schertle",
+            "Alice Schertle",
+            "Alice Schertle",
+            "Alice Schertle",
         )
 
         bookImgIdList = arrayOf(
@@ -160,32 +122,6 @@ class HomeFragment : Fragment() {
             val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
             sampleBookList.add(sampleBook)
         }
-
-        // Popular Authors
-        popularAuthorNameList = arrayListOf(
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Neil Giamen",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Neil Giamen"
-        )
-
-        popularAuthorImgList = arrayListOf(
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1
-        )
     }
+
 }
