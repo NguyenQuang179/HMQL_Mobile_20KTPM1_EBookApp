@@ -25,6 +25,13 @@ class MyBooksFragment : Fragment() {
     lateinit var tabLayout: TabLayout
 
     lateinit var myViewPagerAdapter: MyViewPagerAdapter
+    private lateinit var sampleBookList : ArrayList<SampleBook>
+    lateinit var bookNameList : Array<String>
+    lateinit var authorNameList : Array<String>
+    lateinit var bookImgIdList : Array<Int>
+
+    lateinit var popularAuthorNameList : ArrayList<String>
+    lateinit var popularAuthorImgList : ArrayList<Int>
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -50,11 +57,11 @@ class MyBooksFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState);
-
+        sampleDataInit()
 
         tabLayout = view.findViewById<TabLayout>(R.id.myBooksTabFragmentLayout)
         val viewPager2 = view.findViewById<ViewPager2>(R.id.myBooksViewPager2)
-        myViewPagerAdapter = MyViewPagerAdapter(this);
+        myViewPagerAdapter = MyViewPagerAdapter(this, sampleBookList);
         viewPager2.setAdapter(myViewPagerAdapter)
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -100,5 +107,80 @@ class MyBooksFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+    private fun sampleDataInit() {
+        // Favourite Books
+        sampleBookList = arrayListOf<SampleBook>()
+
+        bookNameList = arrayOf(
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S..."
+        )
+
+        authorNameList = arrayOf(
+            "Alice Schertle, Jill McElmurry",
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory",
+            "Alice Schertle, Jill McElmurry",
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory"
+        )
+
+        bookImgIdList = arrayOf(
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1
+        )
+
+        for(i in bookNameList.indices) {
+            val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
+            sampleBookList.add(sampleBook)
+        }
+
+        // Popular Authors
+        popularAuthorNameList = arrayListOf(
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory",
+            "Neil Giamen",
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory",
+            "Neil Giamen"
+        )
+
+        popularAuthorImgList = arrayListOf(
+            R.drawable.sampleauthor1,
+            R.drawable.sampleauthor2,
+            R.drawable.sampleauthor3,
+            R.drawable.sampleauthor1,
+            R.drawable.sampleauthor2,
+            R.drawable.sampleauthor3,
+            R.drawable.sampleauthor1,
+            R.drawable.sampleauthor2,
+            R.drawable.sampleauthor3,
+            R.drawable.sampleauthor1
+        )
     }
 }
