@@ -9,6 +9,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -25,6 +26,14 @@ class searchActivity : AppCompatActivity() {
         val layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         customRecyclerView.layoutManager = layoutManager
+
+        val listOfCategory = resources.getStringArray(R.array.category);
+        var categoryChoiceRecyclerView = findViewById<RecyclerView>(R.id.categoryChoiceRecyclerView)
+        var categoryAdapter = MyRecyclerViewForCategoryChoice(listOfCategory)
+        categoryChoiceRecyclerView!!.adapter = categoryAdapter
+        val categoryLayoutManager = GridLayoutManager(this, 2)
+        categoryChoiceRecyclerView.layoutManager = categoryLayoutManager
+
 
         var listOfTypeSearch =  resources.getStringArray(R.array.SearchType)
         var spinner = findViewById<Spinner>(R.id.searchTypeSpinner);
