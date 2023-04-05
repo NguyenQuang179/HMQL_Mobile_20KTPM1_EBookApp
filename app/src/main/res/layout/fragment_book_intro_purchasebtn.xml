@@ -9,7 +9,6 @@
         android:id="@+id/ReadBtn"
         android:layout_width="280dp"
         android:layout_height="50dp"
-        android:layout_marginStart="112dp"
         android:fontFamily="@font/inter_bold"
         android:insetTop="0dp"
         android:insetBottom="0dp"
@@ -19,15 +18,15 @@
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:cornerRadius="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/LikeBtn"
+        tools:layout_editor_absoluteY="15dp" />
 
     <ImageButton
         android:id="@+id/LikeBtn"
         android:layout_width="70dp"
         android:layout_height="50dp"
-        android:layout_marginStart="16dp"
         android:background="@drawable/rounded_corner_book_intro"
         android:backgroundTint="@color/lightSecondary"
         android:paddingStart="25dp"
@@ -35,8 +34,9 @@
         android:paddingEnd="25dp"
         android:paddingBottom="22dp"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ReadBtn"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/bookmark_regular_light" />
+        app:srcCompat="@drawable/bookmark_regular_light"
+        tools:layout_editor_absoluteY="15dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
