@@ -18,6 +18,7 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
         val bookNameTv : TextView = listItemView.findViewById<TextView>(R.id.bookNameTextView)!!
         val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.authorTextView)!!
         val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.bookImageView)!!
+        val bookmarkImgBtn : ImageView = listItemView.findViewById<ImageView>(R.id.bookmarkImageButton)!!
         init { listItemView.setOnClickListener { onItemClick?.invoke(books[adapterPosition]) } }
     }
 
@@ -40,6 +41,18 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
         authorNameTv.setText(book.authorName)
         val bookImgView = holder.bookImgView
         bookImgView.setImageResource(book.bookImg)
+
+        //set on click listener for a button in a recycler View item that change into another image on click
+        //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
+        holder.bookmarkImgBtn.setOnClickListener {
+            if (holder.bookmarkImgBtn.tag == "bookmark") {
+                holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_solid)
+                holder.bookmarkImgBtn.tag = "bookmarked"
+            } else {
+                holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_regular)
+                holder.bookmarkImgBtn.tag = "bookmark"
+            }
+        }
     }
 
     override fun getItemCount(): Int = books.size

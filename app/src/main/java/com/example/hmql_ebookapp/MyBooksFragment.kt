@@ -63,6 +63,14 @@ class MyBooksFragment : Fragment() {
         val viewPager2 = view.findViewById<ViewPager2>(R.id.myBooksViewPager2)
         myViewPagerAdapter = MyViewPagerAdapter(this, sampleBookList);
         viewPager2.setAdapter(myViewPagerAdapter)
+
+        for (i in 0 until tabLayout.tabCount) {
+            val tab = (tabLayout.getChildAt(0) as ViewGroup).getChildAt(i)
+            val p = tab.layoutParams as ViewGroup.MarginLayoutParams
+            p.setMargins(10, 0, 10, 0)
+            tab.requestLayout()
+        }
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 viewPager2.setCurrentItem(tab!!.position)
