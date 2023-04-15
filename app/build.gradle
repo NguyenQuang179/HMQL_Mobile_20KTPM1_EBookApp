@@ -6,7 +6,7 @@ plugins {
 android {
     namespace 'com.example.hmql_ebookapp'
     compileSdk 33
-
+    useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.example.hmql_ebookapp"
         minSdk 21
@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.7.0'
