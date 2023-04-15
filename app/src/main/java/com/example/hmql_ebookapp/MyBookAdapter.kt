@@ -1,5 +1,7 @@
 package com.example.hmql_ebookapp
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class MyBookAdapter(private val books : ArrayList<SampleBook>)
@@ -15,6 +18,7 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
     var onItemClick: ((SampleBook) -> Unit)? = null
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
+        val statusTextView : TextView = listItemView.findViewById<TextView>(R.id.statusTextView)!!
         val bookNameTv : TextView = listItemView.findViewById<TextView>(R.id.bookNameTextView)!!
         val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.authorTextView)!!
         val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.bookImageView)!!
@@ -52,6 +56,12 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
                 holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_regular)
                 holder.bookmarkImgBtn.tag = "bookmark"
             }
+        }
+        //make statusTextView Change its text color, background colors, and text on click
+        holder.statusTextView.setOnClickListener {
+            holder.statusTextView.setText("Finished")
+            holder.statusTextView.setTextColor(Color.parseColor("#FFFFFF"))
+            holder.statusTextView.background.setTint(ContextCompat.getColor(holder.statusTextView.context, R.color.lightSecondary))
         }
     }
 
