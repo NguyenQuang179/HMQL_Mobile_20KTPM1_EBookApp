@@ -3,8 +3,8 @@
     <item
         android:id="@+id/item_1"
         android:enabled="true"
-
-        android:title="www" />
+        android:icon="@drawable/house_user_solid"
+        android:title="" />
     <item
         android:id="@+id/item_2"
         android:enabled="true"
