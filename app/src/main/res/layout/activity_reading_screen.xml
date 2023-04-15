@@ -21,6 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:textIsSelectable="true"
             android:id="@+id/pdfContentTv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -15,6 +16,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //start ReadingScreen Activity
+        val intent = Intent(this, ReadingScreen::class.java)
+        startActivity(intent)
 
         supportFragmentManager.commit {
             add<HomeFragment>(R.id.fragment_container_view)
