@@ -1,21 +1,46 @@
 package com.example.hmql_ebookapp
 
-import android.content.ContentValues.TAG
+import android.app.Dialog
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.hmql_ebookapp.TranslateAPI.OnTranslationCompleteListener
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
-import javax.security.auth.callback.Callback
+
 
 class ReadingScreen : AppCompatActivity() {
     lateinit var extractedTV: TextView
+
+    private fun showTranslateDialog(selectedText: String){
+        // processing translation
+        val translate: TranslateAPI = TranslateAPI()
+        translate.setOnTranslationCompleteListener(object :
+            TranslateAPI.OnTranslationCompleteListener {
+            override fun onStartTranslation() {
+                // here you can perform initial work before translated the text like displaying progress bar
+            }
+
+            override fun onCompleted(text: String) {
+                // "text" variable will give you the translated text
+                findViewById<TextView>(R.id.translated_text).setText(text)
+            }
+
+            override fun onError(e: java.lang.Exception) {}
+        })
+        translate.execute(
+            selectedText, // text to translate
+            "en", // from language code
+            "vi" // to language code
+        )
+
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.translate_popup)
+        dialog.show()
+    }
 
     private val mActionModeCallback = object : ActionMode.Callback {
 
@@ -25,7 +50,10 @@ class ReadingScreen : AppCompatActivity() {
                 val end = extractedTV.selectionEnd
                 val selectedText = extractedTV.text?.substring(start, end)
                 // perform translation logic here
-                Toast.makeText(this@ReadingScreen, "Translate: $selectedText", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this@ReadingScreen, "Translate: $selectedText", Toast.LENGTH_SHORT).show()
+                if (selectedText != null) {
+                    showTranslateDialog(selectedText)
+                }
                 mode.finish()
                 true
             }
@@ -94,11 +122,12 @@ class ReadingScreen : AppCompatActivity() {
                  """.trimIndent()
                 // to extract the PDF content from the different pages
             }
-            extractedTV.setText(extractedText)
+            extractedTV.setText("Guilty" + extractedText)
             pdfReader.close()
         }
         catch (e: Exception) {
             e.printStackTrace()
         }
     }
+
 }

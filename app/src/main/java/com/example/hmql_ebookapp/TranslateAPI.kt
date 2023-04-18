@@ -11,8 +11,9 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
+import java.util.concurrent.TimeUnit
 
-class translate_api : AsyncTask<String, String, String>() {
+class TranslateAPI : AsyncTask<String, String, String>() {
     private var listener: OnTranslationCompleteListener? = null
 
     override fun doInBackground(vararg strings: String): String {
@@ -21,17 +22,39 @@ class translate_api : AsyncTask<String, String, String>() {
         try {
             val encode = URLEncoder.encode(strArr[0], "utf-8")
             val sb = StringBuilder()
-            sb.append("https://translate.googleapis.com/translate_a/single?client=gtx&sl=")
+            val apiKey = "AIzaSyAuYG_BuGHCn_T8-ZfdTAUOEcayOZdkLgw"
+            //val apiKey = "YOUR_API_KEY_HERE"
+            sb.append("https://translation.googleapis.com/language/translate/v2?key=$apiKey&source=")
+            sb.append(strArr[1])
+            sb.append("&target=")
+            sb.append(strArr[2])
+            sb.append("&q=")
+            sb.append(encode)
+            /*sb.append("https://translate.googleapis.com/translate_a/single?client=gtx&sl=")
             sb.append(strArr[1])
             sb.append("&tl=")
             sb.append(strArr[2])
             sb.append("&dt=t&q=")
-            sb.append(encode)
+            sb.append(encode)*/
             val url = URL(sb.toString())
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
             connection.connect()
-            val statusCode = connection.responseCode
+            var statusCode = connection.responseCode
+
+            var retryCount = 0
+
+            // Retry up to 3 times if status code 429 is encountered
+            while (statusCode == 429 && retryCount < 3) {
+                connection.disconnect()
+                val delayTime = 5L * retryCount
+                Log.i("translate_api", "Status code 429 encountered. Retrying in $delayTime seconds.")
+                TimeUnit.SECONDS.sleep(delayTime)
+                connection.connect()
+                statusCode = connection.responseCode
+                retryCount++
+            }
+
             if (statusCode == 200) {
                 val inputStream = connection.inputStream
                 val result = readStream(inputStream)
