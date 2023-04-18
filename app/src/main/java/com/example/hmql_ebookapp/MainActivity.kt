@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //start ReadingScreen Activity
-        val intent = Intent(this, ReadingScreen::class.java)
-        startActivity(intent)
+//        val intent = Intent(this, ReadingScreen::class.java)
+//        startActivity(intent)
 
         supportFragmentManager.commit {
             add<HomeFragment>(R.id.fragment_container_view)
@@ -40,8 +40,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.item_2 -> {
-                    Toast.makeText(this,"open Find Menu",Toast.LENGTH_SHORT).show()
-                    // Respond to navigation item 2 click
+                    supportFragmentManager.commit {
+                        replace<SearchBookFragment>(R.id.fragment_container_view)
+                        setReorderingAllowed(true)
+                        addToBackStack("name") // name can be null
+                    }                    // Respond to navigation item 2 click
                     true
 
                 }
