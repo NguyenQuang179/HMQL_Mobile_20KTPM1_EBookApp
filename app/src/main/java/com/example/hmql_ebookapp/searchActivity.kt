@@ -19,47 +19,7 @@ class searchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        val listOfString = resources.getStringArray(R.array.recentSearch);
-        var customRecyclerView = findViewById<RecyclerView>(R.id.recentSearchRecyclerView)
-        var adapter = MyRecyclerViewForRecentSearchs(listOfString)
-        customRecyclerView!!.adapter = adapter
-        val layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        customRecyclerView.layoutManager = layoutManager
 
-        val listOfCategory = resources.getStringArray(R.array.category);
-        var categoryChoiceRecyclerView = findViewById<RecyclerView>(R.id.categoryChoiceRecyclerView)
-        var categoryAdapter = MyRecyclerViewForCategoryChoice(listOfCategory)
-        categoryChoiceRecyclerView!!.adapter = categoryAdapter
-        val categoryLayoutManager = GridLayoutManager(this, 2)
-        categoryChoiceRecyclerView.layoutManager = categoryLayoutManager
-
-
-        var listOfTypeSearch =  resources.getStringArray(R.array.SearchType)
-        var spinner = findViewById<Spinner>(R.id.searchTypeSpinner);
-        if (spinner != null) {
-            val adapter = ArrayAdapter(
-                this,
-                android.R.layout.simple_spinner_dropdown_item, listOfTypeSearch
-            )
-            spinner.adapter = adapter
-
-            spinner.onItemSelectedListener = object :
-                AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View, position: Int, id: Long
-                ) {
-                    Toast.makeText(
-                        this@searchActivity, spinner.selectedItem.toString(), Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>) {
-                    // write code to perform some action
-                }
-            }
-        }
 
     }
 }
