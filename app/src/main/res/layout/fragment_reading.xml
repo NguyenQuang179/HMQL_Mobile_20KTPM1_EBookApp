@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
     tools:context=".ReadingFragment">
 
 
@@ -26,10 +27,12 @@
             android:id="@+id/pdfContentTv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?attr/backgroundColor"
             android:fontFamily="@font/inter_regular"
             android:gravity="fill_horizontal"
             android:justificationMode="inter_word"
             android:lineSpacingExtra="8sp"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="16sp"
             android:textStyle="normal" />
     </ScrollView>

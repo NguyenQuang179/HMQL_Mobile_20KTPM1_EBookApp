@@ -10,6 +10,7 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
@@ -30,10 +31,7 @@ class MyTranslationCompleteListener(val context: Context) : Translator.OnTransla
 }
 
 class ReadingScreen : AppCompatActivity() {
-
-    private fun showTranslateDialog(selectedText: String){
-
-    }
+    lateinit var extractedTV : TextView
 
     private val mActionModeCallback = object : ActionMode.Callback {
         // init the Translator class:
@@ -83,6 +81,12 @@ class ReadingScreen : AppCompatActivity() {
     }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            setTheme(R.style.darkTheme) //when dark mode is enabled, we use the dark theme
+        } else {
+            setTheme(R.style.lightTheme)  //default app theme
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reading_screen)
 

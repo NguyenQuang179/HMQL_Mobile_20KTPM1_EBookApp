@@ -1,17 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.HMQL_EBookApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="darkTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/nightPrimary</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/nightBackground</item>
+        <item name="colorPrimary">#FFE867</item>
+        <item name="colorOnPrimary">#222D5A</item>
+        <item name="colorTertiary">#9797AA</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/nightSecondary</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/nightText</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondary">#222D5A</item>
+        <item name="colorOnSecondary">#F2F7FF</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->\
-        <item name="android:colorBackground">@color/nightBackground</item>
+        <!-- Customize your theme here. -->
+        <!-- Background brand color -->
+        <item name="backgroundColor">#152238</item>
+        <item name="colorOnBackground">#F2F7FF</item>
     </style>
 </resources>

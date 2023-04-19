@@ -11,6 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
 
@@ -85,8 +88,11 @@ class ReadingFragment : Fragment() {
 
         val settingBtn = view.findViewById<ImageButton>(R.id.settingBtn)
         settingBtn!!.setOnClickListener(){
-            val intent : Intent = Intent(this.requireContext(), Settings::class.java)
-            startActivity(intent)
+            requireActivity().supportFragmentManager.commit {
+                replace<SettingFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("settingFragment")
+            }
         }
     }
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/backgroundColor"
-    tools:context=".Settings">
+    tools:context=".SettingFragment">
 
     <TextView
         android:id="@+id/settingTitle"
@@ -28,7 +28,7 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="32dp"
         android:text="Font:"
-        android:textColor="?attr/colorPrimary"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="32dp"
         android:text="Font Size:"
-        android:textColor="?attr/colorPrimary"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +54,7 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="32dp"
         android:text="Theme:"
-        android:textColor="?attr/colorPrimary"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
     tools:context=".HomeFragment">
 
     <ScrollView
@@ -30,7 +31,7 @@
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/inter_semibold"
                 android:text="Hi Fela"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="28sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -43,7 +44,7 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/inter_regular"
                 android:text="What are you reading today?"
-                android:textColor="#80000000"
+                android:textColor="?attr/colorTertiary"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/introUserTv" />
@@ -61,7 +62,7 @@
                 android:stateListAnimator="@null"
                 android:text="See more >>"
                 android:textAllCaps="false"
-                android:textColor="#80000000"
+                android:textColor="?attr/colorTertiary"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/popularAuthorTv"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +77,7 @@
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/inter_semibold"
                 android:text="Popular Authors"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/favouriteBooksRv" />
@@ -104,7 +105,7 @@
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/inter_semibold"
                 android:text="Favourite Books"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/questionTv" />
@@ -122,7 +123,7 @@
                 android:stateListAnimator="@null"
                 android:text="See more >>"
                 android:textAllCaps="false"
-                android:textColor="#80000000"
+                android:textColor="?attr/colorTertiary"
                 android:textSize="16sp"
                 app:iconPadding="0dp"
                 app:layout_constraintBottom_toBottomOf="@+id/FavouriteBookTv"
