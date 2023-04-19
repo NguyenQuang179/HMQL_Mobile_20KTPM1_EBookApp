@@ -1,58 +1,55 @@
 package com.example.hmql_ebookapp
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.hmql_ebookapp.TranslateAPI.OnTranslationCompleteListener
+import com.google.mlkit.nl.translate.TranslateLanguage
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
 
+class MyTranslationCompleteListener(val context: Context) : Translator.OnTranslationCompleteListener {
+    override fun onCompleted(translatedText: String) {
+        // Handle the completion event here
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.translate_popup)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.findViewById<TextView>(R.id.translated_text).setText(translatedText)
+        dialog.show()
+    }
+
+    override fun onError(exception: Exception) {
+        // Handle the error event here
+    }
+}
 
 class ReadingScreen : AppCompatActivity() {
     lateinit var extractedTV: TextView
 
     private fun showTranslateDialog(selectedText: String){
-        // processing translation
-        val translate: TranslateAPI = TranslateAPI()
-        translate.setOnTranslationCompleteListener(object :
-            TranslateAPI.OnTranslationCompleteListener {
-            override fun onStartTranslation() {
-                // here you can perform initial work before translated the text like displaying progress bar
-            }
 
-            override fun onCompleted(text: String) {
-                // "text" variable will give you the translated text
-                findViewById<TextView>(R.id.translated_text).setText(text)
-            }
-
-            override fun onError(e: java.lang.Exception) {}
-        })
-        translate.execute(
-            selectedText, // text to translate
-            "en", // from language code
-            "vi" // to language code
-        )
-
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.translate_popup)
-        dialog.show()
     }
 
     private val mActionModeCallback = object : ActionMode.Callback {
-
+        // init the Translator class:
+        val translator = Translator(this@ReadingScreen)
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             menu.add(Menu.NONE, 1, Menu.NONE, "Translate").setOnMenuItemClickListener {
+
                 val start = extractedTV.selectionStart
                 val end = extractedTV.selectionEnd
                 val selectedText = extractedTV.text?.substring(start, end)
                 // perform translation logic here
                 //Toast.makeText(this@ReadingScreen, "Translate: $selectedText", Toast.LENGTH_SHORT).show()
                 if (selectedText != null) {
-                    showTranslateDialog(selectedText)
+                    val translationCompleteListener = MyTranslationCompleteListener(this@ReadingScreen)
+                    translator.translateText(selectedText, TranslateLanguage.VIETNAMESE, translationCompleteListener)
                 }
                 mode.finish()
                 true
