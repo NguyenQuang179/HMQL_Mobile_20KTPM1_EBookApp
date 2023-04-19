@@ -5,26 +5,31 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.google.android.material.navigation.NavigationBarView
 
 class MainActivity : AppCompatActivity() {
-
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            setTheme(R.style.darkTheme) //when dark mode is enabled, we use the dark theme
+        } else {
+            setTheme(R.style.lightTheme)  //default app theme
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //start ReadingScreen Activity
 //        val intent = Intent(this, ReadingScreen::class.java)
 //        startActivity(intent)
 
         supportFragmentManager.commit {
             add<HomeFragment>(R.id.fragment_container_view)
-            setReorderingAllowed(true)
-            addToBackStack("name") // name can be null
+//            setReorderingAllowed(true)
+//            addToBackStack("name") // name can be null
         }
         val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
         //Bottom Navigation Menu

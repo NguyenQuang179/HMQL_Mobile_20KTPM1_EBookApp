@@ -5,13 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/backgroundColor"
-    tools:context=".ReadingScreen">
+    tools:context=".ReadingFragment">
+
 
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="84dp"
         android:contentDescription="Content Section"
@@ -26,16 +28,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/backgroundColor"
-            android:contentDescription="PDF Content"
             android:fontFamily="@font/inter_regular"
             android:gravity="fill_horizontal"
             android:justificationMode="inter_word"
             android:lineSpacingExtra="8sp"
             android:textColor="?attr/colorOnBackground"
-            android:textIsSelectable="true"
             android:textSize="16sp"
-            android:textStyle="normal"
-            tools:ignore="TouchTargetSizeCheck" />
+            android:textStyle="normal" />
     </ScrollView>
 
     <ImageButton
