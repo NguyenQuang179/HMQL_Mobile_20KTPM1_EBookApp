@@ -5,8 +5,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/recentSearchBTN"
+    <TextView
+        android:id="@+id/recentSearchTV"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginStart="8dp"
@@ -16,14 +16,14 @@
         android:ellipsize="end"
         android:maxWidth="200dp"
         android:maxLines="1"
-        android:paddingLeft="8dp"
-        android:paddingTop="0dp"
-        android:paddingRight="52dp"
+        android:paddingStart="8dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="52dp"
         android:paddingBottom="0dp"
         android:text="Tôi thấy hoa vàng trên cỏ xanh"
         android:textAllCaps="false"
         android:textColor="@color/black"
-        android:textSize="12dp"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -43,9 +43,9 @@
         android:text="X"
         android:textColor="#000000"
         android:textSize="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/recentSearchBTN"
+        app:layout_constraintBottom_toBottomOf="@+id/recentSearchTV"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/recentSearchBTN"
+        app:layout_constraintTop_toTopOf="@+id/recentSearchTV"
         app:layout_constraintVertical_bias="0.0"
         app:strokeColor="#B3113F67"
         app:strokeWidth="1dp" />

@@ -49,6 +49,14 @@ class SearchBookFragment : Fragment() {
         val listOfString = resources.getStringArray(R.array.recentSearch);
         var customRecyclerView = view.findViewById<RecyclerView>(R.id.recentSearchRecyclerView)
         var adapter = MyRecyclerViewForRecentSearchs(listOfString)
+        adapter.onItemClick = { item ->
+// do something with your item
+            Toast.makeText (context, "Row clicekd: $item", Toast.LENGTH_SHORT).show()
+        }
+        adapter.onButtonClick = { item ->
+// do something with your item
+            Toast.makeText (context, "Button clicekd: $item",Toast.LENGTH_SHORT).show()
+        }
         customRecyclerView!!.adapter = adapter
         val layoutManager =
             LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
