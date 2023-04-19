@@ -3,18 +3,19 @@ package com.example.hmql_ebookapp
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class MyRecyclerViewForRecentSearchs(
-    private val listOfSearch: Array<String>
-) : RecyclerView.Adapter<MyRecyclerViewForRecentSearchs.ViewHolder>() {
+class MyRecyclerViewForCategoryChoice(
+    private val listOfCategory: Array<String>
+) : RecyclerView.Adapter<MyRecyclerViewForCategoryChoice.ViewHolder>() {
     var onItemClick: ((String) -> Unit)? = null
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var recentSearchTV: TextView
+        var categoryCheckBox: CheckBox
         init {
             // Define click listener for the ViewHolder's View.
-            recentSearchTV = view.findViewById(R.id.recentSearchBTN)
+            categoryCheckBox = view.findViewById(R.id.categoryCheckBox)
             //view.setOnClickListener { onItemClick?.invoke(listOfStudentFiltered[adapterPosition]) }
         }
     }
@@ -24,7 +25,7 @@ class MyRecyclerViewForRecentSearchs(
         // Create a new view, which defines the UI of the list item
 
         val view = LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.recent_search_btn, viewGroup, false)
+            .inflate(R.layout.category_checkbox, viewGroup, false)
         return ViewHolder(view)
     }
 
@@ -33,13 +34,13 @@ class MyRecyclerViewForRecentSearchs(
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.recentSearchTV.setText(listOfSearch[position])
+        viewHolder.categoryCheckBox.setText(listOfCategory[position])
 
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int {
         // filter the list to show only items satisfy the requirements
-        return listOfSearch.size
+        return listOfCategory.size
     }
 }

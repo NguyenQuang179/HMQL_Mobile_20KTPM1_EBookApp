@@ -1,0 +1,11 @@
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_item_1"
+        android:title="Copy Text"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_item_2"
+        android:title="Translate Text"
+        app:showAsAction="always" />
+</menu>
