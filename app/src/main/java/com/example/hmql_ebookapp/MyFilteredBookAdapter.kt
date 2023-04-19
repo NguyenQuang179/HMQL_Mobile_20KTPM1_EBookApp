@@ -6,16 +6,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class MyBookAdapter(private val books : ArrayList<SampleBook>)
-    : RecyclerView.Adapter<MyBookAdapter.ViewHolder>(){
+class MyFilteredBookAdapter(private val books : ArrayList<SampleBook>)
+    : RecyclerView.Adapter<MyFilteredBookAdapter.ViewHolder>(), Filterable{
 
     var onItemClick: ((SampleBook) -> Unit)? = null
+    var filteredBooks = ArrayList<SampleBook>();
+    init{
+        filteredBooks = books as ArrayList<SampleBook>
+    }
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
         val statusTextView : TextView = listItemView.findViewById<TextView>(R.id.statusTextView)!!
@@ -23,7 +25,7 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
         val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.authorTextView)!!
         val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.bookImageView)!!
         val bookmarkImgBtn : ImageView = listItemView.findViewById<ImageView>(R.id.bookmarkImageButton)!!
-        init { listItemView.setOnClickListener { onItemClick?.invoke(books[adapterPosition]) } }
+        init { listItemView.setOnClickListener { onItemClick?.invoke(filteredBooks[adapterPosition]) } }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -36,7 +38,7 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Get the data model based on position
-        val book : SampleBook = books[position]
+        val book : SampleBook = filteredBooks[position]
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
@@ -65,5 +67,32 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
         }
     }
 
-    override fun getItemCount(): Int = books.size
+    override fun getItemCount(): Int = filteredBooks.size
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                if (charSearch.isEmpty()) {
+                    filteredBooks = books as ArrayList<SampleBook>
+                } else {
+                    val resultList = ArrayList<SampleBook>()
+                    for (row in books) {
+                        if (row.bookName.toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            resultList.add(row)
+                        }
+                    }
+                    filteredBooks = resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = filteredBooks
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredBooks = results?.values as ArrayList<SampleBook>
+                notifyDataSetChanged()
+            }
+        }
+    }
 }

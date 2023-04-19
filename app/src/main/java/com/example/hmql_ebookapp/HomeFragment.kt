@@ -1,5 +1,6 @@
 package com.example.hmql_ebookapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -67,6 +68,13 @@ class HomeFragment : Fragment() {
 
         favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         favBookRv.adapter = favBookRvAdapter
+        favBookRvAdapter.onItemClick = { book ->
+            requireActivity().supportFragmentManager.commit {
+                replace<ReadingFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("readingFragment")
+            }
+        }
 
         popularAuthorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         popularAuthorRv.adapter = popularAuthorRvAdapter
@@ -74,7 +82,7 @@ class HomeFragment : Fragment() {
             requireActivity().supportFragmentManager.commit {
                 replace<AuthorInfoFragment>(R.id.fragment_container_view)
                 setReorderingAllowed(true)
-                addToBackStack("name") // name can be null
+                addToBackStack("authorInfoFragment") // name can be null
             }
         }
 

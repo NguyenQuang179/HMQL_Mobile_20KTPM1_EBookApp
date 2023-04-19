@@ -14,4 +14,6 @@
     <color name="nightSecondary">#FF222D5A</color>
     <color name="nightBackground">#FF152238</color>
     <color name="nightText">#FFF2F7FF</color>
+    <color name="neutral">#99CCCCCC</color>
+    <color name="onNeutral">#FFFFFF</color>
 </resources>

@@ -3,19 +3,27 @@ package com.example.hmql_ebookapp
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class MyRecyclerViewForRecentSearchs(
     private val listOfSearch: Array<String>
 ) : RecyclerView.Adapter<MyRecyclerViewForRecentSearchs.ViewHolder>() {
+    var onButtonClick: ((String) -> Unit)? = null
     var onItemClick: ((String) -> Unit)? = null
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var recentSearchTV: TextView
+        var deleteRecentSearch: Button
         init {
             // Define click listener for the ViewHolder's View.
-            recentSearchTV = view.findViewById(R.id.recentSearchBTN)
-            //view.setOnClickListener { onItemClick?.invoke(listOfStudentFiltered[adapterPosition]) }
+            recentSearchTV = view.findViewById(R.id.recentSearchTV)
+            deleteRecentSearch = view.findViewById<Button>(R.id.deleteRecentSearchBTN)
+            view.setOnClickListener { onItemClick?.invoke(listOfSearch[adapterPosition]) }
+            val deleteRecentSearchTemp = view.findViewById<Button>(R.id.deleteRecentSearchBTN)
+            deleteRecentSearchTemp.setOnClickListener {
+                onButtonClick?.invoke(listOfSearch[adapterPosition])
+            }
         }
     }
 
