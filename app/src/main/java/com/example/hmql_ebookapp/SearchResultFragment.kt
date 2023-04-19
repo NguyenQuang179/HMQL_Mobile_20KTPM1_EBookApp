@@ -1,10 +1,17 @@
 package com.example.hmql_ebookapp
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -45,12 +52,31 @@ class SearchResultFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         sampleDataInit()
 
-        val myBookRv = view.findViewById<RecyclerView>(R.id.searchResultRV)
-        val myBookRvAdapter = MyBookAdapter(books)
+        var customRecyclerView = view.findViewById<RecyclerView>(R.id.searchResultRV)
+        var adapter = MyFilteredBookAdapter(books)
+        customRecyclerView!!.adapter = adapter
+        val layoutManager = LinearLayoutManager(context)
+        customRecyclerView.layoutManager = layoutManager
+        val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
+            DividerItemDecoration.VERTICAL)
+        customRecyclerView.addItemDecoration(itemDecoration)
+//        adapter.onItemClick = {student ->
+//            val intent = Intent(this, EditActivity::class.java)
+//            intent.putExtra("pos", listOfStudent.indexOf(student));
+//            intent.putExtra("studentInfo", student)
+//            startActivityForResult(intent, Request_Code_Edit);
+//        }
 
-
-        myBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        myBookRv.adapter = myBookRvAdapter
+        var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
+        autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                adapter?.filter?.filter(p0)
+                adapter.notifyDataSetChanged();
+                customRecyclerView!!.adapter = adapter
+            }
+        })
     }
 
     companion object {
