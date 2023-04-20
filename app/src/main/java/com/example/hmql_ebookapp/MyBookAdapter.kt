@@ -1,16 +1,28 @@
 package com.example.hmql_ebookapp
 
-import android.content.res.ColorStateList
+import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.Color
-import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+
+
+fun getColor(context: Context, colorResId: Int): Int {
+
+    //return ContextCompat.getColor(context, colorResId); // Doesn't seem to work for R.attr.colorPrimary
+    val typedValue = TypedValue()
+    val typedArray: TypedArray =
+        context.obtainStyledAttributes(typedValue.data, intArrayOf(colorResId))
+    val color = typedArray.getColor(0, 0)
+    typedArray.recycle()
+    return color
+}
 
 class MyBookAdapter(private val books : ArrayList<SampleBook>)
     : RecyclerView.Adapter<MyBookAdapter.ViewHolder>(){
@@ -60,8 +72,8 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
         //make statusTextView Change its text color, background colors, and text on click
         holder.statusTextView.setOnClickListener {
             holder.statusTextView.setText("Finished")
-            holder.statusTextView.setTextColor(Color.parseColor("#FFFFFF"))
-            holder.statusTextView.background.setTint(ContextCompat.getColor(holder.statusTextView.context, R.color.lightSecondary))
+            holder.statusTextView.setTextColor(getColor(holder.statusTextView.context, com.google.android.material.R.attr.colorOnSecondary))
+            holder.statusTextView.background.setTint(getColor(holder.statusTextView.context, com.google.android.material.R.attr.colorSecondary))
         }
     }
 

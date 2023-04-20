@@ -12,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
+        android:textColor="?attr/colorTertiary"
         android:text="Alice Shertle, JillMcElmury"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.095"
@@ -59,11 +60,12 @@
 
         <TextView
             android:id="@+id/ratingTextView"
+
             android:layout_width="30sp"
             android:layout_height="wrap_content"
             android:text="4.5"
             android:textAlignment="center"
-            android:textColor="#333333"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -72,13 +74,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_corner"
-            android:backgroundTint="@color/lightPrimary"
+            android:backgroundTint="?attr/colorPrimary"
             android:paddingLeft="20dp"
             android:paddingTop="2dp"
             android:paddingRight="20dp"
             android:paddingBottom="2dp"
             android:text="In Progress"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -90,7 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:text="Entertainment Weekly"
-        android:textColor="#333333"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="@+id/authorTextView"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
@@ -100,7 +102,7 @@
         android:layout_width="wrap_content"
         android:layout_height="20sp"
         android:adjustViewBounds="true"
-        android:backgroundTint="#00FFFFFF"
+        android:backgroundTint="?attr/backgroundColor"
         android:cropToPadding="false"
         android:padding="0dp"
         android:scaleType="fitCenter"
@@ -109,7 +111,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/linearLayout"
         app:layout_constraintTop_toTopOf="@+id/linearLayout"
-        app:srcCompat="@drawable/bookmark_solid" />
+        app:srcCompat="@drawable/bookmark_solid"
+        app:tint="?attr/colorOnBackground" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
