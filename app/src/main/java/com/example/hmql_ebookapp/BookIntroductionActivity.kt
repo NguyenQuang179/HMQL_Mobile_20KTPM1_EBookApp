@@ -67,7 +67,7 @@ class BookIntroductionActivity : AppCompatActivity() {
         }
 
         supportFragmentManager.commit {
-            add<HomeFragment>(R.id.fragment_book_intro_purchasebtn)
+//            add<HomeFragment>(R.id.fragment_book_intro_purchasebtn)
 //            setReorderingAllowed(true)
 //            addToBackStack("name") // name can be null
         }

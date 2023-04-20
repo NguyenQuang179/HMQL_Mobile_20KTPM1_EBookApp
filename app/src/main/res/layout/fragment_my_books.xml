@@ -5,8 +5,9 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="?attr/backgroundColor"
     android:background="@color/common_google_signin_btn_text_dark_pressed"
+    android:backgroundTint="?attr/backgroundColor"
+    android:paddingBottom="90dp"
     tools:context=".MyBooksFragment">
 
     <!-- TODO: Update blank fragment layout -->

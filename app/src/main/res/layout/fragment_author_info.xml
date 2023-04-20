@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
     tools:context=".AuthorInfoFragment"
     tools:visibility="visible">
 
@@ -31,7 +32,7 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/inter_regular"
                 android:text="Shakespeare's first plays were written in the conventional style of the day. He wrote them in a stylised language that does not always spring naturally from the needs of the characters or the drama. The poetry depends on extended, sometimes elaborate metaphors and conceits, and the language is often rhetorical—written for actors to declaim rather than speak. The grand speeches in Titus Andronicus, in the view of some critics, often hold up the action, for example; and the verse in The Two Gentlemen of Verona has been described as stilted."
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -46,7 +47,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:text="Author Information"
                 android:textAllCaps="true"
-                android:textColor="@color/lightPrimary"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -75,7 +76,7 @@
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/inter_semibold"
                 android:text="Notable Works"
-                android:textColor="@color/lightPrimary"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
@@ -89,7 +90,7 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/inter_semibold"
                 android:text="Author Name"
-                android:textColor="@color/lightPrimary"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
