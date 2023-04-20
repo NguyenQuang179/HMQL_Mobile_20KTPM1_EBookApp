@@ -9,10 +9,10 @@
         android:id="@+id/categoryCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:buttonTint="@drawable/checkbox_background"
         android:text="CheckBox"
-        android:textColorHighlight="#87C0CD"
-        android:textColorLink="#87C0CD"
+        android:textColorHighlight="?attr/colorSecondary"
+        android:textColorLink="?attr/colorSecondary"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:buttonTint="@drawable/checkbox_background"/>
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
