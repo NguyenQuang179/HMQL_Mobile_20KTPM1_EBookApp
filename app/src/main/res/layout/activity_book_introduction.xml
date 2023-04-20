@@ -7,15 +7,24 @@
     android:background="?attr/backgroundColor"
     tools:context=".BookIntroductionActivity">
 
-    <androidx.fragment.app.FragmentContainerView
+    <FrameLayout
         android:id="@+id/readlikebtn_fragmentCV"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/fragment_book_intro_purchasebtn" />
+        tools:layout="@layout/fragment_book_introduction__read_favorite" />
+
+<!--    <androidx.fragment.app.FragmentContainerView-->
+<!--        android:id="@+id/readlikebtn_fragmentCV"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="80dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        tools:layout="@layout/fragment_book_introduction__read_favorite" />-->
 
     <LinearLayout
         android:id="@+id/top_navigation_bar"

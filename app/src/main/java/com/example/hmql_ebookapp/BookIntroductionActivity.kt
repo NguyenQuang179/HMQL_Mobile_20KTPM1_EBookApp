@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 
+@Suppress("DEPRECATION")
 class BookIntroductionActivity : AppCompatActivity() {
     private lateinit var sampleBookList : ArrayList<SampleBook>
     lateinit var bookNameList : Array<String>
@@ -23,6 +25,7 @@ class BookIntroductionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_introduction)
         sampleDataInit()
+
 
         val TagsRV = findViewById<RecyclerView>(R.id.TagsRV)
         val ChaptersRV = findViewById<RecyclerView>(R.id.ChaptersRV)
@@ -65,13 +68,6 @@ class BookIntroductionActivity : AppCompatActivity() {
         SeeMoreRecBtn!!.setOnClickListener(){
             Toast.makeText(this, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
         }
-
-        supportFragmentManager.commit {
-            add<HomeFragment>(R.id.fragment_book_intro_purchasebtn)
-//            setReorderingAllowed(true)
-//            addToBackStack("name") // name can be null
-        }
-    }
 
     private fun sampleDataInit() {
         // Favourite Books
