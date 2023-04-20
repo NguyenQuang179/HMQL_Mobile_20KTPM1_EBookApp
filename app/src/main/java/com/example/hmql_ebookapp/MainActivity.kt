@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.commit {
                         replace<HomeFragment>(R.id.fragment_container_view)
                         setReorderingAllowed(true)
-                        addToBackStack("name") // name can be null
+                        addToBackStack("home") // name can be null
                     }
                     true
                 }
@@ -48,13 +48,18 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.commit {
                         replace<SearchBookFragment>(R.id.fragment_container_view)
                         setReorderingAllowed(true)
-                        addToBackStack("name") // name can be null
+                        addToBackStack("searchBook") // name can be null
                     }                    // Respond to navigation item 2 click
                     true
 
                 }
                 R.id.item_3 -> {
-                    // Respond to navigation item 1 click
+                    // Respond to navigation item 3 click
+                    supportFragmentManager.commit {
+                        replace<AccountInformationFragment>(R.id.fragment_container_view)
+                        setReorderingAllowed(true)
+                        addToBackStack("accountInformation") // name can be null
+                    }
                     true
                 }
                 R.id.item_4 -> {
@@ -63,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.commit {
                         replace<MyBooksFragment>(R.id.fragment_container_view)
                         setReorderingAllowed(true)
-                        addToBackStack("name") // name can be null
+                        addToBackStack("myBooks") // name can be null
                     }
 
                     true
