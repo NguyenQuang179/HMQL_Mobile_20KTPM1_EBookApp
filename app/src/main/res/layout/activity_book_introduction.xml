@@ -46,7 +46,7 @@
             android:backgroundTint="#FFFFFF"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/back_button" />
+            app:srcCompat="@drawable/back_arrow" />
 
         <View
             android:layout_width="0dp"
@@ -61,7 +61,7 @@
             android:backgroundTint="#FFFFFF"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/download_button" />
+            app:srcCompat="@drawable/download_icon" />
     </LinearLayout>
 
     <ScrollView
@@ -119,7 +119,7 @@
                         android:fontFamily="@font/inter_bold"
                         android:paddingBottom="5dp"
                         android:text="The Little Book of Stoicism"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="18dp"
                         android:textStyle="bold" />
 

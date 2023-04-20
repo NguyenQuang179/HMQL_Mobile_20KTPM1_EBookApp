@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:backgroundTint="?attr/colorPrimary"
     android:paddingStart="20dp"
     android:paddingTop="15dp"
-    android:paddingEnd="20dp"
->
+    android:paddingEnd="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:background="@drawable/rounded_corner_book_intro"
-            android:backgroundTint="@color/lightSecondary"
+            android:backgroundTint="?attr/colorSecondary"
             android:paddingStart="25dp"
             android:paddingTop="22dp"
             android:paddingEnd="25dp"
@@ -47,11 +47,11 @@
             android:letterSpacing="0.01"
             android:text="Read"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="18sp"
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/LikeBtn"/>
+            app:layout_constraintStart_toEndOf="@+id/LikeBtn" />
 
     </LinearLayout>
 
