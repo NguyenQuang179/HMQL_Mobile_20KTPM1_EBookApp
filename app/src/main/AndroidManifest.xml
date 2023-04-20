@@ -18,7 +18,19 @@
 
         <activity
             android:name=".BookIntroductionActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:hardwareAccelerated="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
         <activity
             android:name=".SearchResultActivity"
             android:exported="false">
@@ -52,10 +64,10 @@
             android:exported="true"
             android:windowSoftInputMode="adjustNothing"><!--keyboard adjustment-->
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
 
             <meta-data
                 android:name="android.app.lib_name"
