@@ -19,7 +19,7 @@ class MyViewPagerAdapter(fragment: Fragment, books : ArrayList<SampleBook>) : Fr
             0 -> MyBooks_LikedBooksFragment(book)
             1 -> MyBooks_DownloadFragment(book)
             2 -> MyBooks_HistoryFragment(book)
-            else -> MyBooks_DownloadFragment(book)
+            else -> Fragment()
         }
     }
 }
