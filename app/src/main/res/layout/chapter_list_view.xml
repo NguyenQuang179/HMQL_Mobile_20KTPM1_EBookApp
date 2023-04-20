@@ -2,32 +2,36 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="360dp"
-    android:layout_height="100dp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:orientation="horizontal"
-
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/ChapterTextView"
+            android:id="@+id/ChapterNumberTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:text="Ch. XX"
-            android:textColor="#000000" />
+            android:textColor="#000000"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/ChapterNameTextView"
+            android:id="@+id/ChapterNameTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="Chapter name (if exist)"
+            android:text="Chapter name"
             android:textColor="#000000" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

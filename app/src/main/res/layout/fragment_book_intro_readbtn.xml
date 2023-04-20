@@ -13,7 +13,7 @@
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:letterSpacing="0.01"
-        android:text="Purchase Book"
+        android:text="Read"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
@@ -39,4 +39,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/bookmark_regular_light"
         tools:layout_editor_absoluteY="15dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
