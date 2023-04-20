@@ -35,7 +35,7 @@ class ReadingScreen : AppCompatActivity() {
 
     private val mActionModeCallback = object : ActionMode.Callback {
         // init the Translator class:
-        val translator = Translator(this@ReadingScreen)
+        val translator = Translator()
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             menu.add(Menu.NONE, 1, Menu.NONE, "Translate").setOnMenuItemClickListener {
 

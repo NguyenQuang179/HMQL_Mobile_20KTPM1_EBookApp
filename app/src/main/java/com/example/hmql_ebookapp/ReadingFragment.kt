@@ -5,15 +5,14 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import com.google.mlkit.nl.translate.TranslateLanguage
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
 
@@ -27,7 +26,57 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ReadingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
 class ReadingFragment : Fragment() {
+    private val mActionModeCallback = object : ActionMode.Callback {
+        // init the Translator class:
+        val translator = Translator()
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+
+            menu.add(Menu.NONE, 1, Menu.NONE, "Translate").setOnMenuItemClickListener {
+                val start = extractedTV.selectionStart
+                val end = extractedTV.selectionEnd
+                val selectedText = extractedTV.text?.substring(start, end)
+                // perform translation logic here
+                //Toast.makeText(this@ReadingScreen, "Translate: $selectedText", Toast.LENGTH_SHORT).show()
+                if (selectedText != null) {
+                    val translationCompleteListener = this@ReadingFragment.context?.let { it1 ->
+                        MyTranslationCompleteListener(
+                            it1
+                        )
+                    }
+                    if (translationCompleteListener != null) {
+                        translator.translateText(selectedText, TranslateLanguage.VIETNAMESE, translationCompleteListener)
+                    }
+                }
+                mode.finish()
+                true
+            }
+            menu.add(Menu.NONE, 2, Menu.NONE, "Highlight").setOnMenuItemClickListener {
+                val start = extractedTV.selectionStart
+                val end = extractedTV.selectionEnd 
+                var hightlightStr = SpannableString(extractedTV.text)
+                hightlightStr.setSpan(BackgroundColorSpan(Color.YELLOW), start, end, 0)
+                extractedTV.text = hightlightStr
+                mode.finish()
+                true
+            }
+            menu.add(Menu.NONE, 3, Menu.NONE, "Read Outloud").setOnMenuItemClickListener {
+                mode.finish()
+                true
+            }
+            return true
+        }
+
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return false
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode) {}
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            return false
+        }
+    }
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -82,9 +131,8 @@ class ReadingFragment : Fragment() {
         extractedTV = view.findViewById(R.id.pdfContentTv)
         extractData()
 
-        var hightlightStr = SpannableString(extractedTV.text)
-        hightlightStr.setSpan(BackgroundColorSpan(Color.YELLOW), 50, 100, 0)
-        extractedTV.text = hightlightStr
+        extractedTV.customSelectionActionModeCallback = mActionModeCallback
+
 
         val settingBtn = view.findViewById<ImageButton>(R.id.settingBtn)
         settingBtn!!.setOnClickListener(){

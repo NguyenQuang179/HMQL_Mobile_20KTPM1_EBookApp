@@ -1,12 +1,11 @@
 package com.example.hmql_ebookapp
 
-import android.content.Context
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 
-class Translator(context: Context) {
+class Translator() {
 
     fun translateText(sourceText: String, targetLanguage: String, listener: OnTranslationCompleteListener) {
                 val options = TranslatorOptions.Builder()
