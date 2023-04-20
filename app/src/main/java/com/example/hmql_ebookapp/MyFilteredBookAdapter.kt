@@ -62,8 +62,8 @@ class MyFilteredBookAdapter(private val books : ArrayList<SampleBook>)
         //make statusTextView Change its text color, background colors, and text on click
         holder.statusTextView.setOnClickListener {
             holder.statusTextView.setText("Finished")
-            holder.statusTextView.setTextColor(Color.parseColor("#FFFFFF"))
-            holder.statusTextView.background.setTint(ContextCompat.getColor(holder.statusTextView.context, R.color.lightSecondary))
+            holder.statusTextView.setTextColor(getColor(holder.statusTextView.context, com.google.android.material.R.attr.colorOnSecondary))
+            holder.statusTextView.background.setTint(getColor(holder.statusTextView.context, com.google.android.material.R.attr.colorSecondary))
         }
     }
 
