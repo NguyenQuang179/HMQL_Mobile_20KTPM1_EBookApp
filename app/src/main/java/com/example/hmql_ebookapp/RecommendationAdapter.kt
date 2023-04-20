@@ -7,15 +7,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class FavouriteBookAdapter(private val books : ArrayList<SampleBook>)
-    : RecyclerView.Adapter<FavouriteBookAdapter.ViewHolder>(){
+class RecommendationAdapter(private val books : ArrayList<SampleBook>)
+    : RecyclerView.Adapter<RecommendationAdapter.ViewHolder>(){
 
     var onItemClick: ((SampleBook) -> Unit)? = null
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
-        val bookNameTv : TextView = listItemView.findViewById<TextView>(R.id.favBookNameTv)!!
-        val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.favBookAuthorNameTv)!!
-        val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.favBookImgView)!!
+        val bookNameTv : TextView = listItemView.findViewById<TextView>(R.id.recBookNameTv)!!
+        val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.recBookAuthorNameTv)!!
+        val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.recBookImgView)!!
         init { listItemView.setOnClickListener { onItemClick?.invoke(books[adapterPosition]) } }
     }
 
@@ -23,8 +23,8 @@ class FavouriteBookAdapter(private val books : ArrayList<SampleBook>)
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         // Inflate the custom layout
-        val favBooksView : View = inflater.inflate(R.layout.favouritebooks_layout, parent, false)
-        return ViewHolder(favBooksView)
+        val recommendationbooksView : View = inflater.inflate(R.layout.recommendationbooks_layout, parent, false)
+        return ViewHolder(recommendationbooksView)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

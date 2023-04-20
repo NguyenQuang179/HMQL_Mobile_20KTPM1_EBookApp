@@ -4,82 +4,121 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 
 class BookIntroductionActivity : AppCompatActivity() {
+    private lateinit var sampleBookList : ArrayList<SampleBook>
+    lateinit var bookNameList : Array<String>
+    lateinit var authorNameList : Array<String>
+    lateinit var bookImgIdList : Array<Int>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_introduction)
+        sampleDataInit()
+
         val TagsRV = findViewById<RecyclerView>(R.id.TagsRV)
+        val ChaptersRV = findViewById<RecyclerView>(R.id.ChaptersRV)
+        val RecommendationBooksRV = findViewById<RecyclerView>(R.id.RecommendationBooksRV)
+        val SeeMoreRecBtn = findViewById<Button>(R.id.SeeMoreRecBtn)
+
 
         // this creates a vertical layout Manager
         TagsRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        ChaptersRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        RecommendationBooksRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
 
         // ArrayList of class ItemsViewModel
-        val data = ArrayList<TagsViewModel>()
+        val data_tags = ArrayList<TagsViewModel>()
+        val data_chapters = ArrayList<ChapterViewModel>()
+
 
         // This loop will create 20 Views containing
         // the image with the count of view
         for (i in 1..20) {
-            data.add(TagsViewModel("Item " + i))
+            data_tags.add(TagsViewModel("Tags " + i))
+        }
+
+        for (i in 1..20) {
+            data_chapters.add(ChapterViewModel("Ch. " + i, "Chapter name " + i))
         }
 
         // This will pass the ArrayList to our Adapter
-        val adapter = TagsAdapterClass(data)
+        val adapter_tags = TagsAdapterClass(data_tags)
+        val adapter_chapters = ChapterAdapterClass(data_chapters)
+        val adapter_recommendations = RecommendationAdapter(sampleBookList)
 
         // Setting the Adapter with the recyclerview
-        TagsRV.adapter = adapter
+        TagsRV.adapter = adapter_tags
+        ChaptersRV.adapter = adapter_chapters
+        RecommendationBooksRV.adapter = adapter_recommendations
+
+
+        SeeMoreRecBtn!!.setOnClickListener(){
+            Toast.makeText(this, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
+        }
+
+        supportFragmentManager.commit {
+            add<HomeFragment>(R.id.fragment_book_intro_purchasebtn)
+//            setReorderingAllowed(true)
+//            addToBackStack("name") // name can be null
+        }
     }
 
-    internal class Row_Author_Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    private fun sampleDataInit() {
+        // Favourite Books
+        sampleBookList = arrayListOf<SampleBook>()
 
-    internal class Row_Tags_Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+        bookNameList = arrayOf(
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S...",
+            "Merry Christmas",
+            "Little Blue Truck's Halloween",
+            "Born a crime: Stories from a S..."
+        )
 
-    internal class Row_Synopsis_Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+        authorNameList = arrayOf(
+            "Alice Schertle, Jill McElmurry",
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory",
+            "Alice Schertle, Jill McElmurry",
+            "Alice Schertle",
+            "Jill McElmurry",
+            "Bret Bais",
+            "Liana Moriatory"
+        )
 
-    internal class Row_Chapters_Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+        bookImgIdList = arrayOf(
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1,
+            R.drawable.favbookimg2,
+            R.drawable.favbookimg3,
+            R.drawable.favbookimg1
+        )
 
-    internal class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            if (viewType == 0) {
-                val view: View =
-                    LayoutInflater.from(parent.context).inflate(R.layout.row_author_book_intro, parent, false)
-                return  Row_Author_Holder(view)
-            }
-            else if (viewType == 1){
-                val view: View =
-                    LayoutInflater.from(parent.context).inflate(R.layout.row_tags_book_intro, parent, false)
-                return  Row_Tags_Holder(view)
-            }
-            else if (viewType == 2){
-                val view: View =
-                    LayoutInflater.from(parent.context).inflate(R.layout.row_synopsis_book_intro, parent, false)
-                return  Row_Synopsis_Holder(view)
-            }
-            else if (viewType == 3){
-                val view: View =
-                    LayoutInflater.from(parent.context).inflate(R.layout.row_chapters_book_intro, parent, false)
-                return  Row_Chapters_Holder(view)
-            }
-            else {
-                val view: View =
-                    LayoutInflater.from(parent.context).inflate(R.layout.row_tags_book_intro, parent, false)
-                return  Row_Tags_Holder(view)
-            }
-
-        }
-
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {}
-        override fun getItemViewType(position: Int): Int {
-            return if (position == 0) 1 else position % 3
-        }
-
-        override fun getItemCount(): Int {
-            return 10
+        for(i in bookNameList.indices) {
+            val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
+            sampleBookList.add(sampleBook)
         }
     }
 
