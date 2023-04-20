@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,17 +21,11 @@ class BookIntroductionActivity : AppCompatActivity() {
     lateinit var authorNameList : Array<String>
     lateinit var bookImgIdList : Array<Int>
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_introduction)
         sampleDataInit()
 
-        if(savedInstanceState == null) { // initial transaction should be wrapped like this
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.readlikebtn_fragmentCV, BookIntroduction_ReadFavoriteFragment())
-                .commitAllowingStateLoss()
-        }
 
         val TagsRV = findViewById<RecyclerView>(R.id.TagsRV)
         val ChaptersRV = findViewById<RecyclerView>(R.id.ChaptersRV)
@@ -74,9 +68,6 @@ class BookIntroductionActivity : AppCompatActivity() {
         SeeMoreRecBtn!!.setOnClickListener(){
             Toast.makeText(this, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
         }
-
-
-    }
 
     private fun sampleDataInit() {
         // Favourite Books
