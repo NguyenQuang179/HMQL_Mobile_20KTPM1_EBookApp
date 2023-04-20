@@ -5,6 +5,8 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="?attr/backgroundColor"
+    android:background="@color/common_google_signin_btn_text_dark_pressed"
     tools:context=".MyBooksFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -14,9 +16,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:backgroundTint="?attr/backgroundColor"
         android:fontFamily="sans-serif-medium"
         android:text="My Books"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,19 +30,19 @@
         android:layout_width="411dp"
         android:layout_height="48dp"
         android:layout_marginTop="20dp"
-        android:backgroundTint="@color/lightBackground"
+        android:backgroundTint="?attr/backgroundColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fragmentTitleTextView"
         app:tabIndicator="@drawable/rounded_corner"
         app:tabIndicatorAnimationMode="elastic"
-        app:tabIndicatorColor="@color/lightPrimary"
+        app:tabIndicatorColor="?attr/colorPrimary"
         app:tabIndicatorGravity="stretch"
         app:tabIndicatorHeight="1dp"
         app:tabMode="fixed"
-        app:tabSelectedTextColor="@color/white"
-        app:tabTextColor="@color/lightSecondary">
+        app:tabSelectedTextColor="?attr/colorOnPrimary"
+        app:tabTextColor="?attr/colorTertiary">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -62,6 +65,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        android:backgroundTint="?attr/backgroundColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
