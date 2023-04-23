@@ -1,22 +1,31 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+// TODO: Rename parameter arguments, choose names that match
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
 
-@Suppress("DEPRECATION")
-class BookIntroductionActivity : AppCompatActivity() {
+/**
+ * A simple [Fragment] subclass.
+ * Use the [BookIntroductionFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ */
+class BookIntroductionFragment : Fragment() {
+    // TODO: Rename and change types of parameters
+    private var param1: String? = null
+    private var param2: String? = null
+
     private lateinit var sampleBookList : ArrayList<SampleBook>
     lateinit var bookNameList : Array<String>
     lateinit var authorNameList : Array<String>
@@ -73,28 +82,40 @@ class BookIntroductionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_book_introduction)
+        arguments?.let {
+            param1 = it.getString(ARG_PARAM1)
+            param2 = it.getString(ARG_PARAM2)
+        }
+
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+
+
+        return inflater.inflate(R.layout.fragment_book_introduction, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         sampleDataInit()
 
-//        if (savedInstanceState == null) { // initial transaction should be wrapped like this
-//            supportFragmentManager.beginTransaction()
-//                .replace(R.id.readlikebtn_fragmentCV, BookIntroduction_ReadFavoriteFragment())
-//                .commitAllowingStateLoss()
-//        }
-
-        val TagsRV = findViewById<RecyclerView>(R.id.TagsRV)
-        val ChaptersRV = findViewById<RecyclerView>(R.id.ChaptersRV)
-        val RecommendationBooksRV = findViewById<RecyclerView>(R.id.RecommendationBooksRV)
-        val SeeMoreRecBtn = findViewById<Button>(R.id.SeeMoreRecBtn)
-        val LikedButton = findViewById<ImageButton>(R.id.LikeBtn)
+        val TagsRV = view.findViewById<RecyclerView>(R.id.TagsRV)
+        val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
+        val RecommendationBooksRV = view.findViewById<RecyclerView>(R.id.RecommendationBooksRV)
+        val SeeMoreRecBtn = view.findViewById<Button>(R.id.SeeMoreRecBtn)
+        val LikedButton = view.findViewById<ImageButton>(R.id.LikeBtn)
         LikedButton.tag = "bookmark"
 
-
         // this creates a vertical layout Manager
-        TagsRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        ChaptersRV.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        TagsRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+        ChaptersRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         RecommendationBooksRV.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
 
         // ArrayList of class ItemsViewModel
@@ -122,13 +143,6 @@ class BookIntroductionActivity : AppCompatActivity() {
         ChaptersRV.adapter = adapter_chapters
         RecommendationBooksRV.adapter = adapter_recommendations
 
-
-        SeeMoreRecBtn!!.setOnClickListener() {
-            Toast.makeText(this, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-
-
         LikedButton.setOnClickListener {
             if (LikedButton.tag == "bookmark") {
                 LikedButton.setImageResource(R.drawable.bookmark_solid_light)
@@ -141,4 +155,23 @@ class BookIntroductionActivity : AppCompatActivity() {
 
     }
 
+    companion object {
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param param1 Parameter 1.
+         * @param param2 Parameter 2.
+         * @return A new instance of fragment BookIntroductionFragment.
+         */
+        // TODO: Rename and change types and number of parameters
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+            BookIntroductionFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)
+                }
+            }
+    }
 }

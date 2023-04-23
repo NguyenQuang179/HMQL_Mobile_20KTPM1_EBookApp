@@ -28,7 +28,7 @@
             app:layout_constraintEnd_toStartOf="@+id/ReadBtn"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/bookmark_regular_light"
+            app:srcCompat="@drawable/bookmark_selector"
             tools:layout_editor_absoluteY="15dp" />
 
         <View
