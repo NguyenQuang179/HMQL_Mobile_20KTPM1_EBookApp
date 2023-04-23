@@ -42,4 +42,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="underline_for_backBtn"><u>Back</u></string>
     <string name="tab1">Liked Books</string>
+
+    <string name="sample_word">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tellus in metus vulputate eu scelerisque felis imperdiet proin. Odio euismod lacinia at quis risus sed vulputate odio. </string>
 </resources>
