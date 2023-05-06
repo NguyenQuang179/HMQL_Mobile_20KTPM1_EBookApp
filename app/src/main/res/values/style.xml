@@ -3,4 +3,25 @@
     <style name="circleAvatar">
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="LoginTheme" parent="FirebaseUI">
+        <item name="android:windowBackground">@drawable/rounded_corner</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@color/nightBackground</item>
+<!--        <item name="android:colorBackground">@color/</item>-->
+<!--        <item name="android:colorForeground">@color/white</item>-->
+
+        <item name="android:colorPrimary">@color/lightPrimary</item>
+        <item name="android:colorPrimaryDark">@color/nightPrimary</item>
+        <item name="android:colorAccent">@color/lightSecondary</item>
+
+        <item name="android:colorControlNormal">@color/white</item>
+        <item name="android:colorControlActivated">@color/white</item>
+        <item name="android:colorControlHighlight">@color/white</item>
+        <item name="android:colorButtonNormal">@color/lightBackground</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+    </style>
 </resources>
