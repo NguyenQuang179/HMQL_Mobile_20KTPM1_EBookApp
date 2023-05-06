@@ -1,10 +1,11 @@
 package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
@@ -17,12 +18,14 @@ class MainActivity : AppCompatActivity() {
 
     //signing
     val AUTH_REQUEST_CODE = 7192 // Any number you want
+    val AUTH_REGISTER_CODE = 7193 // Any number you want
+    val AUTH_LOGOUT_CODE = 7194 // Any number you want
     lateinit var firebaseAuth: FirebaseAuth
     lateinit var listener:FirebaseAuth.AuthStateListener
     lateinit var providers:List<AuthUI.IdpConfig>
-    private fun init(){
+    public fun init(){ //init login
         providers = arrayListOf(
-AuthUI.IdpConfig.EmailBuilder().build(), //Email Builder
+        AuthUI.IdpConfig.EmailBuilder().setAllowNewAccounts(true).build(), //Email Builder
             AuthUI.IdpConfig.GoogleBuilder().build(), //Google Builder
             //AuthUI.IdpConfig.FacebookBuilder().build(), //Facebook Builder
             AuthUI.IdpConfig.PhoneBuilder().build(), //Phone Builder
@@ -48,7 +51,38 @@ AuthUI.IdpConfig.EmailBuilder().build(), //Email Builder
             }
         }
     }
+//            RC_SIGN_IN
+//        )
+//    }
 
+    // Register function
+    public fun register(email: String, password: String) {
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Registration successful, do something here
+                } else {
+                    // Registration failed, display error message
+                    Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+    // Logout function
+    fun logout(activity: Activity) {
+        AuthUI.getInstance()
+            .signOut(activity)
+            .addOnCompleteListener {
+                // Successfully signed out, do something here
+                activity.startActivityForResult(
+                    AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setTheme(R.style.LoginTheme)
+                        .build(),
+                    AUTH_REQUEST_CODE
+                )
+            }
+    }
     @SuppressLint("MissingInflatedId")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,66 +101,66 @@ AuthUI.IdpConfig.EmailBuilder().build(), //Email Builder
 
         init();
 
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .setTheme(R.style.LoginTheme)
-                .build(), AUTH_REQUEST_CODE
-        )
+//        startActivityForResult(
+//            AuthUI.getInstance()
+//                .createSignInIntentBuilder()
+//                .setAvailableProviders(providers)
+//                .setTheme(R.style.LoginTheme)
+//                .build(), AUTH_REQUEST_CODE
+//        )
 //     val intent = Intent(this, ReadingScreen::class.java)
 //        startActivity(intent)
 
-//        supportFragmentManager.commit {
-//            add<HomeFragment>(R.id.fragment_container_view)
-////            setReorderingAllowed(true)
-////            addToBackStack("name") // name can be null
-//        }
-//        val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
-//        //Bottom Navigation Menu
-//            navBar.setOnItemSelectedListener{ item ->
-//            when(item.itemId) {
-//                R.id.item_1 -> {
-//                    // Respond to navigation item 1 click
-//                    supportFragmentManager.commit {
-//                        replace<HomeFragment>(R.id.fragment_container_view)
-//                        setReorderingAllowed(true)
-//                        addToBackStack("home") // name can be null
-//                    }
-//                    true
-//                }
-//                R.id.item_2 -> {
-//                    supportFragmentManager.commit {
-//                        replace<SearchBookFragment>(R.id.fragment_container_view)
-//                        setReorderingAllowed(true)
-//                        addToBackStack("searchBook") // name can be null
-//                    }                    // Respond to navigation item 2 click
-//                    true
-//
-//                }
-//                R.id.item_3 -> {
-//                    // Respond to navigation item 3 click
-//                    supportFragmentManager.commit {
-//                        replace<AccountInformationFragment>(R.id.fragment_container_view)
-//                        setReorderingAllowed(true)
-//                        addToBackStack("accountInformation") // name can be null
-//                    }
-//                    true
-//                }
-//                R.id.item_4 -> {
-//                    // Respond to navigation item 2 click
-//                    //setCurrentFragment(Fragment01())
-//                    supportFragmentManager.commit {
-//                        replace<MyBooksFragment>(R.id.fragment_container_view)
-//                        setReorderingAllowed(true)
-//                        addToBackStack("myBooks") // name can be null
-//                    }
-//
-//                    true
-//                }
-//                else -> false
-//            }
-//        }
+        supportFragmentManager.commit {
+            add<HomeFragment>(R.id.fragment_container_view)
+//            setReorderingAllowed(true)
+//            addToBackStack("name") // name can be null
+        }
+        val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
+        //Bottom Navigation Menu
+            navBar.setOnItemSelectedListener{ item ->
+            when(item.itemId) {
+                R.id.item_1 -> {
+                    // Respond to navigation item 1 click
+                    supportFragmentManager.commit {
+                        replace<HomeFragment>(R.id.fragment_container_view)
+                        setReorderingAllowed(true)
+                        addToBackStack("home") // name can be null
+                    }
+                    true
+                }
+                R.id.item_2 -> {
+                    supportFragmentManager.commit {
+                        replace<SearchBookFragment>(R.id.fragment_container_view)
+                        setReorderingAllowed(true)
+                        addToBackStack("searchBook") // name can be null
+                    }                    // Respond to navigation item 2 click
+                    true
+
+                }
+                R.id.item_3 -> {
+                    // Respond to navigation item 3 click
+                    supportFragmentManager.commit {
+                        replace<AccountInformationFragment>(R.id.fragment_container_view)
+                        setReorderingAllowed(true)
+                        addToBackStack("accountInformation") // name can be null
+                    }
+                    true
+                }
+                R.id.item_4 -> {
+                    // Respond to navigation item 2 click
+                    //setCurrentFragment(Fragment01())
+                    supportFragmentManager.commit {
+                        replace<MyBooksFragment>(R.id.fragment_container_view)
+                        setReorderingAllowed(true)
+                        addToBackStack("myBooks") // name can be null
+                    }
+
+                    true
+                }
+                else -> false
+            }
+       }
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
