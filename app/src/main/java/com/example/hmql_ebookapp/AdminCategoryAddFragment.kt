@@ -5,9 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -16,10 +18,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [AdminDashboardFragment.newInstance] factory method to
+ * Use the [AdminCategoryAddFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AdminDashboardFragment : Fragment() {
+class AdminCategoryAddFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -37,27 +39,32 @@ class AdminDashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_dashboard, container, false)
+        return inflater.inflate(R.layout.fragment_admin_category_add, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val booksCard : ConstraintLayout = view.findViewById<ConstraintLayout>(R.id.AdminDashboardBookCard)
-        booksCard.setOnClickListener(){
-            requireActivity().supportFragmentManager.commit {
-                replace<AdminBooksFragment>(R.id.fragmentContainerView2)
-                setReorderingAllowed(true)
-                addToBackStack("adminBooks")
-            }
+        val backBtn = view.findViewById<Button>(R.id.AdminCategoryAddBackBtn)
+        backBtn.setOnClickListener(){
+            requireActivity().supportFragmentManager.popBackStack()
         }
 
-        val categoriesCard : ConstraintLayout = view.findViewById<ConstraintLayout>(R.id.AdminDashboardTagCard)
-        categoriesCard.setOnClickListener() {
-            requireActivity().supportFragmentManager.commit {
-                replace<AdminCategoriesFragment>(R.id.fragmentContainerView2)
-                setReorderingAllowed(true)
-                addToBackStack("adminCategories")
+        val categoryIdEt = view.findViewById<EditText>(R.id.AdminCategoryAddIdEt)
+        val categoryNameEt = view.findViewById<EditText>(R.id.AdminCategoryAddNameEt)
+        val saveBtn = view.findViewById<Button>(R.id.AdminCategoryAddSaveBtn)
+        saveBtn.setOnClickListener(){
+            val id : String = categoryIdEt.text.toString()
+            val name : String = categoryNameEt.text.toString()
+            if(id == "" || name == "") {
+                Toast.makeText(requireContext(), "Please fill all information before u save", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                setFragmentResult("addCategory",
+                    bundleOf("id" to id,
+                        "name" to name)
+                )
+                requireActivity().supportFragmentManager.popBackStack()
             }
         }
     }
@@ -69,12 +76,12 @@ class AdminDashboardFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment AdminDashboardFragment.
+         * @return A new instance of fragment AdminCategoryAddFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            AdminDashboardFragment().apply {
+            AdminCategoryAddFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
