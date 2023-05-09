@@ -48,7 +48,7 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>)
         val authorNameTv = holder.authorNameTv
         authorNameTv.setText(book.author)
         val bookImgView = holder.bookImgView
-        Glide.with(context)
+        Glide.with(holder.bookNameTv.context)
             .load(book.cover)
             .into(bookImgView);
 

@@ -37,6 +37,7 @@ class AdminBooksFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sampleDataInit()
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -53,7 +54,11 @@ class AdminBooksFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sampleDataInit()
+
+        val backBtn = view.findViewById<Button>(R.id.AdminBookBackBtn)
+        backBtn.setOnClickListener(){
+            requireActivity().supportFragmentManager.popBackStack()
+        }
 
         val booksRv = view.findViewById<RecyclerView>(R.id.AdminBookRv)
         val booksRvAdapter = AdminBookRecyclerViewAdapter(sampleBookList)
@@ -62,7 +67,8 @@ class AdminBooksFragment : Fragment() {
         booksRvAdapter.onItemClick = { book ->
             Toast.makeText(requireContext(), book.bookName.toString(), Toast.LENGTH_SHORT).show()
             val bundle = Bundle()
-            //bundle.putSerializable("bookDetail", book)
+            bundle.putSerializable("bookDetail", book)
+            bundle.putInt("bookIndex", sampleBookList.indexOf(book))
             val bookDetailFragment = AdminBookDetail()
             bookDetailFragment.arguments = bundle
             requireActivity().supportFragmentManager.commit {
@@ -72,9 +78,13 @@ class AdminBooksFragment : Fragment() {
             }
         }
 
-        val backBtn = view.findViewById<Button>(R.id.AdminBookBackBtn)
-        backBtn.setOnClickListener(){
-            requireActivity().supportFragmentManager.popBackStack()
+        setFragmentResultListener("editBookInfo") { key, bundle ->
+            val newTitle = bundle.getString("newTitle")
+            val newAuthor = bundle.getString("newAuthor")
+            val bookIndex = bundle.getInt("bookIndex")
+            sampleBookList[bookIndex].bookName = newTitle.toString()
+            sampleBookList[bookIndex].authorName = newAuthor.toString()
+            booksRvAdapter.notifyDataSetChanged()
         }
 
         setFragmentResultListener("newBookInfo") { key, bundle ->

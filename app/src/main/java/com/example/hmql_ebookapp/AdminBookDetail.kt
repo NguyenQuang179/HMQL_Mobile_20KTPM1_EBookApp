@@ -1,7 +1,6 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
-import androidx.fragment.app.setFragmentResultListener
+import androidx.core.os.bundleOf
+import androidx.fragment.app.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -49,7 +47,8 @@ class AdminBookDetail : Fragment() {
 
         val args = this.arguments
         val book : SampleBook = args?.getSerializable("bookDetail") as SampleBook
-        Toast.makeText(requireContext(), book.authorName.toString(), Toast.LENGTH_LONG).show()
+        val bookIndex : Int = args.getInt("bookIndex")
+        Toast.makeText(requireContext(), "Selected Book Index $bookIndex", Toast.LENGTH_SHORT).show()
 
         val backBtn = view.findViewById<Button>(R.id.AdminBookDetailBackBtn)
         backBtn.setOnClickListener(){
@@ -76,16 +75,29 @@ class AdminBookDetail : Fragment() {
 
         val saveBtn = view.findViewById<Button>(R.id.AdminBookSaveBtn)
         saveBtn.setOnClickListener(){
-            val data = "Sending Data From AdminBookDetail"
-            val bundle = Bundle()
-            bundle.putString("dataFromBookDetail", data)
-            val bookEditFragment = AdminBookEditFragment()
-            bookEditFragment.arguments = bundle
-            //fragmentManager?.beginTransaction()?.replace(R.id.fragmentContainerView2, bookEditFragment)?.commit()
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragmentContainerView2, bookEditFragment)
-                setReorderingAllowed(true)
-                addToBackStack("EditBook")
+//            val data = "Sending Data From AdminBookDetail"
+//            val bundle = Bundle()
+//            bundle.putString("dataFromBookDetail", data)
+//            val bookEditFragment = AdminBookEditFragment()
+//            bookEditFragment.arguments = bundle
+//            //fragmentManager?.beginTransaction()?.replace(R.id.fragmentContainerView2, bookEditFragment)?.commit()
+//            requireActivity().supportFragmentManager.commit {
+//                replace(R.id.fragmentContainerView2, bookEditFragment)
+//                setReorderingAllowed(true)
+//                addToBackStack("EditBook")
+//            }
+            val newTitle = bookName.text.toString()
+            val newAuthor = bookAuthor.text.toString()
+            if(newTitle == "" || newAuthor == "") {
+                Toast.makeText(requireContext(), "Please fill all information before u save", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                setFragmentResult("editBookInfo",
+                    bundleOf("newTitle" to newTitle,
+                                    "newAuthor" to newAuthor,
+                                    "bookIndex" to bookIndex)
+                )
+                requireActivity().supportFragmentManager.popBackStack()
             }
         }
     }
