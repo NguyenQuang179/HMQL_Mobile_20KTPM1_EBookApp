@@ -16,6 +16,7 @@ import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
 
     //signing
@@ -86,6 +87,16 @@ class MainActivity : AppCompatActivity() {
             }
     }
     @SuppressLint("MissingInflatedId")
+    override fun onBackPressed() {
+        val count = supportFragmentManager.backStackEntryCount
+
+        if (count == 0) {
+            super.onBackPressed()
+            //additional code
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

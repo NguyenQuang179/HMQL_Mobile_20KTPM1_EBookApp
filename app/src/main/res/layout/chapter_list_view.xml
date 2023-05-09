@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
 
             android:text="Ch. XX"
-            android:textColor="#000000"
+            android:textColor="?attr/colorOnBackground"
             android:textStyle="bold" />
 
         <TextView
@@ -32,6 +32,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="Chapter name"
-            android:textColor="#000000" />
+            android:textColor="?attr/colorTertiary" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

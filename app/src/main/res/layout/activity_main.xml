@@ -15,9 +15,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home"
+        />
+
     <!--    Bottom Navigation Bar-->
     <View
+        android:id="@+id/view_bar"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?attr/colorTertiary"

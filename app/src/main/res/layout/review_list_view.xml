@@ -7,13 +7,25 @@
     android:background="?attr/backgroundColor"
     tools:context=".AccountInformationFragment">
 
+    <TextView
+        android:id="@+id/ReviewRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="5.0"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ReviewRatingBar"
+        app:layout_constraintStart_toEndOf="@+id/ReviewRatingBar"
+        app:layout_constraintTop_toTopOf="@+id/ReviewRatingBar"
+        app:layout_constraintVertical_bias="1.0" />
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ReviewerIV"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="20dp"
+        android:layout_width="62dp"
+        android:layout_height="58dp"
         android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/Reviewer_nameTV"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/circleAvatar"
@@ -24,69 +36,41 @@
         android:id="@+id/Reviewer_nameTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="241dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="249dp"
         android:fontFamily="@font/inter_bold"
         android:text="Fela Fela"
         android:textColor="?attr/colorOnBackground"
-        android:textSize="18dp"
-        app:layout_constraintBottom_toTopOf="@+id/ReviewRatingBar"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/ReviewerIV"
-        app:layout_constraintTop_toTopOf="@+id/ReviewerIV" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <RatingBar
         android:id="@+id/ReviewRatingBar"
         style="@style/Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ReviewerIV"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintStart_toEndOf="@+id/ReviewerIV"
         app:layout_constraintTop_toBottomOf="@+id/Reviewer_nameTV">
 
     </RatingBar>
 
     <TextView
-        android:id="@+id/ReviewRate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="212dp"
-        android:fontFamily="@font/inter_regular"
-        android:text="5.0"
-        android:textColor="?attr/colorOnBackground"
-        android:textSize="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ReviewRatingBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ReviewRatingBar"
-        app:layout_constraintTop_toTopOf="@+id/ReviewRatingBar" />
-
-    <TextView
         android:id="@+id/ReviewTextTV"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:text="@string/sample_word"
         android:textSize="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ReviewerIV"
-        app:layout_constraintVertical_bias="0.421" />
-
-    <View
-        android:layout_width="320dp"
-        android:layout_height="2dp"
-        android:layout_marginStart="45dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="46dp"
-        android:background="?attr/colorOnBackground"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ReviewTextTV" />
+        app:layout_constraintTop_toBottomOf="@+id/ReviewerIV" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
