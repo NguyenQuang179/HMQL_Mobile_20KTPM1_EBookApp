@@ -9,14 +9,16 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import android.content.Context
 
-class MyFilteredBookAdapter(private val books : ArrayList<SampleBook>)
+class MyFilteredBookAdapter(private val books : ArrayList<Book>)
     : RecyclerView.Adapter<MyFilteredBookAdapter.ViewHolder>(), Filterable{
 
-    var onItemClick: ((SampleBook) -> Unit)? = null
-    var filteredBooks = ArrayList<SampleBook>();
+    var onItemClick: ((Book) -> Unit)? = null
+    var filteredBooks = ArrayList<Book>();
     init{
-        filteredBooks = books as ArrayList<SampleBook>
+        filteredBooks = books as ArrayList<Book>
     }
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
@@ -38,15 +40,17 @@ class MyFilteredBookAdapter(private val books : ArrayList<SampleBook>)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Get the data model based on position
-        val book : SampleBook = filteredBooks[position]
+        val book : Book = filteredBooks[position]
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
-        bookNameTv.setText(book.bookName)
+        bookNameTv.setText(book.title)
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(book.authorName)
+        authorNameTv.setText(book.author)
         val bookImgView = holder.bookImgView
-        bookImgView.setImageResource(book.bookImg)
+        Glide.with(context)
+            .load(book.cover)
+            .into(bookImgView);
 
         //set on click listener for a button in a recycler View item that change into another image on click
         //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
@@ -74,11 +78,11 @@ class MyFilteredBookAdapter(private val books : ArrayList<SampleBook>)
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val charSearch = constraint.toString()
                 if (charSearch.isEmpty()) {
-                    filteredBooks = books as ArrayList<SampleBook>
+                    filteredBooks = books as ArrayList<Book>
                 } else {
-                    val resultList = ArrayList<SampleBook>()
+                    val resultList = ArrayList<Book>()
                     for (row in books) {
-                        if (row.bookName.toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        if (row.title.toLowerCase().contains(constraint.toString().toLowerCase())) {
                             resultList.add(row)
                         }
                     }
@@ -90,7 +94,7 @@ class MyFilteredBookAdapter(private val books : ArrayList<SampleBook>)
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredBooks = results?.values as ArrayList<SampleBook>
+                filteredBooks = results?.values as ArrayList<Book>
                 notifyDataSetChanged()
             }
         }

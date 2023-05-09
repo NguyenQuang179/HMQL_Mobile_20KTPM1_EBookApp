@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,7 +32,7 @@ class SearchResultFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    lateinit var books : ArrayList<SampleBook>
+    lateinit var books : ArrayList<Book>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,31 +52,29 @@ class SearchResultFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sampleDataInit()
-
-        var customRecyclerView = view.findViewById<RecyclerView>(R.id.searchResultRV)
-        var adapter = MyFilteredBookAdapter(books)
-        customRecyclerView!!.adapter = adapter
-        val layoutManager = LinearLayoutManager(context)
-        customRecyclerView.layoutManager = layoutManager
-        val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
-            DividerItemDecoration.VERTICAL)
-        customRecyclerView.addItemDecoration(itemDecoration)
-//        adapter.onItemClick = {student ->
-//            val intent = Intent(this, EditActivity::class.java)
-//            intent.putExtra("pos", listOfStudent.indexOf(student));
-//            intent.putExtra("studentInfo", student)
-//            startActivityForResult(intent, Request_Code_Edit);
-//        }
-
-        var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
-        autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                adapter?.filter?.filter(p0)
-                adapter.notifyDataSetChanged();
+        sampleDataInit(object : OnDataReadyCallback {
+            override fun onDataReady(books: List<Book>) {
+                this@SearchResultFragment.books = ArrayList(books)
+                Log.d("Books size", "Number of books: ${books.size}");
+                var customRecyclerView = view.findViewById<RecyclerView>(R.id.searchResultRV)
+                var adapter = MyFilteredBookAdapter(this@SearchResultFragment.books)
                 customRecyclerView!!.adapter = adapter
+                val layoutManager = LinearLayoutManager(context)
+                customRecyclerView.layoutManager = layoutManager
+                val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
+                    DividerItemDecoration.VERTICAL)
+                customRecyclerView.addItemDecoration(itemDecoration)
+
+                var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
+                autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {}
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                        adapter?.filter?.filter(p0)
+                        adapter.notifyDataSetChanged();
+                        customRecyclerView!!.adapter = adapter
+                    }
+                })
             }
         })
     }
@@ -99,52 +99,25 @@ class SearchResultFragment : Fragment() {
             }
     }
 
-    private fun sampleDataInit() {
-        // Favourite Books
-        books = arrayListOf<SampleBook>()
+    private fun sampleDataInit(callback: OnDataReadyCallback) {
+        val books = mutableListOf<Book>()
+        val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+        ref1.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val book = child.getValue(Book::class.java)
+                        book?.let { books.add(it) }
+                    }
+                    Log.d("Books size", "Number of books: ${books.size}")
+                    callback.onDataReady(books)
+                }
+            }
 
-        val bookNameList = arrayOf(
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S..."
-        )
-
-        val authorNameList = arrayOf(
-            "Alice Schertle, Jill McElmurry",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Alice Schertle, Jill McElmurry",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory"
-        )
-
-        val bookImgIdList = arrayOf(
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1
-        )
-
-        for(i in bookNameList.indices) {
-            val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
-            books.add(sampleBook)
-        }
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Error", "Failed to read value.", error.toException())
+                callback.onDataReady(emptyList())
+            }
+        })
     }
 }

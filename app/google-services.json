@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "867048702045",
+    "firebase_url": "https://ebook-database-97796-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "ebook-database-97796",
     "storage_bucket": "ebook-database-97796.appspot.com"
   },
@@ -22,7 +23,7 @@
           }
         },
         {
-          "client_id": "867048702045-jibuenv633ajp80nhqrt8erkm97617e8.apps.googleusercontent.com",
+          "client_id": "867048702045-idalol8m97j5ra93agnp5mucmcbutli1.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "867048702045-jibuenv633ajp80nhqrt8erkm97617e8.apps.googleusercontent.com",
+              "client_id": "867048702045-idalol8m97j5ra93agnp5mucmcbutli1.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
