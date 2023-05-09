@@ -33,9 +33,9 @@ class AdminCategoryRecyclerViewAdapter(private val categories : ArrayList<Catego
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val categoryIdTv = holder.categoryIdTv
-        categoryIdTv.setText(catergory.id)
+        categoryIdTv.setText(catergory.categoryID)
         val categoryNameTv = holder.categoryNameTv
-        categoryNameTv.setText(catergory.name)
+        categoryNameTv.setText(catergory.categoryName)
         val delBtn = holder.delBtn
 
         delBtn.setOnClickListener {

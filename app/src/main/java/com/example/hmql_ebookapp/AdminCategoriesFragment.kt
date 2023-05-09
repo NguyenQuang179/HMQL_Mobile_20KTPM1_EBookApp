@@ -63,7 +63,7 @@ class AdminCategoriesFragment : Fragment() {
         categoriesRv.layoutManager = LinearLayoutManager(requireContext())
         categoriesRv.adapter = categoriesRvAdapter
         categoriesRvAdapter.onItemClick = {category ->
-            Toast.makeText(requireContext(), category.name.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), category.categoryName.toString(), Toast.LENGTH_SHORT).show()
             val bundle = Bundle()
             bundle.putSerializable("categoryDetail", category)
             bundle.putInt("categoryIndex", listOfCategory.indexOf(category))
@@ -79,7 +79,7 @@ class AdminCategoriesFragment : Fragment() {
         setFragmentResultListener("editCategory") { key, bundle ->
             val newName = bundle.getString("newName")
             val categoryIndex = bundle.getInt("categoryIndex")
-            listOfCategory[categoryIndex].name = newName!!
+            listOfCategory[categoryIndex].categoryName = newName!!
             categoriesRvAdapter.notifyDataSetChanged()
         }
 

@@ -57,8 +57,8 @@ class AdminCategoryDetailFragment : Fragment() {
         var categoryName = view.findViewById<EditText>(R.id.AdminCategoryDetailNameEt)
         var categoryId = view.findViewById<EditText>(R.id.AdminCategoryDetailIdEt)
 
-        categoryId.setText(category.id)
-        categoryName.setText(category.name)
+        categoryId.setText(category.categoryID)
+        categoryName.setText(category.categoryName)
         categoryId.isEnabled = false
 
         val saveBtn = view.findViewById<Button>(R.id.AdminCategoryDetailSaveBtn)
