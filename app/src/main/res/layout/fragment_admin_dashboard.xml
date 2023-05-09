@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/DashboardConstraint"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    tools:context=".AdminDashboardFragment">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="admin dashboard scrollviewer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="106dp">
+
+            <TextView
+                android:id="@+id/AdminDashboardTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:fontFamily="@font/inter_bold"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="OVERVIEW"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="24sp" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/AdminDashboardBookCard"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_margin="32dp"
+                android:background="@drawable/admin_dashboard_rounded_card">
+
+                <TextView
+                    android:id="@+id/TotalBooksDashboardTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_semibold"
+                    android:text="Total Books"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/DashboardNumBookTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/inter_semibold"
+                    android:text="32"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="34sp"
+                    app:layout_constraintEnd_toEndOf="@+id/TotalBooksDashboardTv"
+                    app:layout_constraintStart_toStartOf="@+id/TotalBooksDashboardTv"
+                    app:layout_constraintTop_toBottomOf="@+id/TotalBooksDashboardTv" />
+
+                <TextView
+                    android:id="@+id/BookIconCard"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/fontawesome6_free_solid_900"
+                    android:gravity="center"
+                    android:text="\uf02d"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="60sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.5" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/AdminDashboardTagCard"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/admin_dashboard_rounded_card">
+
+                <TextView
+                    android:id="@+id/TotalTagsDashboardTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_semibold"
+                    android:text="Total Tags"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/DashboardNumTagTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/inter_semibold"
+                    android:text="16"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="34sp"
+                    app:layout_constraintEnd_toEndOf="@+id/TotalTagsDashboardTv"
+                    app:layout_constraintStart_toStartOf="@+id/TotalTagsDashboardTv"
+                    app:layout_constraintTop_toBottomOf="@+id/TotalTagsDashboardTv" />
+
+                <TextView
+                    android:id="@+id/TagIconCard"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/fontawesome6_free_solid_900"
+                    android:gravity="center"
+                    android:text="\uf02c"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="60sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.5" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/AdminDashboardAuthorCard"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/admin_dashboard_rounded_card">
+
+                <TextView
+                    android:id="@+id/TotalAuthorsDashboardTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_semibold"
+                    android:text="Total Authors"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/DashboardNumAuthorTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/inter_semibold"
+                    android:text="20"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="34sp"
+                    app:layout_constraintEnd_toEndOf="@+id/TotalAuthorsDashboardTv"
+                    app:layout_constraintStart_toStartOf="@+id/TotalAuthorsDashboardTv"
+                    app:layout_constraintTop_toBottomOf="@+id/TotalAuthorsDashboardTv" />
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/fontawesome6_free_solid_900"
+                    android:gravity="center"
+                    android:text="\uf007"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="60sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.5" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

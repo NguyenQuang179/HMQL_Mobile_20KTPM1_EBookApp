@@ -47,7 +47,6 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Get the data model based on position
         val book : SampleBook = books[position]
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
