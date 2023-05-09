@@ -1,18 +1,19 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,10 +22,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
+ * Use the [AdminBooksFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomeFragment : Fragment() {
+class AdminBooksFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -34,16 +35,13 @@ class HomeFragment : Fragment() {
     lateinit var authorNameList : Array<String>
     lateinit var bookImgIdList : Array<Int>
 
-    lateinit var popularAuthorNameList : ArrayList<String>
-    lateinit var popularAuthorImgList : ArrayList<Int>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sampleDataInit()
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
     }
 
     override fun onCreateView(
@@ -51,66 +49,60 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
-    }
-
-    fun sendViewToBack(child: View) {
-        val parent = child.parent as ViewGroup
-        if (null != parent) {
-            parent.removeView(child)
-            parent.addView(child, 0)
-        }
+        return inflater.inflate(R.layout.fragment_admin_books, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sampleDataInit()
 
-        val favBookRv = view.findViewById<RecyclerView>(R.id.favouriteBooksRv)
-        val favBookRvAdapter = FavouriteBookAdapter(sampleBookList)
-        val popularAuthorRv = view.findViewById<RecyclerView>(R.id.popularAuthorsRv)
-        val popularAuthorRvAdapter = PopularAuthorAdapter(popularAuthorNameList, popularAuthorImgList)
-        val avaBtn = view.findViewById<ImageButton>(R.id.avatarIBtn)
-        val favBookMoreBtn = view.findViewById<Button>(R.id.favouriteBooksMoreBtn)
-        val popularAuthorMoreBtn = view.findViewById<Button>(R.id.popularAuthorsMoreBtn)
+        val backBtn = view.findViewById<Button>(R.id.AdminBookBackBtn)
+        backBtn.setOnClickListener(){
+            requireActivity().supportFragmentManager.popBackStack()
+        }
 
-
-        favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        favBookRv.adapter = favBookRvAdapter
-        favBookRvAdapter.onItemClick = { book ->
+        val booksRv = view.findViewById<RecyclerView>(R.id.AdminBookRv)
+        val booksRvAdapter = AdminBookRecyclerViewAdapter(sampleBookList)
+        booksRv.layoutManager = LinearLayoutManager(requireContext())
+        booksRv.adapter = booksRvAdapter
+        booksRvAdapter.onItemClick = { book ->
+            Toast.makeText(requireContext(), book.bookName.toString(), Toast.LENGTH_SHORT).show()
+            val bundle = Bundle()
+            bundle.putSerializable("bookDetail", book)
+            bundle.putInt("bookIndex", sampleBookList.indexOf(book))
+            val bookDetailFragment = AdminBookDetail()
+            bookDetailFragment.arguments = bundle
             requireActivity().supportFragmentManager.commit {
-//                fragmentContainer!!.bringToFront()
-//                ViewCompat.setTranslationZ(fragmentContainer, 90F)
-//                sendViewToBack()
-
-                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                replace(R.id.fragmentContainerView2, bookDetailFragment)
                 setReorderingAllowed(true)
-                addToBackStack("bookIntroductionFragment")
+                addToBackStack("adminBookDetail")
             }
         }
 
-        popularAuthorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        popularAuthorRv.adapter = popularAuthorRvAdapter
-        popularAuthorRvAdapter.onItemClick = { authorName, authorImg ->  
+        setFragmentResultListener("editBookInfo") { key, bundle ->
+            val newTitle = bundle.getString("newTitle")
+            val newAuthor = bundle.getString("newAuthor")
+            val bookIndex = bundle.getInt("bookIndex")
+            sampleBookList[bookIndex].bookName = newTitle.toString()
+            sampleBookList[bookIndex].authorName = newAuthor.toString()
+            booksRvAdapter.notifyDataSetChanged()
+        }
+
+        setFragmentResultListener("newBookInfo") { key, bundle ->
+            val newTitle = bundle.getString("title")
+            val newAuthor = bundle.getString("author")
+            Toast.makeText(requireContext(), "$newTitle $newAuthor", Toast.LENGTH_SHORT ).show()
+            var newBook : SampleBook = SampleBook(newTitle.toString(), newAuthor.toString(), R.drawable.favbookimg2)
+            sampleBookList.add(newBook)
+            booksRvAdapter.notifyDataSetChanged()
+        }
+
+        val addBtn = view.findViewById<FloatingActionButton>(R.id.AdminBookAddBtn)
+        addBtn.setOnClickListener(){
             requireActivity().supportFragmentManager.commit {
-                replace<AuthorInfoFragment>(R.id.fragment_container_view)
+                replace<AdminBookAddFragment>(R.id.fragmentContainerView2)
                 setReorderingAllowed(true)
-                addToBackStack("authorInfoFragment") // name can be null
+                addToBackStack("adminBookAdd")
             }
-        }
-
-        avaBtn!!.setOnClickListener(){
-            Toast.makeText(context, "Avatar Button Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-
-        favBookMoreBtn!!.setOnClickListener(){
-            Toast.makeText(context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-
-        popularAuthorMoreBtn!!.setOnClickListener(){
-            Toast.makeText(context, "See More Author Button Clicked", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -121,12 +113,12 @@ class HomeFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
+         * @return A new instance of fragment AdminBooksFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
+            AdminBooksFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
@@ -181,32 +173,5 @@ class HomeFragment : Fragment() {
             val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
             sampleBookList.add(sampleBook)
         }
-
-        // Popular Authors
-        popularAuthorNameList = arrayListOf(
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Neil Giamen",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Neil Giamen"
-        )
-
-        popularAuthorImgList = arrayListOf(
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1
-        )
     }
 }

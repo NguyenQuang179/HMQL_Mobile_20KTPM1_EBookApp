@@ -5,6 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FirebaseAuth
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,6 +44,23 @@ class AccountInformationFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_account_information, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState);
+
+        val signoutButton = view.findViewById<TextView>(R.id.signOutTv)
+        signoutButton.setOnClickListener {
+            (activity as MainActivity).logout(requireActivity())
+        }
+        var settingTv = view.findViewById<TextView>(R.id.settingTv)
+        settingTv.setOnClickListener(){
+            requireActivity().supportFragmentManager.commit {
+                replace<SettingFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("settingFragment") // name can be null
+            }
+        }
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -55,5 +79,37 @@ class AccountInformationFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+    val AUTH_REQUEST_CODE = 7192 // Any number you want
+    lateinit var firebaseAuth: FirebaseAuth
+    lateinit var listener:FirebaseAuth.AuthStateListener
+    lateinit var providers:List<AuthUI.IdpConfig>
+    public fun init(){
+        providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build(), //Email Builder
+            AuthUI.IdpConfig.GoogleBuilder().build(), //Google Builder
+            AuthUI.IdpConfig.FacebookBuilder().build(), //Facebook Builder
+            AuthUI.IdpConfig.PhoneBuilder().build(), //Phone Builder
+
+        )
+        firebaseAuth = FirebaseAuth.getInstance()
+        listener = FirebaseAuth.AuthStateListener { myFirebaseAuth ->
+            val user = myFirebaseAuth.currentUser
+            if(user != null){
+                //User already logged in
+                Toast.makeText(requireContext(), "Welcome Back", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                Toast.makeText(requireContext(), "Opening login screen", Toast.LENGTH_SHORT).show()
+                //User not logged in
+                startActivityForResult(
+                    AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setTheme(R.style.LoginTheme)
+                        .build(), AUTH_REQUEST_CODE
+                )
+            }
+        }
     }
 }

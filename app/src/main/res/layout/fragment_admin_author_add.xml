@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminAuthorAddFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:verticalScrollbarPosition="right">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/AdminAuthorAddBackBtn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Back" />
+
+            <TextView
+                android:id="@+id/AdminAuthorAddTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/inter_bold"
+                android:gravity="center"
+                android:text="ADD NEW AUTHOR"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/AdminAuthorAddNameTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Author Name"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/AdminAuthorAddNameEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:ems="10"
+                android:fontFamily="@font/inter_regular"
+                android:hint="Author Name"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/AdminAuthorAddDescTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Author Description"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/AdminAuthorAddDescEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:ems="10"
+                android:fontFamily="@font/inter_regular"
+                android:gravity="top|left"
+                android:hint="Author Description"
+                android:inputType="textMultiLine"
+                android:maxLines="10"
+                android:minHeight="48dp"
+                android:minLines="10"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/AdminAuthorAddImgTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Author Image Path"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/AdminAuthorAddImgEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:ems="10"
+                android:fontFamily="@font/inter_regular"
+                android:hint="Author Image Path"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/AdminAuthorAddSaveBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="32dp"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Save" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
