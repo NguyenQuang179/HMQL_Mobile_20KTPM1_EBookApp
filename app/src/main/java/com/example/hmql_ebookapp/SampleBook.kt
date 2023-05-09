@@ -1,5 +1,9 @@
 package com.example.hmql_ebookapp
 
+interface OnDataReadyCallback {
+    fun onDataReady(books: List<Book>)
+}
+
 data class Book(
     var bookID: String = "",
     var title: String = "",
@@ -17,4 +21,4 @@ data class Book(
 
 
 
-data class SampleBook(val bookName: String, val authorName: String, val bookImg : Int)
+data class SampleBook(val bookName: String, val authorName: String, val bookImg : Int) : java.io.Serializable

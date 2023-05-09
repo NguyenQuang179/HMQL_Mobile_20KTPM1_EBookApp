@@ -62,7 +62,7 @@ class AdminBooksFragment : Fragment() {
         booksRvAdapter.onItemClick = { book ->
             Toast.makeText(requireContext(), book.bookName.toString(), Toast.LENGTH_SHORT).show()
             val bundle = Bundle()
-            bundle.putSerializable("bookDetail", book)
+            //bundle.putSerializable("bookDetail", book)
             val bookDetailFragment = AdminBookDetail()
             bookDetailFragment.arguments = bundle
             requireActivity().supportFragmentManager.commit {
