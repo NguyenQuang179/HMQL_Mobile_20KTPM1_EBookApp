@@ -360,11 +360,21 @@
 
                 </androidx.recyclerview.widget.RecyclerView>
 
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    
-                </ImageButton>
+                <Button
+
+                    android:id="@+id/WriteReviewBtn"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_height="40dp"
+                    android:fontFamily="@font/inter_bold"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:letterSpacing="0.01"
+                    android:text="Write a Review"
+                    android:textAllCaps="false"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textSize="14sp"
+                    app:cornerRadius="12dp" />
             </LinearLayout>
 
         </LinearLayout>

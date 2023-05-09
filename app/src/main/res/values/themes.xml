@@ -16,5 +16,6 @@
         <!-- Background brand color -->
         <item name="backgroundColor">#FFF3F9FB</item>
         <item name="colorOnBackground">@color/black</item>
+
     </style>
 </resources>

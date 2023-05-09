@@ -1,14 +1,14 @@
 package com.example.hmql_ebookapp
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -54,6 +54,14 @@ class HomeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    fun sendViewToBack(child: View) {
+        val parent = child.parent as ViewGroup
+        if (null != parent) {
+            parent.removeView(child)
+            parent.addView(child, 0)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sampleDataInit()
@@ -66,14 +74,20 @@ class HomeFragment : Fragment() {
         val favBookMoreBtn = view.findViewById<Button>(R.id.favouriteBooksMoreBtn)
         val popularAuthorMoreBtn = view.findViewById<Button>(R.id.popularAuthorsMoreBtn)
 
+
         favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         favBookRv.adapter = favBookRvAdapter
         favBookRvAdapter.onItemClick = { book ->
             requireActivity().supportFragmentManager.commit {
-                replace<ReadingFragment>(R.id.fragment_container_view)
+//                fragmentContainer!!.bringToFront()
+//                ViewCompat.setTranslationZ(fragmentContainer, 90F)
+//                sendViewToBack()
+
+                replace<BookIntroductionFragment>(R.id.fragment_container_view)
                 setReorderingAllowed(true)
-                addToBackStack("readingFragment")
+                addToBackStack("bookIntroductionFragment")
             }
+
         }
 
         popularAuthorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
