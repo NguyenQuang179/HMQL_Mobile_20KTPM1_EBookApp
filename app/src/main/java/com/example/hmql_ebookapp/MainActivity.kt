@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.add
@@ -12,6 +13,7 @@ import androidx.fragment.app.replace
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -66,7 +68,54 @@ AuthUI.IdpConfig.EmailBuilder().build(), //Email Builder
         setContentView(R.layout.activity_main)
 
         init();
+//        val category1 = Category("tieu thuyet");
+//        val category2 = Category("van hoc");
+//        val newBook = Book("122fskjd3fsdffsadffsdafsaff11","Ten sach","Tac gia","Mo ta",2020,4.9, 200,"cover","pdf", arrayListOf(category1, category2))
+//        val ref: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+//        ref.child(newBook.bookID).setValue(newBook) { databaseError, databaseReference ->
+//            if (databaseError != null) {
+//                Log.e("Firebase", "Error adding book: ${databaseError.message}")
+//            } else {
+//                Log.i("Firebase", "Book added successfully")
+//            }
+//        }
+//
+//        val list = arrayListOf<Book>();
+//        val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+//        ref1.addValueEventListener(object : ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                if (snapshot.exists()){
+//                    for (child in snapshot.children){
+//                        val book = child.getValue(Book::class.java)
+//                        list.add(book!!);
+//                    }
+//                }
+//            }
+//            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+//            }
+//
+//        })
+//
+//        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book/sadfsdfadf")
+//        ref2.addValueEventListener(object : ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//
+//                if (snapshot.exists()){
+//                        val data = snapshot.getValue(Book::class.java)
+//                        for (category in data!!.categories){
+//                            Log.i("Firebase", category.toString());
+//                        }
+//                    }
+//                }
+//            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+//            }
+//
+//        })
 
+
+        Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show()
         startActivityForResult(
             AuthUI.getInstance()
                 .createSignInIntentBuilder()
