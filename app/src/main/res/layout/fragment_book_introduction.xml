@@ -4,24 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundColor"
-    tools:context=".BookIntroductionActivity">
+    android:background="?attr/backgroundColor">
 
-<!--    <include-->
-<!--        android:id="@+id/custom_toolbar"-->
-<!--        layout="@layout/custom_toolbar_bookintro"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-
-    <FrameLayout
-        android:id="@+id/readlikebtn_fragmentCV"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/fragment_book_introduction__read_favorite" />
 
     <LinearLayout
         android:id="@+id/top_navigation_bar"
