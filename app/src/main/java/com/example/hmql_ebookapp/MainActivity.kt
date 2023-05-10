@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
             if(user != null){
                 //User already logged in
                 Toast.makeText(this@MainActivity, "Welcome Back", Toast.LENGTH_SHORT).show()
+
             }
             else{
                 Toast.makeText(this@MainActivity, "Opening login screen", Toast.LENGTH_SHORT).show()
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+
     }
 //            RC_SIGN_IN
 //        )
@@ -226,6 +228,38 @@ class MainActivity : AppCompatActivity() {
                 // User successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
                 Toast.makeText(this@MainActivity, "Welcome ${user?.displayName}", Toast.LENGTH_SHORT).show()
+
+                // Add user data to the database if it doesn't exist
+
+                val database = FirebaseDatabase.getInstance()
+                val usersRef = database.getReference("Users")
+                val uid = user?.uid
+                val name = user?.displayName
+                val email = user?.email
+                val userRef = usersRef.child(uid.toString())
+                userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        if (!dataSnapshot.exists()) {
+                            val newUser = User(uid, name, email, mutableListOf())
+                            userRef.setValue(newUser)
+
+                            // Get a reference to the current user's list of books
+                            val userBooksRef = usersRef.child(uid.toString()).child("listOfBooks")
+
+// Create a new UserBook object
+                            val book = UserBook("bookID", "bookName", "status", 1, true, false)
+
+// Add the book to the list of books for the current user
+                            userBooksRef.push().setValue(book)
+                        }
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.e("TAG", "onCancelled", databaseError.toException())
+                    }
+                })
+
+
             } else {
                 // Sign in failed
                 Toast.makeText(this@MainActivity, "Sign in failed. Please try again later.", Toast.LENGTH_SHORT).show()
