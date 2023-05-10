@@ -1,5 +1,6 @@
 package com.example.hmql_ebookapp
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.media.Image
@@ -19,6 +20,9 @@ import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+@SuppressLint("NotifyDataSetChanged")
+@Deprecated("Deprecated in Java")
+@Suppress("DEPRECATION")
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,7 +34,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [BookIntroductionFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-@Suppress("DEPRECATION")
+
 class BookIntroductionFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -142,8 +146,6 @@ class BookIntroductionFragment : Fragment() {
             sampleReviewList.add(sampleReview)
         }
     }
-
-    
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,8 +153,6 @@ class BookIntroductionFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
-
     }
 
     val REQUEST_CODE = 123
@@ -162,8 +162,6 @@ class BookIntroductionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-
-
         return inflater.inflate(R.layout.fragment_book_introduction, container, false)
     }
 
@@ -172,12 +170,11 @@ class BookIntroductionFragment : Fragment() {
         sampleDataInit()
         sampleReviewInit()
 
-
-
         val TagsRV = view.findViewById<RecyclerView>(R.id.TagsRV)
         val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
         val RecommendationBooksRV = view.findViewById<RecyclerView>(R.id.RecommendationBooksRV)
         ReviewRV = view.findViewById<RecyclerView>(R.id.ReviewRV)
+
         val SeeMoreRecBtn = view.findViewById<Button>(R.id.SeeMoreRecBtn)
         val AddReviewButton = view.findViewById<Button>(R.id.WriteReviewBtn)
 
@@ -189,22 +186,16 @@ class BookIntroductionFragment : Fragment() {
 
         LikedButton.tag = "bookmark"
 
-
         // this creates a vertical layout Manager
         TagsRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
         ChaptersRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        RecommendationBooksRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+
         ReviewRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        RecommendationBooksRV.layoutManager =
-            LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
-
-        // ArrayList of class ItemsViewModel
         val data_tags = ArrayList<TagsViewModel>()
         val data_chapters = ArrayList<ChapterViewModel>()
 
-
-        // This loop will create 20 Views containing
-        // the image with the count of view
         for (i in 1..20) {
             data_tags.add(TagsViewModel("Tags " + i))
         }
@@ -223,6 +214,14 @@ class BookIntroductionFragment : Fragment() {
         TagsRV.adapter = adapter_tags
         ChaptersRV.adapter = adapter_chapters
         RecommendationBooksRV.adapter = adapter_recommendations
+        adapter_recommendations.onItemClick = { book ->
+            requireActivity().supportFragmentManager.commit {
+                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("bookIntroductionFragment")
+            }
+        }
+
         ReviewRV.adapter = adapter_review
 
         SeeMoreRecBtn!!.setOnClickListener() {
@@ -256,16 +255,13 @@ class BookIntroductionFragment : Fragment() {
         }
 
         AddReviewButton.setOnClickListener {
-//            Toast.makeText(this,"click me button clicked", Toast.LENGTH_LONG).show()
-//            val activity = view.context.applicationContext as AppCompatActivity
             val reviewPopUp = ReviewPopupFragment()
             reviewPopUp.setTargetFragment(this, REQUEST_CODE)
             reviewPopUp.show((this.context as AppCompatActivity).supportFragmentManager, "reviewPopup")
-
         }
     }
 
-    @Deprecated("Deprecated in Java")
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
