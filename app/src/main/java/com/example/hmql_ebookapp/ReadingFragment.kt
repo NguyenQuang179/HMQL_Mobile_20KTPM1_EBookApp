@@ -36,7 +36,10 @@ class NoteClickableSpan(var noteText: String) : ClickableSpan() {
 
     override fun onClick(widget: View) {
         val popup = PopupWindow(widget.context)
+        popup.isFocusable = true
+        popup.isTouchable = true
         val view = LayoutInflater.from(widget.context).inflate(R.layout.popup_note, widget.parent as ViewGroup, false)
+
         val etNoteText = view.findViewById<EditText>(R.id.et_note_input)
         etNoteText.setText(noteText)
         etNoteText.requestFocus() // set focus on the EditText
