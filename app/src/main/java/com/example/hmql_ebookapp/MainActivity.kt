@@ -166,8 +166,7 @@ class MainActivity : AppCompatActivity() {
 //                .setTheme(R.style.LoginTheme)
 //                .build(), AUTH_REQUEST_CODE
 //        )
-//     val intent = Intent(this, ReadingScreen::class.java)
-//        startActivity(intent)
+
 
         supportFragmentManager.commit {
             add<HomeFragment>(R.id.fragment_container_view)
