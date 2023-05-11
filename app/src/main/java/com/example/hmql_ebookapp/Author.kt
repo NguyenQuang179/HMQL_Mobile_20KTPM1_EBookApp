@@ -6,4 +6,5 @@ data class Author (
     var description: String = "",
     var img:String = "",
     var listOfBooks: List<String> = emptyList<String>()
-)
+): java.io.Serializable
+

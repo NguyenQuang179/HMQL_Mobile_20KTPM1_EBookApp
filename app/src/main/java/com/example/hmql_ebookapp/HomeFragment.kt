@@ -1,6 +1,5 @@
 package com.example.hmql_ebookapp
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -57,6 +58,14 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    fun sendViewToBack(child: View) {
+        val parent = child.parent as ViewGroup
+        if (null != parent) {
+            parent.removeView(child)
+            parent.addView(child, 0)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

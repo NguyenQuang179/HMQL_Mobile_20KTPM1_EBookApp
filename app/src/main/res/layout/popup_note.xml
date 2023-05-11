@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="beforeDescendants">
+
+    <TextView
+        android:id="@+id/tv_note_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Note Text"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/et_note_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_note_text"
+        android:hint="Type your note here"
+        android:inputType="text"
+        android:padding="16dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true"/>
+
+    <Button
+        android:id="@+id/btn_save_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_note_input"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="110dp"
+        android:text="Save" />
+
+    <Button
+        android:id="@+id/btn_close_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_note_input"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:text="X" />
+
+</RelativeLayout>

@@ -4,27 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundColor"
-    tools:context=".BookIntroductionActivity">
+    android:background="?attr/backgroundColor">
 
-    <FrameLayout
-        android:id="@+id/readlikebtn_fragmentCV"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/fragment_book_introduction__read_favorite" />
-
-    <!--    <androidx.fragment.app.FragmentContainerView-->
-    <!--        android:id="@+id/readlikebtn_fragmentCV"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="80dp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintHorizontal_bias="0.0"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        tools:layout="@layout/fragment_book_introduction__read_favorite" />-->
 
     <LinearLayout
         android:id="@+id/top_navigation_bar"
@@ -43,7 +24,7 @@
             android:layout_width="20dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:backgroundTint="#FFFFFF"
+            android:backgroundTint="#00FFFFFF"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/back_arrow" />
@@ -54,11 +35,23 @@
             android:layout_weight="1" />
 
         <ImageButton
+            android:id="@+id/LikeBtn"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="#00FFFFFF"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/bookmark_regular" />
+
+
+        <ImageButton
             android:id="@+id/downloadBtn"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:backgroundTint="#FFFFFF"
+            android:backgroundTint="#00FFFFFF"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/download_icon" />
@@ -66,9 +59,10 @@
 
     <ScrollView
         android:id="@+id/scrollView4"
-        android:layout_width="409dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/readlikebtn_fragmentCV"
+        android:layout_marginBottom="90dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_navigation_bar">
@@ -116,7 +110,7 @@
                         android:layout_width="210dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="80dp"
+                        android:layout_marginTop="30dp"
                         android:fontFamily="@font/inter_bold"
                         android:paddingBottom="5dp"
                         android:text="The Little Book of Stoicism"
@@ -132,6 +126,7 @@
                         android:fontFamily="@font/inter_medium"
                         android:paddingBottom="5dp"
                         android:text="Alice Schertle, Jill McElmurry"
+                        android:textColor="?attr/colorTertiary"
                         android:textSize="12sp" />
 
                     <LinearLayout
@@ -155,9 +150,29 @@
                             android:layout_marginStart="5sp"
                             android:fontFamily="@font/inter_bold"
                             android:text="4.6"
+                            android:textColor="?attr/colorTertiary"
                             android:textSize="12sp" />
 
                     </LinearLayout>
+
+                    <Button
+                        android:id="@+id/ReadBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_gravity="end"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:fontFamily="@font/inter_bold"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:letterSpacing="0.01"
+
+                        android:text="Read"
+                        android:textAllCaps="false"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textSize="16dp"
+                        app:cornerRadius="20dp"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                 </LinearLayout>
 
@@ -191,7 +206,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_bold"
                     android:text="Synopsis"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnBackground"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@+id/textView8"
@@ -206,6 +221,7 @@
                     android:layout_marginTop="5dp"
                     android:fontFamily="@font/inter_medium"
                     android:text="Lorem ipsum dolor sit amet consectetur. Tempus consequat et velit risus turpis est. Rhoncus sit elit sed arcu. Fringilla a integer cras eu dui cursus mi. At senectus tristique nunc in morbi."
+                    android:textColor="?attr/colorTertiary"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -229,7 +245,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_bold"
                     android:text="Chapters"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnBackground"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -268,7 +284,7 @@
                         android:layout_gravity="center"
                         android:fontFamily="@font/inter_bold"
                         android:text="Recommendations"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -327,7 +343,7 @@
                         android:layout_marginEnd="10dp"
                         android:fontFamily="@font/inter_bold"
                         android:text="Reviews"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -342,7 +358,7 @@
                         android:layout_gravity="center"
                         android:fontFamily="@font/inter_light"
                         android:text="132 reviews"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorTertiary"
                         android:textSize="10sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -355,16 +371,17 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/ReviewRV"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    android:layout_height="400dp"
+                    android:layout_marginTop="5dp"
+                    tools:listitem="@layout/review_list_view">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
                 <Button
                     android:id="@+id/WriteReviewBtn"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="10dp"
                     android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
                     android:fontFamily="@font/inter_bold"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
@@ -381,57 +398,36 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@+id/readlikebtn_fragmentCV"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:paddingStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:paddingEnd="20dp">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/readlikebtn_fragmentCV"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        android:paddingStart="20dp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:layout_marginBottom="15dp"-->
+<!--        android:paddingEnd="20dp">-->
 
-        <ImageButton
-            android:id="@+id/LikeBtn"
-            android:layout_width="70dp"
-            android:layout_height="50dp"
-            android:background="@drawable/rounded_corner_book_intro"
-            android:backgroundTint="?attr/colorSecondary"
-            android:paddingStart="25dp"
-            android:paddingTop="22dp"
-            android:paddingEnd="25dp"
-            android:paddingBottom="22dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toStartOf="@+id/ReadBtn"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/bookmark_selector"
-            tools:layout_editor_absoluteY="15dp" />
+<!--        <Button-->
+<!--            android:id="@+id/ReadBtn"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:paddingStart="10dp"-->
+<!--            android:paddingEnd="10dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:fontFamily="@font/inter_bold"-->
+<!--            android:insetTop="0dp"-->
+<!--            android:insetBottom="0dp"-->
+<!--            android:letterSpacing="0.01"-->
+<!--            android:text="Read"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:layout_gravity="end"-->
+<!--            android:textColor="?attr/colorOnPrimary"-->
+<!--            android:textSize="18sp"-->
+<!--            app:cornerRadius="20dp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent" />-->
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-
-        <Button
-            android:id="@+id/ReadBtn"
-            android:layout_width="280dp"
-            android:layout_height="50dp"
-            android:fontFamily="@font/inter_bold"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:letterSpacing="0.01"
-            android:text="Start Reading"
-            android:textAllCaps="false"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="18sp"
-            app:cornerRadius="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/LikeBtn" />
-
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

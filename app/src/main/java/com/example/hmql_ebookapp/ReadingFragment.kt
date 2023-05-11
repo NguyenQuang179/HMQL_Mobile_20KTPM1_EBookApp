@@ -1,14 +1,20 @@
 package com.example.hmql_ebookapp
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
 import android.text.style.BackgroundColorSpan
+import android.text.style.ClickableSpan
 import android.view.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import androidx.fragment.app.Fragment
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -26,6 +32,50 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ReadingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+class NoteClickableSpan(var noteText: String) : ClickableSpan() {
+
+    override fun onClick(widget: View) {
+        val popup = PopupWindow(widget.context)
+        popup.isFocusable = true
+        popup.isTouchable = true
+        val view = LayoutInflater.from(widget.context).inflate(R.layout.popup_note, widget.parent as ViewGroup, false)
+
+        val etNoteText = view.findViewById<EditText>(R.id.et_note_input)
+        etNoteText.setText(noteText)
+        etNoteText.requestFocus() // set focus on the EditText
+        val imm = widget.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(etNoteText, InputMethodManager.SHOW_IMPLICIT)
+        val btnSave = view.findViewById<Button>(R.id.btn_save_note)
+        btnSave.setOnClickListener {
+            val updatedNoteText = etNoteText.text.toString()
+            if (updatedNoteText.isNotEmpty()) {
+                popup.dismiss()
+                noteText = updatedNoteText
+                val newNote = SpannableString("[$noteText] ")
+                newNote.setSpan(
+                    NoteClickableSpan(noteText),
+                    0, newNote.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                widget.invalidate()
+            } else {
+                Toast.makeText(widget.context, "Note cannot be empty", Toast.LENGTH_SHORT).show()
+            }
+        }
+        view.findViewById<Button>(R.id.btn_close_note).setOnClickListener {
+            popup.dismiss()
+        }
+        popup.contentView = view
+        popup.showAsDropDown(widget)
+    }
+
+    override fun updateDrawState(ds: TextPaint) {
+        super.updateDrawState(ds)
+        ds.color = ds.linkColor
+        ds.isUnderlineText = false
+    }
+}
+
 
 class ReadingFragment : Fragment() {
     private val mActionModeCallback = object : ActionMode.Callback {
@@ -61,7 +111,20 @@ class ReadingFragment : Fragment() {
                 mode.finish()
                 true
             }
-            menu.add(Menu.NONE, 3, Menu.NONE, "Read Outloud").setOnMenuItemClickListener {
+            menu.add(Menu.NONE, 3, Menu.NONE, "Add Notes").setOnMenuItemClickListener {
+                val start = extractedTV.selectionStart
+                val end = extractedTV.selectionEnd
+                if (start != -1 && end != -1) {
+                    val selectedText = extractedTV.text.subSequence(start, end)
+                    val noteText = "This is a note for the selected text."
+                    val spannableStringBuilder = SpannableStringBuilder(extractedTV.text)
+                    spannableStringBuilder.setSpan(NoteClickableSpan("lala"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    extractedTV.text = spannableStringBuilder
+                }
+                mode.finish()
+                true
+            }
+            menu.add(Menu.NONE, 4, Menu.NONE, "Read Outloud").setOnMenuItemClickListener {
                 mode.finish()
                 true
             }
@@ -130,7 +193,7 @@ class ReadingFragment : Fragment() {
 
         extractedTV = view.findViewById(R.id.pdfContentTv)
         extractData()
-
+        extractedTV.movementMethod = LinkMovementMethod.getInstance()
         extractedTV.customSelectionActionModeCallback = mActionModeCallback
 
 
