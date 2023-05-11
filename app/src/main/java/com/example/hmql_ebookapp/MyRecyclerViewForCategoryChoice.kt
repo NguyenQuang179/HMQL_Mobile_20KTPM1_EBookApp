@@ -8,9 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class MyRecyclerViewForCategoryChoice(
-    private val listOfCategory: Array<String>
+    private val listOfCategory: ArrayList<Category>
 ) : RecyclerView.Adapter<MyRecyclerViewForCategoryChoice.ViewHolder>() {
-    var onItemClick: ((String) -> Unit)? = null
+    var onItemClick: ((Category) -> Unit)? = null
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var categoryCheckBox: CheckBox
         init {
@@ -34,7 +34,7 @@ class MyRecyclerViewForCategoryChoice(
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.categoryCheckBox.setText(listOfCategory[position])
+        viewHolder.categoryCheckBox.setText(listOfCategory[position].categoryName)
 
     }
 

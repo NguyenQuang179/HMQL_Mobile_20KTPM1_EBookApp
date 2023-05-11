@@ -1,9 +1,5 @@
 package com.example.hmql_ebookapp
 
-interface OnDataReadyCallback {
-    fun onDataReady(books: List<Book>)
-}
-
 data class Book(
     var bookID: String = "",
     var title: String = "",
@@ -15,7 +11,8 @@ data class Book(
     var cover: String = "",
     var pdf: String = "",
     var categories: List<Category> = emptyList()
-) {
+) : Comparable<Book> {
+    override fun compareTo(other: Book): Int = this.averageStar.compareTo(other.averageStar)
     constructor() : this("", "", "", "", 0, 0.0, 0, "", "", emptyList())
 }
 

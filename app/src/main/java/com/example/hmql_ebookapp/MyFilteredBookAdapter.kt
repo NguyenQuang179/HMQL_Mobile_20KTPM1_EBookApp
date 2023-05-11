@@ -27,6 +27,7 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>)
         val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.authorTextView)!!
         val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.bookImageView)!!
         val bookmarkImgBtn : ImageView = listItemView.findViewById<ImageView>(R.id.bookmarkImageButton)!!
+        val ratingTV: TextView = listItemView.findViewById<TextView>(R.id.ratingTextView);
         init { listItemView.setOnClickListener { onItemClick?.invoke(filteredBooks[adapterPosition]) } }
     }
 
@@ -47,8 +48,10 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>)
         bookNameTv.setText(book.title)
         val authorNameTv = holder.authorNameTv
         authorNameTv.setText(book.author)
+        val ratingStarTV = holder.ratingTV
+        ratingStarTV.setText(book.averageStar.toString())
         val bookImgView = holder.bookImgView
-        Glide.with(holder.bookNameTv.context)
+        Glide.with(holder.bookImgView.context)
             .load(book.cover)
             .into(bookImgView);
 
