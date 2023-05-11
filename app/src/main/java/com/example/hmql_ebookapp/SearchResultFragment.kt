@@ -34,7 +34,8 @@ class SearchResultFragment : Fragment() {
 
     lateinit var books : ArrayList<Book>
     lateinit var searchString: String
-
+    lateinit var customRecyclerView: RecyclerView;
+    lateinit var adapter: MyFilteredBookAdapter;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -58,36 +59,21 @@ class SearchResultFragment : Fragment() {
             searchString = bundle.getString("searchString").toString()
             // Sử dụng giá trị dữ liệu trong SearchResultFragment
         }
-        sampleDataInit(object : OnDataReadyCallback {
-            override fun onDataReady(books: List<Book>) {
-                this@SearchResultFragment.books = ArrayList(books)
-                Log.d("Books size", "Number of books: ${books.size}");
-                var customRecyclerView = view.findViewById<RecyclerView>(R.id.searchResultRV)
-                var adapter = MyFilteredBookAdapter(this@SearchResultFragment.books)
-                customRecyclerView!!.adapter = adapter
-                val layoutManager = LinearLayoutManager(context)
-                customRecyclerView.layoutManager = layoutManager
-                val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
-                    DividerItemDecoration.VERTICAL)
-                customRecyclerView.addItemDecoration(itemDecoration)
-                var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
-                autoCompleteTV.setText(searchString);
+        customRecyclerView = view.findViewById<RecyclerView>(R.id.searchResultRV)
+        sampleDataInit()
+
+        var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
+        autoCompleteTV.setText(searchString);
 //                adapter.filter.filter(searchString)
 //                adapter.notifyDataSetChanged();
 
-                autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
-                    override fun afterTextChanged(p0: Editable?) {}
-                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        adapter?.filter?.filter(p0)
-                        adapter.notifyDataSetChanged();
-                        //customRecyclerView!!.adapter = adapter
-                    }
-                })
-            }
-
-            override fun onHomeDataReady(books: List<Book>, authors: List<Author>) {
-                TODO("Not yet implemented")
+        autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                adapter?.filter?.filter(p0)
+                adapter.notifyDataSetChanged();
+                //customRecyclerView!!.adapter = adapter
             }
         })
     }
@@ -112,8 +98,8 @@ class SearchResultFragment : Fragment() {
             }
     }
 
-    private fun sampleDataInit(callback: OnDataReadyCallback) {
-        val books = mutableListOf<Book>()
+    private fun sampleDataInit() {
+        books = ArrayList<Book>()
         val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
         ref1.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -123,13 +109,18 @@ class SearchResultFragment : Fragment() {
                         book?.let { books.add(it) }
                     }
                     Log.d("Books size", "Number of books: ${books.size}")
-                    callback.onDataReady(books)
+                    adapter = MyFilteredBookAdapter(books)
+                    customRecyclerView!!.adapter = adapter
+                    val layoutManager = LinearLayoutManager(context)
+                    customRecyclerView.layoutManager = layoutManager
+                    val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
+                        DividerItemDecoration.VERTICAL)
+                    customRecyclerView.addItemDecoration(itemDecoration)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e("Error", "Failed to read value.", error.toException())
-                callback.onDataReady(emptyList())
             }
         })
     }

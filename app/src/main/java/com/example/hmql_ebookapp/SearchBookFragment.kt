@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +9,11 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,6 +29,10 @@ class SearchBookFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    lateinit var categoryList: ArrayList<Category>
+    lateinit var categoryChoiceRecyclerView: RecyclerView
+    var categoryAdapter = MyRecyclerViewForCategoryChoice(ArrayList<Category>())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,16 +68,10 @@ class SearchBookFragment : Fragment() {
         val layoutManager =
             LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
         customRecyclerView.layoutManager = layoutManager
+        categoryChoiceRecyclerView = view.findViewById<RecyclerView>(R.id.categoryChoiceRecyclerView)
+        sampleDataInit();
 
-        val listOfCategory = resources.getStringArray(R.array.category);
-        var categoryChoiceRecyclerView = view.findViewById<RecyclerView>(R.id.categoryChoiceRecyclerView)
         var autoCompleteTextView = view.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView);
-        var categoryAdapter = MyRecyclerViewForCategoryChoice(listOfCategory)
-        categoryChoiceRecyclerView!!.adapter = categoryAdapter
-        val categoryLayoutManager = GridLayoutManager(this.requireContext(), 2)
-        categoryChoiceRecyclerView.layoutManager = categoryLayoutManager
-
-
         var listOfTypeSearch =  resources.getStringArray(R.array.SearchType)
         var spinner = view.findViewById<Spinner>(R.id.searchTypeSpinner);
         if (spinner != null) {
@@ -132,5 +133,29 @@ class SearchBookFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    private fun sampleDataInit() {
+        categoryList = ArrayList<Category>()
+        val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("category")
+        ref1.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val category = child.getValue(Category::class.java)
+                        category?.let { categoryList.add(it) }
+                    }
+                    Log.d("Books size", "Number of books: ${categoryList.size}")
+                    categoryAdapter = MyRecyclerViewForCategoryChoice(categoryList)
+                    categoryChoiceRecyclerView!!.adapter = categoryAdapter
+                    val categoryLayoutManager = GridLayoutManager(context, 2)
+                    categoryChoiceRecyclerView.layoutManager = categoryLayoutManager
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Error", "Failed to read value.", error.toException())
+            }
+        })
     }
 }

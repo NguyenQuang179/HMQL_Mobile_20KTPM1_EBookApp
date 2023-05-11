@@ -6,16 +6,17 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
-class PopularAuthorAdapter(private val authorNameList : ArrayList<String>, private val authorImgList : ArrayList<Int>)
+class PopularAuthorAdapter(private val authorList : ArrayList<Author>)
     : RecyclerView.Adapter<PopularAuthorAdapter.ViewHolder>(){
 
-    var onItemClick: ((authorName : String, authorImg : Int) -> Unit)? = null
+    var onItemClick: ((Author) -> Unit)? = null
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
         val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.authorNameTv)!!
         val authorImgView : ImageView = listItemView.findViewById<ImageView>(R.id.authorImgView)!!
-        init { listItemView.setOnClickListener { onItemClick?.invoke(authorNameList[adapterPosition], authorImgList[adapterPosition]) } }
+        init { listItemView.setOnClickListener { onItemClick?.invoke(authorList[adapterPosition]) } }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularAuthorAdapter.ViewHolder {
@@ -28,10 +29,12 @@ class PopularAuthorAdapter(private val authorNameList : ArrayList<String>, priva
 
     override fun onBindViewHolder(holder: PopularAuthorAdapter.ViewHolder, position: Int) {
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(authorNameList[position])
+        authorNameTv.setText(authorList[position].name)
         val authorImgView = holder.authorImgView
-        authorImgView.setImageResource(authorImgList[position])
+        Glide.with(holder.authorImgView.context)
+            .load(authorList[position].img)
+            .into(authorImgView);
     }
 
-    override fun getItemCount(): Int = authorNameList.size
+    override fun getItemCount(): Int = authorList.size
 }

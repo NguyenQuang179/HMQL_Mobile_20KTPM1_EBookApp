@@ -2,6 +2,7 @@ package com.example.hmql_ebookapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +12,10 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,13 +32,15 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    private lateinit var sampleBookList : ArrayList<SampleBook>
-    lateinit var bookNameList : Array<String>
-    lateinit var authorNameList : Array<String>
-    lateinit var bookImgIdList : Array<Int>
+    private lateinit var bookList : ArrayList<Book>
 
-    lateinit var popularAuthorNameList : ArrayList<String>
-    lateinit var popularAuthorImgList : ArrayList<Int>
+
+    lateinit var popularAuthorList : ArrayList<Author>
+
+    lateinit var favBookRv: RecyclerView
+    var favBookRvAdapter = FavouriteBookAdapter(ArrayList<Book>())
+    lateinit var popularAuthorRv: RecyclerView
+    var popularAuthorRvAdapter = PopularAuthorAdapter(ArrayList<Author>())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,29 +63,23 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         sampleDataInit()
 
-        val favBookRv = view.findViewById<RecyclerView>(R.id.favouriteBooksRv)
-        val favBookRvAdapter = FavouriteBookAdapter(sampleBookList)
-        val popularAuthorRv = view.findViewById<RecyclerView>(R.id.popularAuthorsRv)
-        val popularAuthorRvAdapter = PopularAuthorAdapter(popularAuthorNameList, popularAuthorImgList)
+        favBookRv = view.findViewById<RecyclerView>(R.id.favouriteBooksRv)
+        popularAuthorRv = view.findViewById<RecyclerView>(R.id.popularAuthorsRv)
         val avaBtn = view.findViewById<ImageButton>(R.id.avatarIBtn)
         val favBookMoreBtn = view.findViewById<Button>(R.id.favouriteBooksMoreBtn)
         val popularAuthorMoreBtn = view.findViewById<Button>(R.id.popularAuthorsMoreBtn)
 
-        favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        favBookRv.adapter = favBookRvAdapter
-        favBookRvAdapter.onItemClick = { book ->
-            requireActivity().supportFragmentManager.commit {
-                replace<ReadingFragment>(R.id.fragment_container_view)
-                setReorderingAllowed(true)
-                addToBackStack("readingFragment")
-            }
-//            var intent = Intent(this.requireContext(), BookIntroductionActivity::class.java)
-//            startActivity(intent)
-        }
+//        favBookRvAdapter.onItemClick = { book ->
+//            requireActivity().supportFragmentManager.commit {
+//                replace<ReadingFragment>(R.id.fragment_container_view)
+//                setReorderingAllowed(true)
+//                addToBackStack("readingFragment")
+//            }
+////            var intent = Intent(this.requireContext(), BookIntroductionActivity::class.java)
+////            startActivity(intent)
+//        }
 
-        popularAuthorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        popularAuthorRv.adapter = popularAuthorRvAdapter
-        popularAuthorRvAdapter.onItemClick = { authorName, authorImg ->  
+        popularAuthorRvAdapter.onItemClick = { author ->
             requireActivity().supportFragmentManager.commit {
                 replace<AuthorInfoFragment>(R.id.fragment_container_view)
                 setReorderingAllowed(true)
@@ -125,77 +124,50 @@ class HomeFragment : Fragment() {
 
     private fun sampleDataInit() {
         // Favourite Books
-        sampleBookList = arrayListOf<SampleBook>()
+        bookList = ArrayList<Book>()
+        val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+        ref1.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val book = child.getValue(Book::class.java)
+                        book?.let { bookList.add(it) }
+                    }
+                    Log.d("Books size", "Number of books: ${bookList.size}")
+                    bookList.sortDescending();
+                    bookList = ArrayList(bookList.subList(0, 5))
+                    favBookRvAdapter = FavouriteBookAdapter(bookList)
+                    favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    favBookRv.adapter = favBookRvAdapter
+                }
+            }
 
-        bookNameList = arrayOf(
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S..."
-        )
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Error", "Failed to read value.", error.toException())
+            }
+        })
 
-        authorNameList = arrayOf(
-            "Alice Schertle, Jill McElmurry",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Alice Schertle, Jill McElmurry",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory"
-        )
+        popularAuthorList = ArrayList<Author>()
+        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("author")
+        ref2.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val author = child.getValue(Author::class.java)
+                        author?.let { popularAuthorList.add(it) }
+                    }
+                    Log.d("Books size", "Number of books: ${bookList.size}")
+                    popularAuthorList = ArrayList(popularAuthorList.subList(0, 5))
+                    popularAuthorRvAdapter = PopularAuthorAdapter(popularAuthorList)
+                    popularAuthorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    popularAuthorRv.adapter = popularAuthorRvAdapter
+                }
+            }
 
-        bookImgIdList = arrayOf(
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1
-        )
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Error", "Failed to read value.", error.toException())
+            }
+        })
 
-        for(i in bookNameList.indices) {
-            val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
-            sampleBookList.add(sampleBook)
-        }
-
-        // Popular Authors
-        popularAuthorNameList = arrayListOf(
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Neil Giamen",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Neil Giamen"
-        )
-
-        popularAuthorImgList = arrayListOf(
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1
-        )
     }
 }
