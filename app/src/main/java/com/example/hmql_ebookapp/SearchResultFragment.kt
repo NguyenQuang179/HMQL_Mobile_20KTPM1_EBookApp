@@ -33,6 +33,7 @@ class SearchResultFragment : Fragment() {
     private var param2: String? = null
 
     lateinit var books : ArrayList<Book>
+    lateinit var searchString: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +53,11 @@ class SearchResultFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bundle = arguments
+        if (bundle != null) {
+            searchString = bundle.getString("searchString").toString()
+            // Sử dụng giá trị dữ liệu trong SearchResultFragment
+        }
         sampleDataInit(object : OnDataReadyCallback {
             override fun onDataReady(books: List<Book>) {
                 this@SearchResultFragment.books = ArrayList(books)
@@ -64,17 +70,24 @@ class SearchResultFragment : Fragment() {
                 val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
                     DividerItemDecoration.VERTICAL)
                 customRecyclerView.addItemDecoration(itemDecoration)
-
                 var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
+                autoCompleteTV.setText(searchString);
+//                adapter.filter.filter(searchString)
+//                adapter.notifyDataSetChanged();
+
                 autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {}
                     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                         adapter?.filter?.filter(p0)
                         adapter.notifyDataSetChanged();
-                        customRecyclerView!!.adapter = adapter
+                        //customRecyclerView!!.adapter = adapter
                     }
                 })
+            }
+
+            override fun onHomeDataReady(books: List<Book>, authors: List<Author>) {
+                TODO("Not yet implemented")
             }
         })
     }

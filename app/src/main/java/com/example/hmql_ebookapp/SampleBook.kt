@@ -2,6 +2,7 @@ package com.example.hmql_ebookapp
 
 interface OnDataReadyCallback {
     fun onDataReady(books: List<Book>)
+    fun onHomeDataReady(books: List<Book>, authors: List<Author>)
 }
 
 data class Book(

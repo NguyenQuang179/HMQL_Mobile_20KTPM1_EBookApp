@@ -64,6 +64,7 @@ class SearchBookFragment : Fragment() {
 
         val listOfCategory = resources.getStringArray(R.array.category);
         var categoryChoiceRecyclerView = view.findViewById<RecyclerView>(R.id.categoryChoiceRecyclerView)
+        var autoCompleteTextView = view.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView);
         var categoryAdapter = MyRecyclerViewForCategoryChoice(listOfCategory)
         categoryChoiceRecyclerView!!.adapter = categoryAdapter
         val categoryLayoutManager = GridLayoutManager(this.requireContext(), 2)
@@ -98,11 +99,18 @@ class SearchBookFragment : Fragment() {
 
         val searchBTN = view.findViewById<ImageButton>(R.id.searchBTN)
         searchBTN.setOnClickListener({
+            val bundle = Bundle()
+            bundle.putString("searchString", autoCompleteTextView.text.toString())
+
+            val fragment = SearchResultFragment()
+            fragment.arguments = bundle
+
             requireActivity().supportFragmentManager.commit {
-                replace<SearchResultFragment>(R.id.fragment_container_view)
+                replace(R.id.fragment_container_view, fragment)
                 setReorderingAllowed(true)
-                addToBackStack("name") // name can be null
+                addToBackStack("name")
             }
+
         })
     }
 

@@ -49,8 +49,8 @@ class AuthorInfoFragment : Fragment() {
         sampleDataInit()
 
         val authorWorksRv = view.findViewById<RecyclerView>(R.id.authorWorksRv)
-        val authorWorksRvAdapter = FavouriteBookAdapter(sampleBookList)
-
+        //val authorWorksRvAdapter = FavouriteBookAdapter(sampleBookList)
+        val authorWorksRvAdapter = FavouriteBookAdapter(ArrayList<Book>())
         authorWorksRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         authorWorksRv.adapter = authorWorksRvAdapter
     }
