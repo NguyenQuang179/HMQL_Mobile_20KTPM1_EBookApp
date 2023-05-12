@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -24,12 +25,9 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class MyBooks_LikedBooksFragment() : Fragment() {
+    lateinit var books: List<UserBook>
 
-    lateinit var books: ArrayList<SampleBook>
 
-    constructor(books: ArrayList<SampleBook>) : this() {
-        this.books = books
-    }
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -40,6 +38,11 @@ class MyBooks_LikedBooksFragment() : Fragment() {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+        }
+        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        val user = userViewModel.user
+        if (user != null) {
+            books = user.listOfBooks
         }
     }
 
@@ -75,7 +78,7 @@ class MyBooks_LikedBooksFragment() : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            MyBooks_LikedBooksFragment(books).apply {
+            MyBooks_LikedBooksFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

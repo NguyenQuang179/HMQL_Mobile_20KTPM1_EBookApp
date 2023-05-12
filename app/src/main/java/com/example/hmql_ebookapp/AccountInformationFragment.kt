@@ -12,6 +12,7 @@ import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +60,14 @@ class AccountInformationFragment : Fragment() {
                 addToBackStack("settingFragment") // name can be null
             }
         }
+
+        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        val user = userViewModel.user
+        val accountNameTV = view.findViewById<TextView>(R.id.Reviewer_nameTV)
+        val accountEmailTV = view.findViewById<TextView>(R.id.emailTv)
+        //and in fragment_home
+        accountNameTV.text = user?.name
+        accountEmailTV.text = user?.email
     }
 
     companion object {

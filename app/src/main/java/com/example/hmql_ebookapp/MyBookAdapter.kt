@@ -24,10 +24,10 @@ fun getColor(context: Context, colorResId: Int): Int {
     return color
 }
 
-class MyBookAdapter(private val books : ArrayList<SampleBook>)
+class MyBookAdapter(private val books : List<UserBook>)
     : RecyclerView.Adapter<MyBookAdapter.ViewHolder>(){
 
-    var onItemClick: ((SampleBook) -> Unit)? = null
+    var onItemClick: ((UserBook) -> Unit)? = null
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
         val statusTextView : TextView = listItemView.findViewById<TextView>(R.id.statusTextView)!!
@@ -47,15 +47,15 @@ class MyBookAdapter(private val books : ArrayList<SampleBook>)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val book : SampleBook = books[position]
+        val book : UserBook = books[position]
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
         bookNameTv.setText(book.bookName)
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(book.authorName)
-        val bookImgView = holder.bookImgView
-        bookImgView.setImageResource(book.bookImg)
+        authorNameTv.setText("TB Added")
+        //val bookImgView = holder.bookImgView
+        //bookImgView.setImageResource(book.bookImg)
 
         //set on click listener for a button in a recycler View item that change into another image on click
         //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
