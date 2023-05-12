@@ -35,7 +35,7 @@ class AdminAuthorsRecyclerViewAdapter(private val authors : ArrayList<Author>)
         val authorName = holder.authorNameTv
         authorName.setText(author.name)
         val authorImg = holder.authorImgView
-        authorImg.setImageResource(author.image)
+        //authorImg.setImageResource(author.image)
         val delBtn = holder.delBtn
 
         delBtn.setOnClickListener {
