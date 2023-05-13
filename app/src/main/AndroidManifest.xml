@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -20,10 +21,10 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-<!--             <intent-filter>-->
-<!--             <action android:name="android.intent.action.MAIN" />-->
-<!--             <category android:name="android.intent.category.LAUNCHER" />-->
-<!--             </intent-filter>-->
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
         <activity
             android:name=".MyBooksListActivity"
@@ -62,10 +63,10 @@
             android:hardwareAccelerated="false"
             android:windowSoftInputMode="adjustNothing"><!--keyboard adjustment-->
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
 
             <meta-data
                 android:name="android.app.lib_name"
