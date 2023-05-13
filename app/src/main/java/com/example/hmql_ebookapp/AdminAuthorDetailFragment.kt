@@ -60,7 +60,7 @@ class AdminAuthorDetailFragment : Fragment() {
 
         authorNameEt.setText(author.name)
         authorDescEt.setText(author.description)
-        // authorImgEt.setText(author.image.toString())
+        authorImgEt.setText(author.img.toString())
 
         val saveBtn = view.findViewById<Button>(R.id.AdminAuthorDetailSaveBtn)
         saveBtn.setOnClickListener(){

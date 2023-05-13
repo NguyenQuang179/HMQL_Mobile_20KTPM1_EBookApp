@@ -45,7 +45,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/fontsLayout" />
 
     <TextView
         android:id="@+id/settingThemeTv"
@@ -60,72 +60,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settingFontsizeSB" />
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="32dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="0dp"
-        android:text="Aa"
-        android:textAllCaps="false"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/button"
-        app:layout_constraintStart_toEndOf="@+id/button2"
-        app:layout_constraintTop_toTopOf="@+id/button"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="32dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="0dp"
-        android:text="Aa"
-        android:textAllCaps="false"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/button"
-        app:layout_constraintStart_toEndOf="@+id/button"
-        app:layout_constraintTop_toTopOf="@+id/button"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="0dp"
-        android:text="Aa"
-        android:textAllCaps="false"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/settingFontTv"
-        app:layout_constraintTop_toBottomOf="@+id/settingFontTv" />
-
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="32dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="0dp"
-        android:text="Aa"
-        android:textAllCaps="false"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/button"
-        app:layout_constraintStart_toEndOf="@+id/button3"
-        app:layout_constraintTop_toTopOf="@+id/button"
-        app:layout_constraintVertical_bias="0.0" />
-
     <com.google.android.material.slider.Slider
         android:id="@+id/settingFontsizeSB"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -136,7 +70,7 @@
         android:layout_marginEnd="44dp"
         android:contentDescription="Font Size Slider"
         android:stepSize="2"
-        android:value="16"
+        android:value="14"
         android:valueFrom="10"
         android:valueTo="22"
         app:haloColor="?attr/colorSecondary"
@@ -148,6 +82,7 @@
         app:thumbColor="?attr/colorPrimary"
         app:thumbRadius="14dp"
         app:tickColorActive="?attr/colorSecondary"
+        app:tickVisible="true"
         app:trackColorActive="?attr/colorPrimary"
         app:trackColorInactive="?attr/colorSecondary"
         app:trackHeight="8dp" />
@@ -204,5 +139,95 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fontsLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingFontTv">
+
+        <Button
+            android:id="@+id/sansSerifBtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="1dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="Aa"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5" />
+
+        <Button
+            android:id="@+id/latoBtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="32dp"
+            android:fontFamily="@font/lato"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="Aa"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/sansSerifBtn"
+            app:layout_constraintStart_toEndOf="@+id/sansSerifBtn"
+            app:layout_constraintTop_toTopOf="@+id/sansSerifBtn" />
+
+        <Button
+            android:id="@+id/playfairDisplayBtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="32dp"
+            android:fontFamily="@font/playfair_display"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="Aa"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/latoBtn"
+            app:layout_constraintStart_toEndOf="@+id/latoBtn"
+            app:layout_constraintTop_toTopOf="@+id/latoBtn" />
+
+        <Button
+            android:id="@+id/merriWeatherBtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="32dp"
+            android:fontFamily="@font/merriweather"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="Aa"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/playfairDisplayBtn"
+            app:layout_constraintStart_toEndOf="@+id/playfairDisplayBtn"
+            app:layout_constraintTop_toTopOf="@+id/playfairDisplayBtn" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingSaveBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

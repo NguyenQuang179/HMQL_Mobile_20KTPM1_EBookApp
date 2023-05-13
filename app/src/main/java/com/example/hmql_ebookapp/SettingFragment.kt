@@ -8,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Switch
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.slider.Slider
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,6 +28,7 @@ class SettingFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     var isDark : Boolean = false
+    var fontFamily : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
@@ -58,17 +62,54 @@ class SettingFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
-        val settingBtn = view.findViewById<Switch>(R.id.settingThemeSwitch)
-        settingBtn.isChecked = isDark
-        settingBtn.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked){
-                requireActivity().supportFragmentManager.popBackStack()
+        val sansSerifBtn = view.findViewById<Button>(R.id.sansSerifBtn)
+        val latoBtn = view.findViewById<Button>(R.id.latoBtn)
+        val playfairDisplayBtn = view.findViewById<Button>(R.id.playfairDisplayBtn)
+        val merriWeatherBtn = view.findViewById<Button>(R.id.merriWeatherBtn)
+
+        val textview = view.findViewById<TextView>(R.id.textView6)
+        sansSerifBtn.setOnClickListener() {
+            fontFamily = sansSerifBtn.typeface.toString()
+            textview.typeface = sansSerifBtn.typeface
+        }
+
+        latoBtn.setOnClickListener() {
+            fontFamily = latoBtn.typeface.toString()
+            textview.typeface = latoBtn.typeface
+        }
+
+        playfairDisplayBtn.setOnClickListener() {
+            fontFamily = playfairDisplayBtn.typeface.toString()
+            textview.typeface = playfairDisplayBtn.typeface
+        }
+
+        merriWeatherBtn.setOnClickListener() {
+            fontFamily = merriWeatherBtn.typeface.toString()
+            textview.typeface = merriWeatherBtn.typeface
+        }
+
+        val fontSizeSlider = view.findViewById<Slider>(R.id.settingFontsizeSB)
+
+        val themeBtn = view.findViewById<Switch>(R.id.settingThemeSwitch)
+        themeBtn.isChecked = isDark
+        themeBtn.setOnCheckedChangeListener { _, isChecked ->
+            isDark = isChecked
+        }
+
+        val saveBtn = view.findViewById<Button>(R.id.settingSaveBtn)
+        saveBtn.setOnClickListener(){
+//            Font Family
+            Toast.makeText(requireContext(), fontFamily.toString(), Toast.LENGTH_SHORT).show()
+//            Font Size
+            Toast.makeText(requireContext(), fontSizeSlider.value.toString(), Toast.LENGTH_SHORT).show()
+//            Pop Back Stack & Change Mode
+            requireActivity().supportFragmentManager.popBackStack()
+            if(isDark) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                requireActivity().supportFragmentManager.popBackStack()
+            }
+            else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
-
         }
     }
 
