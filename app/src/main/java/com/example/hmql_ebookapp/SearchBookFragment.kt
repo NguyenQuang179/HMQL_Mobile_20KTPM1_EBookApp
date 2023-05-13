@@ -14,6 +14,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
+import java.io.File
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,7 +38,7 @@ class SearchBookFragment : Fragment() {
     lateinit var categoryList: ArrayList<Category>
     lateinit var categoryChoiceRecyclerView: RecyclerView
     var categoryAdapter = MyRecyclerViewForCategoryChoice(ArrayList<Category>())
-
+    var listOfSearchs = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -53,15 +58,29 @@ class SearchBookFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val listOfString = resources.getStringArray(R.array.recentSearch);
+        readJSONFile()
         var customRecyclerView = view.findViewById<RecyclerView>(R.id.recentSearchRecyclerView)
-        var adapter = MyRecyclerViewForRecentSearchs(listOfString)
+        var adapter = MyRecyclerViewForRecentSearchs(listOfSearchs)
         adapter.onItemClick = { item ->
 // do something with your item
+            val bundle = Bundle()
+            bundle.putString("searchString", item)
+
+            val fragment = SearchResultFragment()
+            fragment.arguments = bundle
+
+            requireActivity().supportFragmentManager.commit {
+                replace(R.id.fragment_container_view, fragment)
+                setReorderingAllowed(true)
+                addToBackStack("name")
+            }
             Toast.makeText (context, "Row cliceked: $item", Toast.LENGTH_SHORT).show()
         }
         adapter.onButtonClick = { item ->
 // do something with your item
+            listOfSearchs.remove(item)
+            writeDataToFile()
+            adapter.notifyDataSetChanged()
             Toast.makeText (context, "Button cliceked: $item",Toast.LENGTH_SHORT).show()
         }
         customRecyclerView!!.adapter = adapter
@@ -100,6 +119,10 @@ class SearchBookFragment : Fragment() {
 
         val searchBTN = view.findViewById<ImageButton>(R.id.searchBTN)
         searchBTN.setOnClickListener({
+            if (autoCompleteTextView.text.toString().length > 0){
+                listOfSearchs.add(0, autoCompleteTextView.text.toString());
+                writeDataToFile()
+            }
             val bundle = Bundle()
             bundle.putString("searchString", autoCompleteTextView.text.toString())
 
@@ -133,6 +156,35 @@ class SearchBookFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    private fun readJSONFile(){
+        try {
+            val file = File(requireContext().filesDir, "recentSearchs.json")
+            val jsonString = file.readText()
+
+            var recentSearch : recentSearch
+            recentSearch = Json.decodeFromString<recentSearch>(jsonString)
+            listOfSearchs = recentSearch.searchs
+            Toast.makeText(requireContext(), "Data read successfully, ${listOfSearchs.size}", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.i("Sai j z",e.message.toString())
+            Toast.makeText(requireContext(), "Error reading data: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun writeDataToFile() {
+        try {
+            val recentSearchTemp = recentSearch(listOfSearchs)
+            val jsonString = Json.encodeToString(recentSearchTemp)
+            val file = File(requireContext().filesDir, "recentSearchs.json")
+            file.writeText(jsonString)
+            Toast.makeText(requireContext(), "Data saved successfully", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.d("Error:/", e.message.toString())
+            Toast.makeText(requireContext(), "Error saving data: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun sampleDataInit() {

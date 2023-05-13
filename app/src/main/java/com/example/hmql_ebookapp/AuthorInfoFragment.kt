@@ -1,12 +1,18 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.firebase.database.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,6 +33,9 @@ class AuthorInfoFragment : Fragment() {
     lateinit var bookNameList : Array<String>
     lateinit var authorNameList : Array<String>
     lateinit var bookImgIdList : Array<Int>
+    lateinit var authorID: String
+    lateinit var authorWorksRv: RecyclerView
+    lateinit var authorWorksRvAdapter: FavouriteBookAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,11 +55,15 @@ class AuthorInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bundle = arguments
+        if (bundle != null) {
+            authorID = bundle.getString("authorID").toString()
+        }
         sampleDataInit()
 
-        val authorWorksRv = view.findViewById<RecyclerView>(R.id.authorWorksRv)
+        authorWorksRv = view.findViewById<RecyclerView>(R.id.authorWorksRv)
         //val authorWorksRvAdapter = FavouriteBookAdapter(sampleBookList)
-        val authorWorksRvAdapter = FavouriteBookAdapter(ArrayList<Book>())
+        authorWorksRvAdapter = FavouriteBookAdapter(ArrayList<Book>())
         authorWorksRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         authorWorksRv.adapter = authorWorksRvAdapter
     }
@@ -76,52 +89,67 @@ class AuthorInfoFragment : Fragment() {
     }
 
     private fun sampleDataInit() {
-        // Favourite Books
-        sampleBookList = arrayListOf<SampleBook>()
+        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("author/${authorID}")
+        ref2.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    val data = snapshot.getValue(Author::class.java)
+                    val authorNameInfoTV = view?.findViewById<TextView>(R.id.authorNameInfoTV)
+                    authorNameInfoTV!!.setText(data!!.name);
+                    val authorDescriptionTV = view?.findViewById<TextView>(R.id.authorDescriptionTV)
+                    authorDescriptionTV!!.setText(data!!.description);
+                    val authorIV = view?.findViewById<ImageView>(R.id.authorImgInfoIV);
+                    if (authorIV != null) {
+                        Glide.with(requireContext())
+                            .load(data.img)
+                            .into(authorIV)
+                    };
+                    var authorWorkList = ArrayList<Book>();
+                        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+                        ref2.addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists()) {
+                                    for (child in snapshot.children) {
+                                        val book = child.getValue(Book::class.java)
+                                        if (book!!.author == data.name)
+                                        {
+                                            authorWorkList.add((book))
+                                        }
 
-        bookNameList = arrayOf(
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S..."
-        )
+                                    }
+                                    Log.d("Books related size", "Number of books: ${authorWorkList.size}")
+                                    authorWorkList.sortDescending();
+                                    if (authorWorkList.size > 5) authorWorkList = ArrayList(authorWorkList.subList(0, 5))
+                                    authorWorksRvAdapter = FavouriteBookAdapter(authorWorkList)
+                                    authorWorksRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                                    authorWorksRv.adapter = authorWorksRvAdapter
+                                    authorWorksRvAdapter.onItemClick = { book ->
+                                        Log.i("In", "Chuyen trang")
+                                        val bundle = Bundle()
+                                        bundle.putString("bookID", book.bookID)
 
-        authorNameList = arrayOf(
-            "Alice Schertle",
-            "Alice Schertle",
-            "Alice Schertle",
-            "Alice Schertle",
-            "Alice Schertle",
-            "Alice Schertle",
-            "Alice Schertle",
-            "Alice Schertle",
-            "Alice Schertle",
-            "Alice Schertle",
-        )
+                                        val fragment = BookIntroductionFragment()
+                                        fragment.arguments = bundle
 
-        bookImgIdList = arrayOf(
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1
-        )
+                                        requireActivity().supportFragmentManager.commit {
+                                            replace(R.id.fragment_container_view, fragment)
+                                            setReorderingAllowed(true)
+                                            addToBackStack("BookIntroductionFragment")
+                                        }
+                                    }
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                TODO("Not yet implemented")
+                            }
+                        })
 
-        for(i in bookNameList.indices) {
-            val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
-            sampleBookList.add(sampleBook)
-        }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
 }
