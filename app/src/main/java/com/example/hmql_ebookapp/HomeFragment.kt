@@ -2,15 +2,16 @@ package com.example.hmql_ebookapp
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -107,6 +108,13 @@ class HomeFragment : Fragment() {
         popularAuthorMoreBtn!!.setOnClickListener(){
             Toast.makeText(context, "See More Author Button Clicked", Toast.LENGTH_SHORT).show()
         }
+
+        //set the user info
+        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        val user = userViewModel.user
+        val introUserTV = view.findViewById<TextView>(R.id.introUserTv)
+        introUserTV.text = "Hi ${user?.name}"
+
     }
 
     companion object {

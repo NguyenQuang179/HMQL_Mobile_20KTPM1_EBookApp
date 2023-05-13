@@ -100,7 +100,7 @@ class AdminAuthorsFragment : Fragment() {
             val name = bundle.getString("name")
             val desc = bundle.getString("desc")
             val img = bundle.getInt("img")
-            val newAuthor = Author(name.toString(), desc.toString(), "")
+            val newAuthor = Author(name.toString(), desc.toString(), img.toString())
             listOfAuthor.add(newAuthor)
             authorsRvAdapter.notifyDataSetChanged()
         }
@@ -163,7 +163,7 @@ class AdminAuthorsFragment : Fragment() {
                 "Cras eget lorem sed orci dignissim lobortis. Aliquam erat volutpat. Donec eu felis scelerisque, gravida mauris non, rhoncus arcu."
 
         for(i in authorNameList.indices) {
-            val author = Author(authorNameList[i], sampleDesc, "")
+            val author = Author(authorNameList[i], sampleDesc, authorImgIdList[i].toString())
             listOfAuthor.add(author)
         }
     }
