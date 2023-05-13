@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -111,6 +113,13 @@ class SearchResultFragment : Fragment() {
                     Log.d("Books size", "Number of books: ${books.size}")
                     adapter = MyFilteredBookAdapter(books)
                     customRecyclerView!!.adapter = adapter
+                    adapter.onItemClick = { book ->
+                        requireActivity().supportFragmentManager.commit {
+                            replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                            setReorderingAllowed(true)
+                            addToBackStack("bookIntroductionFragment")
+                        }
+                    }
                     val layoutManager = LinearLayoutManager(context)
                     customRecyclerView.layoutManager = layoutManager
                     val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,

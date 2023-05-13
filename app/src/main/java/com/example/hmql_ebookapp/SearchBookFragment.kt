@@ -99,7 +99,7 @@ class SearchBookFragment : Fragment() {
         }
 
         val searchBTN = view.findViewById<ImageButton>(R.id.searchBTN)
-        searchBTN.setOnClickListener({
+        searchBTN.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("searchString", autoCompleteTextView.text.toString())
 
@@ -112,7 +112,7 @@ class SearchBookFragment : Fragment() {
                 addToBackStack("name")
             }
 
-        })
+        }
     }
 
     companion object {

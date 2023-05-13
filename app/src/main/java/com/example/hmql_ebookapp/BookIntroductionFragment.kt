@@ -2,9 +2,14 @@ package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
-import android.media.Image
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +17,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -35,6 +41,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 
+@Suppress("DEPRECATION")
 class BookIntroductionFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -155,13 +162,15 @@ class BookIntroductionFragment : Fragment() {
         }
     }
 
+    val STORAGE_PERMISSION_CODE: Int = 1000
     val REQUEST_CODE = 123
-
+    var thiscontext: Context? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        thiscontext = container!!.context
         return inflater.inflate(R.layout.fragment_book_introduction, container, false)
     }
 
@@ -248,6 +257,23 @@ class BookIntroductionFragment : Fragment() {
 
         DownloadButton.setOnClickListener{
             Toast.makeText(this.context, "Downloading!", Toast.LENGTH_SHORT).show()
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (requireActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_DENIED){
+                    //permission denied, request it
+
+                    //show popup for runtime permisison
+                    requestPermissions(arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
+                }
+                else{
+                    //permission already granted, perform download
+                    startDownloading()
+                }
+            }
+            else{
+                //system os is less than marshmallow, runtime permission not required, perform downlaod
+                startDownloading()
+            }
         }
 
         BackButton.setOnClickListener {
@@ -261,6 +287,47 @@ class BookIntroductionFragment : Fragment() {
         }
     }
 
+    private fun startDownloading() {
+
+        //get text/url from edit text
+        val url : String = "https://arxiv.org/pdf/2203.14367.pdf"
+//        url = urlEt.text.toString() TODO("Get book link to download")
+
+        //download request
+        val request = DownloadManager.Request(Uri.parse(url))
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+        request.setTitle("Download")
+        request.setDescription("The file is downloading...")
+
+        request.allowScanningByMediaScanner()
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "${System.currentTimeMillis()}")
+
+        //get download service, and enqueue file
+        val manager = requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        manager.enqueue(request)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+            STORAGE_PERMISSION_CODE -> {
+                if(grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED){
+                    //permission from popup was granted, perform download
+                    startDownloading()
+                }
+                else {
+                    //permission from popup was denied, show error message
+                    Toast.makeText(this.context, "Permission denied", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
