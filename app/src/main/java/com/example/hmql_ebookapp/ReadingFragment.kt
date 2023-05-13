@@ -104,10 +104,18 @@ class ReadingFragment : Fragment() {
             }
             menu.add(Menu.NONE, 2, Menu.NONE, "Highlight").setOnMenuItemClickListener {
                 val start = extractedTV.selectionStart
-                val end = extractedTV.selectionEnd 
-                var hightlightStr = SpannableString(extractedTV.text)
-                hightlightStr.setSpan(BackgroundColorSpan(Color.YELLOW), start, end, 0)
-                extractedTV.text = hightlightStr
+                val end = extractedTV.selectionEnd
+                if (start != -1 && end != -1) {
+                    val selectedText = extractedTV.text.subSequence(start, end)
+                    val hightlightStr = SpannableStringBuilder(extractedTV.text)
+                    hightlightStr.setSpan(
+                        BackgroundColorSpan(Color.YELLOW),
+                        start,
+                        end,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    extractedTV.text = hightlightStr
+                }
                 mode.finish()
                 true
             }
