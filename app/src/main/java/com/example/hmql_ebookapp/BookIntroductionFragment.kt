@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -39,7 +40,24 @@ private const val ARG_PARAM2 = "param2"
  * Use the [BookIntroductionFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-
+fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User's list of books
+    if (user != null) {
+        val bookList = user.listOfBooks.toMutableList()
+        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+        if (existingBookIndex >= 0) {
+            // If the book already exists in the list, remove it
+            bookList.removeAt(existingBookIndex)
+        }
+        // Add the book to the beginning of the list
+        bookList.add(0, UserBook(book.bookID, book.title, "status", 1, true, false))
+        // Update the user's list of books in Firebase
+        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+        val userRef = user.userID?.let { usersRef.child(it) }
+        if (userRef != null) {
+            userRef.child("listOfBooks").setValue(bookList)
+        }
+    }
+}
 class BookIntroductionFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -258,6 +276,14 @@ class BookIntroductionFragment : Fragment() {
                 replace<ReadingFragment>(R.id.fragment_container_view)
                 setReorderingAllowed(true)
                 addToBackStack("readFragment")
+                // Add To History, if already in history then pop it out and push it to the top
+
+                //set the user info
+                val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+                val user = userViewModel.user
+                addBookToUserList(user, data)
+                //Update user after update
+
             }
         }
 

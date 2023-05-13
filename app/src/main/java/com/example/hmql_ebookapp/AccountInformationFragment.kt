@@ -97,8 +97,8 @@ class AccountInformationFragment : Fragment() {
         providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(), //Email Builder
             AuthUI.IdpConfig.GoogleBuilder().build(), //Google Builder
-            AuthUI.IdpConfig.FacebookBuilder().build(), //Facebook Builder
-            AuthUI.IdpConfig.PhoneBuilder().build(), //Phone Builder
+            //AuthUI.IdpConfig.FacebookBuilder().build(), //Facebook Builder
+            //AuthUI.IdpConfig.PhoneBuilder().build(), //Phone Builder
 
         )
         firebaseAuth = FirebaseAuth.getInstance()
