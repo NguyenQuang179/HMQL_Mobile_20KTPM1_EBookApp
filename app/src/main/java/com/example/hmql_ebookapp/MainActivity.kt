@@ -8,9 +8,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
+import androidx.fragment.app.*
+import androidx.lifecycle.ViewModelProvider
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
@@ -60,18 +59,6 @@ class MainActivity : AppCompatActivity() {
 //        )
 //    }
 
-    // Register function
-    public fun register(email: String, password: String) {
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Registration successful, do something here
-                } else {
-                    // Registration failed, display error message
-                    Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
     // Logout function
     fun logout(activity: Activity) {
         AuthUI.getInstance()
@@ -99,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.popBackStack()
         }
     }
-
+    private lateinit var userViewModel: UserViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -115,6 +102,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         init();
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTheme(R.style.LoginTheme)
+                .build(),
+            AUTH_REQUEST_CODE
+        )
 //        for (i in 1..10){
 //            val listOfBook = arrayListOf<String>((i+1).toString(),(i+2).toString(),(i+3).toString(),(i+4).toString())
 //            val newAuthor = Author("Tac gia $i", "$i","Mo ta tac gia","img",listOfBook)
@@ -128,7 +123,9 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 
-//
+        //init the ViewModel for mainActivity
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+
         val list = arrayListOf<Book>();
         val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
         ref1.addValueEventListener(object : ValueEventListener{
@@ -243,24 +240,41 @@ class MainActivity : AppCompatActivity() {
                 userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         if (!dataSnapshot.exists()) {
-                            val newUser = User(uid, name, email, mutableListOf())
-                            userRef.setValue(newUser)
-
                             // Get a reference to the current user's list of books
                             val userBooksRef = usersRef.child(uid.toString()).child("listOfBooks")
 
-// Create a new UserBook object
+                        // Create a new UserBook object
                             val book = UserBook("bookID", "bookName", "status", 1, true, false)
 
-// Add the book to the list of books for the current user
-                            userBooksRef.push().setValue(book)
+                             // Add the book to the list of books for the current user
+                            //val newList = user?.listOfBooks.orEmpty().toMutableList()
+                            val newList = mutableListOf<UserBook>()
+                            newList.add(book)
+                            //userRef.child("listOfBooks").setValue(newList)
+
+                            val newUser = User(uid, email, name, newList)
+                            userRef.setValue(newUser)
                         }
+
+                        // update the fragment_account_information
+
+                        val user = dataSnapshot.getValue(User::class.java)
+
+                        userViewModel.user = user
+                        // Reload current fragment
+                        // Reload current fragment
+
+                        //introUserTV.text = "Hi ${user?.name}"
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
                         Log.e("TAG", "onCancelled", databaseError.toException())
                     }
                 })
+                //Get current user data from firebase and
+
+
+
 
 
             } else {
