@@ -8,8 +8,9 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
-class ReviewAdapterClass(private val mList: List<ReviewViewModel>) : RecyclerView.Adapter<ReviewAdapterClass.ViewHolder>() {
+class ReviewAdapterClass(private val mList: List<Review>) : RecyclerView.Adapter<ReviewAdapterClass.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,14 +25,16 @@ class ReviewAdapterClass(private val mList: List<ReviewViewModel>) : RecyclerVie
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val ReviewViewModel = mList[position]
+        val review = mList[position]
 
         // sets the text to the textview from our itemHolder class
-        holder.Reviewer_nameTV.text = ReviewViewModel.reviewer_name
-        holder.ReviewRatingBar.rating = ReviewViewModel.rating_bar_value
-        holder.ReviewRate.text = ReviewViewModel.rating_rate
-        holder.ReviewTextTV.text = ReviewViewModel.review_text
-        holder.ReviewerIV.setImageResource(ReviewViewModel.reviewer_image)
+        holder.Reviewer_nameTV.text = review.userName
+        holder.ReviewRatingBar.rating = review.star.toFloat()
+        holder.ReviewRate.text = review.star.toString()
+        holder.ReviewTextTV.text = review.content
+        Glide.with(holder.ReviewerIV.context)
+            .load(review.userAvatar)
+            .into(holder.ReviewerIV);
     }
 
     // return the number of the items in the list
