@@ -47,17 +47,26 @@ class AdminBookAddFragment : Fragment() {
 
         val bookTitleEt = view.findViewById<EditText>(R.id.AdminBookAddTitleEt)
         val bookAuthorEt = view.findViewById<EditText>(R.id.AdminBookAddAuthorEt)
+        val AdminBookAddDescEt = view.findViewById<EditText>(R.id.AdminBookAddDescEt)
+        val AdminBookAddTagsEt = view.findViewById<EditText>(R.id.AdminBookAddTagsEt)
         val saveBtn = view.findViewById<Button>(R.id.AdminBookAddSaveBtn)
         saveBtn.setOnClickListener(){
             val title : String = bookTitleEt.text.toString()
             val author : String = bookAuthorEt.text.toString()
+            val newCategoryList: String = AdminBookAddTagsEt.text.toString()
+            val newDesc: String = AdminBookAddDescEt.text.toString()
+
             if(title == "" || author == "") {
                 Toast.makeText(requireContext(), "Please fill all information before u save", Toast.LENGTH_SHORT).show()
             }
             else {
                 setFragmentResult("newBookInfo",
-                    bundleOf("title" to title,
-                                    "author" to author))
+                    bundleOf("newTitle" to title,
+                        "newAuthor" to author,
+                        "newCategoryList" to newCategoryList,
+                        "newDesc" to newDesc
+                    )
+                )
                 requireActivity().supportFragmentManager.popBackStack()
             }
         }

@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -43,7 +44,7 @@ class AdminBookEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Log.i("Edit", "True")
         val textView = view.findViewById<TextView>(R.id.AdminBookEditText)
         val agrs = this.arguments
         val receivedData = agrs?.get("dataFromBookDetail")

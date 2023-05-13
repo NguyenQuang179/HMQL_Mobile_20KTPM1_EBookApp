@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,11 @@ import android.widget.Toast
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.setFragmentResultListener
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.database.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,7 +40,6 @@ class AdminBooksFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sampleDataInit()
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -60,50 +62,98 @@ class AdminBooksFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
-        val booksRv = view.findViewById<RecyclerView>(R.id.AdminBookRv)
-        val booksRvAdapter = AdminBookRecyclerViewAdapter(sampleBookList)
-        booksRv.layoutManager = LinearLayoutManager(requireContext())
-        booksRv.adapter = booksRvAdapter
-        booksRvAdapter.onItemClick = { book ->
-            Toast.makeText(requireContext(), book.bookName.toString(), Toast.LENGTH_SHORT).show()
-            val bundle = Bundle()
-            bundle.putSerializable("bookDetail", book)
-            bundle.putInt("bookIndex", sampleBookList.indexOf(book))
-            val bookDetailFragment = AdminBookDetail()
-            bookDetailFragment.arguments = bundle
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragmentContainerView2, bookDetailFragment)
-                setReorderingAllowed(true)
-                addToBackStack("adminBookDetail")
+        val listOfBook = ArrayList<Book>()
+        val ref : DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val book = child.getValue(Book::class.java)
+                        book?.let { listOfBook.add(it) }
+                    }
+                    Log.d("Books size", "Number of books: ${listOfBook.size}")
+                    val booksRv = view.findViewById<RecyclerView>(R.id.AdminBookRv)
+                    val booksRvAdapter = AdminBookRecyclerViewAdapter(listOfBook)
+                    booksRv.layoutManager = LinearLayoutManager(requireContext())
+                    booksRv.adapter = booksRvAdapter
+                    booksRvAdapter.onItemClick = { book ->
+                        Toast.makeText(requireContext(), book.title, Toast.LENGTH_SHORT).show()
+                        val bundle = Bundle()
+                        bundle.putString("bookID", book.bookID)
+                        bundle.putString("bookIndex", listOfBook.indexOf(book).toString())
+                        val bookDetailFragment = AdminBookDetail()
+                        bookDetailFragment.arguments = bundle
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragmentContainerView2, bookDetailFragment)
+                            setReorderingAllowed(true)
+                            addToBackStack("adminBookDetail")
+                        }
+                    }
+
+                    setFragmentResultListener("editBookInfo") { key, bundle ->
+                        val newTitle = bundle.getString("newTitle")
+                        val newAuthor = bundle.getString("newAuthor")
+                        val bookID = bundle.getString("bookID")
+                        val newDesc = bundle.getString("newDesc")
+                        var newTag = bundle.getString("newCategoryList");
+                        val bookIndex = bundle.getString("bookIndex")?.toInt()
+
+                        listOfBook[bookIndex!!].title = newTitle!!
+                        listOfBook[bookIndex!!].author = newAuthor!!
+                        listOfBook[bookIndex!!].description = newDesc!!
+                        newTag = newTag?.replace(", ", ",")
+                        val substrings = newTag?.split(",")
+                        val listOfCategory = ArrayList<Category>()
+                        if (substrings != null) {
+                            for (substring in substrings) {
+                                val newCategory = Category(substring,"")
+                                listOfCategory.add(newCategory)
+                            }
+                        }
+                        listOfBook[bookIndex!!].categories = listOfCategory!!
+                        val refTemp = FirebaseDatabase.getInstance().getReference("book/${bookID}");
+                        refTemp.setValue(listOfBook[bookIndex!!])
+                        booksRvAdapter.notifyDataSetChanged()
+                    }
+
+                    setFragmentResultListener("newBookInfo") { key, bundle ->
+                        val newTitle = bundle.getString("newTitle")
+                        val newAuthor = bundle.getString("newAuthor")
+                        val newDesc = bundle.getString("newDesc")
+                        var newTag = bundle.getString("newCategoryList");
+                        newTag = newTag?.replace(", ", ",")
+                        val substrings = newTag?.split(",")
+                        val listOfCategory = ArrayList<Category>()
+                        if (substrings != null) {
+                            for (substring in substrings) {
+                                val newCategory = Category(substring,"")
+                                listOfCategory.add(newCategory)
+                            }
+                        }
+                        val refTemp = FirebaseDatabase.getInstance().getReference("book");
+                        val newChild = refTemp.push()
+                        var newBook : Book? = newChild!!.key?.let { Book(it,newTitle!!, newAuthor!!, newDesc!!, 2002, 0.0, 0,"","", listOfCategory)}
+                        newChild.setValue(newBook);
+                        listOfBook.add(newBook!!)
+                        booksRvAdapter.notifyDataSetChanged()
+                    }
+
+                    val addBtn = view.findViewById<FloatingActionButton>(R.id.AdminBookAddBtn)
+                    addBtn.setOnClickListener(){
+                        requireActivity().supportFragmentManager.commit {
+                            replace<AdminBookAddFragment>(R.id.fragmentContainerView2)
+                            setReorderingAllowed(true)
+                            addToBackStack("adminBookAdd")
+                        }
+                    }
+                }
             }
-        }
 
-        setFragmentResultListener("editBookInfo") { key, bundle ->
-            val newTitle = bundle.getString("newTitle")
-            val newAuthor = bundle.getString("newAuthor")
-            val bookIndex = bundle.getInt("bookIndex")
-            sampleBookList[bookIndex].bookName = newTitle.toString()
-            sampleBookList[bookIndex].authorName = newAuthor.toString()
-            booksRvAdapter.notifyDataSetChanged()
-        }
-
-        setFragmentResultListener("newBookInfo") { key, bundle ->
-            val newTitle = bundle.getString("title")
-            val newAuthor = bundle.getString("author")
-            Toast.makeText(requireContext(), "$newTitle $newAuthor", Toast.LENGTH_SHORT ).show()
-            var newBook : SampleBook = SampleBook(newTitle.toString(), newAuthor.toString(), R.drawable.favbookimg2)
-            sampleBookList.add(newBook)
-            booksRvAdapter.notifyDataSetChanged()
-        }
-
-        val addBtn = view.findViewById<FloatingActionButton>(R.id.AdminBookAddBtn)
-        addBtn.setOnClickListener(){
-            requireActivity().supportFragmentManager.commit {
-                replace<AdminBookAddFragment>(R.id.fragmentContainerView2)
-                setReorderingAllowed(true)
-                addToBackStack("adminBookAdd")
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Error", "Failed to read value.", error.toException())
             }
-        }
+        })
+
     }
 
     companion object {
@@ -124,54 +174,5 @@ class AdminBooksFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
-    }
-
-    private fun sampleDataInit() {
-        // Favourite Books
-        sampleBookList = arrayListOf<SampleBook>()
-
-        bookNameList = arrayOf(
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S..."
-        )
-
-        authorNameList = arrayOf(
-            "Alice Schertle, Jill McElmurry",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Alice Schertle, Jill McElmurry",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory"
-        )
-
-        bookImgIdList = arrayOf(
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1
-        )
-
-        for(i in bookNameList.indices) {
-            val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
-            sampleBookList.add(sampleBook)
-        }
     }
 }
