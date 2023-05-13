@@ -263,7 +263,11 @@ class MainActivity : AppCompatActivity() {
 
                         userViewModel.user = user
                         // Reload current fragment
-                        // Reload current fragment
+                        supportFragmentManager.commit {
+                            replace<HomeFragment>(R.id.fragment_container_view)
+                            setReorderingAllowed(true)
+                            addToBackStack("home") // name can be null
+                        }
 
                         //introUserTV.text = "Hi ${user?.name}"
                     }
