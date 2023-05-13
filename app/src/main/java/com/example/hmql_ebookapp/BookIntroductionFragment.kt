@@ -234,7 +234,12 @@ class BookIntroductionFragment : Fragment() {
         ReviewRV.adapter = adapter_review
 
         SeeMoreRecBtn!!.setOnClickListener() {
-            Toast.makeText(this.context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this.context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.commit {
+                replace<HomeFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("homeFragment")
+            }
         }
 
         LikedButton.setOnClickListener {

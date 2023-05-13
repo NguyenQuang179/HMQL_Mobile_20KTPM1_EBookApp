@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.lifecycle.ViewModelProvider
@@ -77,15 +78,13 @@ class HomeFragment : Fragment() {
         val favBookMoreBtn = view.findViewById<Button>(R.id.favouriteBooksMoreBtn)
         val popularAuthorMoreBtn = view.findViewById<Button>(R.id.popularAuthorsMoreBtn)
 
-//        favBookRvAdapter.onItemClick = { book ->
-//            requireActivity().supportFragmentManager.commit {
-//                replace<ReadingFragment>(R.id.fragment_container_view)
-//                setReorderingAllowed(true)
-//                addToBackStack("readingFragment")
-//            }
-////            var intent = Intent(this.requireContext(), BookIntroductionActivity::class.java)
-////            startActivity(intent)
-//        }
+        favBookRvAdapter.onItemClick = { book ->
+            requireActivity().supportFragmentManager.commit {
+                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("bookIntroductionFragment") // name can be null
+            }
+        }
 
         popularAuthorRvAdapter.onItemClick = { author ->
             requireActivity().supportFragmentManager.commit {
