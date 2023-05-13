@@ -153,6 +153,20 @@ class HomeFragment : Fragment() {
                     favBookRvAdapter = FavouriteBookAdapter(bookList)
                     favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                     favBookRv.adapter = favBookRvAdapter
+                    favBookRvAdapter.onItemClick = { book ->
+                        Log.i("In", "Chuyen trang")
+                        val bundle = Bundle()
+                        bundle.putString("bookID", book.bookID)
+
+                        val fragment = BookIntroductionFragment()
+                        fragment.arguments = bundle
+
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragment_container_view, fragment)
+                            setReorderingAllowed(true)
+                            addToBackStack("BookIntroductionFragment")
+                        }
+                    }
                 }
             }
 
@@ -171,10 +185,24 @@ class HomeFragment : Fragment() {
                         author?.let { popularAuthorList.add(it) }
                     }
                     Log.d("Books size", "Number of books: ${bookList.size}")
-                    popularAuthorList = ArrayList(popularAuthorList.subList(0, 5))
+                    if ( popularAuthorList.size > 15) popularAuthorList = ArrayList(popularAuthorList.subList(0, 15))
                     popularAuthorRvAdapter = PopularAuthorAdapter(popularAuthorList)
                     popularAuthorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                     popularAuthorRv.adapter = popularAuthorRvAdapter
+                    popularAuthorRvAdapter.onItemClick = { author ->
+                        Log.i("In", "Chuyen trang")
+                        val bundle = Bundle()
+                        bundle.putString("authorID", author.authorID)
+
+                        val fragment = AuthorInfoFragment()
+                        fragment.arguments = bundle
+
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragment_container_view, fragment)
+                            setReorderingAllowed(true)
+                            addToBackStack("AuthorInfoFragment")
+                        }
+                    }
                 }
             }
 

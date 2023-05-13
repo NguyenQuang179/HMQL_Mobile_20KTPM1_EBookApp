@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class TagsAdapterClass(private val mList: List<TagsViewModel>) : RecyclerView.Adapter<TagsAdapterClass.ViewHolder>() {
+class TagsAdapterClass(private val mList: List<Category>) : RecyclerView.Adapter<TagsAdapterClass.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -21,10 +21,10 @@ class TagsAdapterClass(private val mList: List<TagsViewModel>) : RecyclerView.Ad
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val TagsViewModel = mList[position]
+        val category = mList[position]
 
         // sets the text to the textview from our itemHolder class
-        holder.tagsTV.text = TagsViewModel.tag
+        holder.tagsTV.text = category.categoryName
 
     }
 
