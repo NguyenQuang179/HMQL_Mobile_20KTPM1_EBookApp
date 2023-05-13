@@ -28,6 +28,7 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>)
         val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.bookImageView)!!
         val bookmarkImgBtn : ImageView = listItemView.findViewById<ImageView>(R.id.bookmarkImageButton)!!
         val ratingTV: TextView = listItemView.findViewById<TextView>(R.id.ratingTextView);
+        val bookmarkImageButton = listItemView.findViewById<ImageButton>(R.id.bookmarkImageButton)
         init { listItemView.setOnClickListener { onItemClick?.invoke(filteredBooks[adapterPosition]) } }
     }
 
@@ -42,6 +43,8 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Get the data model based on position
         val book : Book = filteredBooks[position]
+        holder.statusTextView.visibility = View.INVISIBLE;
+        holder.bookmarkImgBtn.visibility = View.INVISIBLE;
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv

@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
-class RecommendationAdapter(private val books : ArrayList<SampleBook>)
+class RecommendationAdapter(private val books : ArrayList<Book>)
     : RecyclerView.Adapter<RecommendationAdapter.ViewHolder>(){
 
-    var onItemClick: ((SampleBook) -> Unit)? = null
+    var onItemClick: ((Book) -> Unit)? = null
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
         val bookNameTv : TextView = listItemView.findViewById<TextView>(R.id.recBookNameTv)!!
@@ -29,15 +30,17 @@ class RecommendationAdapter(private val books : ArrayList<SampleBook>)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Get the data model based on position
-        val book : SampleBook = books[position]
+        val book : Book = books[position]
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
-        bookNameTv.setText(book.bookName)
+        bookNameTv.setText(book.title)
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(book.authorName)
+        authorNameTv.setText(book.author)
         val bookImgView = holder.bookImgView
-        bookImgView.setImageResource(book.bookImg)
+        Glide.with(holder.bookImgView.context)
+            .load(book.cover)
+            .into(bookImgView);
     }
 
     override fun getItemCount(): Int = books.size
