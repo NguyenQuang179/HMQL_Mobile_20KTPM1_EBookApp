@@ -95,7 +95,7 @@ fun editFavoriteStatus(user: User?, book: Book, favorite_status: Boolean){
 }
 
 fun editDownloadedStatus(user: User?, book: Book, downloaded_status: Boolean){
-    if(user != null){
+    if(user != null && book != null){
         val bookList = user.listOfBooks.toMutableList()
         val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
 //        val book_in_list = bookList[existingBookIndex]
@@ -316,22 +316,25 @@ class BookIntroductionFragment : Fragment() {
 
         for (book in user.listOfBooks) {
 //            Toast.makeText(this.context,"${book.bookName} and ${bookID}",Toast.LENGTH_SHORT).show()
-            if(book.bookID == bookID){
+            if(book != null){
+                if(book.bookID == bookID){
 
-                if(book.liked == true){
+                    if(book.liked == true){
 //                    Toast.makeText(this.context,"${book.bookName} is liked",Toast.LENGTH_SHORT).show()
-                    LikedButton.setImageResource(R.drawable.bookmark_solid)
-                    LikedButton.tag = "bookmarked"
-                    bookFavouriteStatus = true
-                }
-                else {
+                        LikedButton.setImageResource(R.drawable.bookmark_solid)
+                        LikedButton.tag = "bookmarked"
+                        bookFavouriteStatus = true
+                    }
+                    else {
 //                    Toast.makeText(this.context,"${book.bookName} is not liked",Toast.LENGTH_SHORT).show()
-                    LikedButton.setImageResource(R.drawable.bookmark_regular)
-                    LikedButton.tag = "bookmark"
-                    bookFavouriteStatus = false
+                        LikedButton.setImageResource(R.drawable.bookmark_regular)
+                        LikedButton.tag = "bookmark"
+                        bookFavouriteStatus = false
+                    }
+                    bookDownloadedStatus = book.downloaded == true
                 }
-                bookDownloadedStatus = book.downloaded == true
             }
+
         }
 
 
