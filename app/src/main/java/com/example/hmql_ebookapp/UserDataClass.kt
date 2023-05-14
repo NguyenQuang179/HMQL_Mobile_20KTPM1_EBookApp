@@ -11,8 +11,8 @@ data class UserBook(
     val bookName: String? = null,
     val status: String? = null,
     val readingProgress: Int? = null,
-    val isLiked: Boolean? = null,
-    val isDownloaded: Boolean? = null
+    val liked: Boolean? = null,
+    val downloaded: Boolean? = null
 )
 
 data class User(

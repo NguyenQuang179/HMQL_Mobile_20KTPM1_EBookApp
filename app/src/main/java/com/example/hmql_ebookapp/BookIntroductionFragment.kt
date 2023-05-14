@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -59,6 +60,7 @@ class BookIntroductionFragment : Fragment() {
     lateinit var bookImgIdList : Array<Int>
 
     lateinit var bookID: String;
+    lateinit var userID: String;
     private var bookRelated = ArrayList<Book>()
     private var recommendationAdapter = RecommendationAdapter(bookRelated)
     private lateinit var RecommendationBooksRV: RecyclerView
@@ -96,6 +98,8 @@ class BookIntroductionFragment : Fragment() {
                         adapterTags = TagsAdapterClass(categoryList)
                         TagsRV.adapter = adapterTags
                     }
+                    bookPDFLink = data.pdf
+
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -103,7 +107,6 @@ class BookIntroductionFragment : Fragment() {
             }
         })
     }
-
     private fun recommendDataInit() {
         val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
         ref2.addValueEventListener(object : ValueEventListener {
@@ -167,7 +170,10 @@ class BookIntroductionFragment : Fragment() {
     lateinit var TagsRV: RecyclerView
     lateinit var adapterTags: TagsAdapterClass
     private var categoryList = ArrayList<Category>()
-    
+
+    lateinit var bookPDFLink : String
+    lateinit var bookFavoriteStatus : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -195,10 +201,17 @@ class BookIntroductionFragment : Fragment() {
             bookID = bundle.getString("bookID").toString()
             // Sử dụng giá trị dữ liệu trong SearchResultFragment
         }
+
+        //set the user info
+        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        val user = userViewModel.user
+
+
+
         sampleDataInit()
         recommendDataInit()
         TagsRV = view.findViewById<RecyclerView>(R.id.TagsRV)
-        val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
+//        val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
         RecommendationBooksRV = view.findViewById<RecyclerView>(R.id.RecommendationBooksRV)
         ReviewRV = view.findViewById<RecyclerView>(R.id.ReviewRV)
 
@@ -211,11 +224,25 @@ class BookIntroductionFragment : Fragment() {
         val LikedButton = view.findViewById<ImageButton>(R.id.LikeBtn)
         val DownloadButton = view.findViewById<ImageButton>(R.id.downloadBtn)
 
-        LikedButton.tag = "bookmark"
+        for (book in user?.listOfBooks!!) {
+
+            if(book.bookID == bookID){
+
+                if(book.liked == true){
+//                    Toast.makeText(this.context,"${book.bookName} is liked",Toast.LENGTH_SHORT).show()
+                    LikedButton.setImageResource(R.drawable.bookmark_solid)
+                    LikedButton.tag = "bookmarked"
+                }
+                else {
+//                    Toast.makeText(this.context,"${book.bookName} is not liked",Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
 
         // this creates a vertical layout Manager
         TagsRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
-        ChaptersRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+//        ChaptersRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         RecommendationBooksRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
         ReviewRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
@@ -237,7 +264,7 @@ class BookIntroductionFragment : Fragment() {
         adapter_review = ReviewAdapterClass(reviewList)
 
         // Setting the Adapter with the recyclerview
-        ChaptersRV.adapter = adapter_chapters
+//        ChaptersRV.adapter = adapter_chapters
         RecommendationBooksRV.adapter = recommendationAdapter
         recommendationAdapter.onItemClick = { book ->
             requireActivity().supportFragmentManager.commit {
@@ -277,7 +304,7 @@ class BookIntroductionFragment : Fragment() {
         }
 
         DownloadButton.setOnClickListener{
-            Toast.makeText(this.context, "Downloading!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this.context, "PDF Link $bookPDFLink", Toast.LENGTH_SHORT).show()
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 if (requireActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_DENIED){
@@ -311,7 +338,7 @@ class BookIntroductionFragment : Fragment() {
     private fun startDownloading() {
 
         //get text/url from edit text
-        val url : String = "https://arxiv.org/pdf/2203.14367.pdf"
+        val url : String = bookPDFLink
 //        url = urlEt.text.toString() TODO("Get book link to download")
 
         //download request

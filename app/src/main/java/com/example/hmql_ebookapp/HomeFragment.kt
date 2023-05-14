@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import android.provider.ContactsContract.Data
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -34,14 +35,13 @@ class HomeFragment : Fragment() {
     private var param2: String? = null
 
     private lateinit var bookList : ArrayList<Book>
-
-
     lateinit var popularAuthorList : ArrayList<Author>
 
     lateinit var favBookRv: RecyclerView
     var favBookRvAdapter = FavouriteBookAdapter(ArrayList<Book>())
     lateinit var popularAuthorRv: RecyclerView
     var popularAuthorRvAdapter = PopularAuthorAdapter(ArrayList<Author>())
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,6 +139,8 @@ class HomeFragment : Fragment() {
     private fun sampleDataInit() {
         // Favourite Books
         bookList = ArrayList<Book>()
+
+
         val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
         ref1.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
