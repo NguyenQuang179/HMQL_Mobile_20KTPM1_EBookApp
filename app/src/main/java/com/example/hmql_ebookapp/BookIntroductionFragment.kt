@@ -76,7 +76,7 @@ fun editFavoriteStatus(user: User?, book: Book, favorite_status: Boolean){
         val book_in_list = bookList[existingBookIndex]
 
         //Update the favorite status
-        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded)
+        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded, 3.5, book.cover, book.author)
 
         //udpate on database
         val usersRef = FirebaseDatabase.getInstance().getReference("Users")
@@ -94,7 +94,7 @@ fun editDownloadedStatus(user: User?, book: Book, downloaded_status: Boolean){
         val book_in_list = bookList[existingBookIndex]
 
         //Update the download status
-        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status)
+        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
 
         //udpate on database
         val usersRef = FirebaseDatabase.getInstance().getReference("Users")
@@ -105,22 +105,17 @@ fun editDownloadedStatus(user: User?, book: Book, downloaded_status: Boolean){
     }
 }
 
-fun addReviewTsoBookList(user: User?, book: Book) { //Function to add Book to User's list of books
+fun addReviewToBookList(user: User?, book: Book) { //Function to add Book to User's list of books
     if (user != null) {
-        val bookList = user.listOfBooks.toMutableList()
-        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
-        if (existingBookIndex >= 0) {
-            // If the book already exists in the list, remove it
-            bookList.removeAt(existingBookIndex)
-        }
-        // Add the book to the beginning of the list
-        bookList.add(0, UserBook(book.bookID, book.title, "status", 1, true, false))
-        // Update the user's list of books in Firebase
-        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
-        val userRef = user.userID?.let { usersRef.child(it) }
-        if (userRef != null) {
-            userRef.child("listOfBooks").setValue(bookList)
-        }
+//        val bookList = user.listOfBooks.toMutableList()
+//        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+//
+//        // Update the user's list of books in Firebase
+//        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+//        val userRef = user.userID?.let { usersRef.child(it) }
+//        if (userRef != null) {
+//            userRef.child("listOfBooks").setValue(bookList)
+//        }
     }
 }
 
@@ -304,7 +299,9 @@ class BookIntroductionFragment : Fragment() {
         val DownloadButton = view.findViewById<ImageButton>(R.id.downloadBtn)
 
         for (book in user.listOfBooks) {
+//            Toast.makeText(this.context,"${book.bookName} and ${bookID}",Toast.LENGTH_SHORT).show()
             if(book.bookID == bookID){
+
                 if(book.liked == true){
 //                    Toast.makeText(this.context,"${book.bookName} is liked",Toast.LENGTH_SHORT).show()
                     LikedButton.setImageResource(R.drawable.bookmark_solid)
@@ -369,7 +366,7 @@ class BookIntroductionFragment : Fragment() {
         }
 
         LikedButton.setOnClickListener {
-
+//            Toast.makeText(this.context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
             if (LikedButton.tag == "bookmark") {
                 LikedButton.setImageResource(R.drawable.bookmark_solid)
                 LikedButton.tag = "bookmarked"
@@ -380,7 +377,7 @@ class BookIntroductionFragment : Fragment() {
                 bookFavouriteStatus = false
             }
 
-            editFavoriteStatus(user, data, bookFavouriteStatus)
+//            editFavoriteStatus(user, data, bookFavouriteStatus)
         }
 
         ReadButton.setOnClickListener {
