@@ -64,6 +64,13 @@ class MyBooks_LikedBooksFragment() : Fragment() {
         myBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         myBookRv.adapter = myBookRvAdapter
 
+        myBookRvAdapter.onItemClick = { book ->
+            requireActivity().supportFragmentManager.commit {
+                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("bookIntroductionFragment") // name can be null
+            }
+        }
     }
 
     companion object {

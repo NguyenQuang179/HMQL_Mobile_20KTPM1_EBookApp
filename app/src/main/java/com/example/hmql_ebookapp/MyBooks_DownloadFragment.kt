@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -57,6 +59,14 @@ class MyBooks_DownloadFragment() : Fragment() {
 
         myBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         myBookRv.adapter = myBookRvAdapter
+
+        myBookRvAdapter.onItemClick = { book ->
+            requireActivity().supportFragmentManager.commit {
+                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("bookIntroductionFragment") // name can be null
+            }
+        }
 
     }
     companion object {

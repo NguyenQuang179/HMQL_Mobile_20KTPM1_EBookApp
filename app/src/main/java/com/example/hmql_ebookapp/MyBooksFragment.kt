@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.tabs.TabLayout
@@ -55,6 +57,7 @@ class MyBooksFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_my_books, container, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState);
         sampleDataInit()
@@ -62,6 +65,7 @@ class MyBooksFragment : Fragment() {
         tabLayout = view.findViewById<TabLayout>(R.id.myBooksTabFragmentLayout)
         val viewPager2 = view.findViewById<ViewPager2>(R.id.myBooksViewPager2)
         myViewPagerAdapter = MyViewPagerAdapter(this, sampleBookList);
+
         viewPager2.setAdapter(myViewPagerAdapter)
 
         for (i in 0 until tabLayout.tabCount) {
@@ -70,6 +74,7 @@ class MyBooksFragment : Fragment() {
             p.setMargins(10, 0, 10, 0)
             tab.requestLayout()
         }
+
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -191,4 +196,6 @@ class MyBooksFragment : Fragment() {
             R.drawable.sampleauthor1
         )
     }
+
+
 }
