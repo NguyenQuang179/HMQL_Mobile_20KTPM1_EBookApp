@@ -64,6 +64,14 @@ class MyBookAdapter(private val books : List<UserBook>)
                 .load(book.cover)
                 .into(imgTV)
         };
+        if (book.liked == true) {
+            holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_solid)
+            holder.bookmarkImgBtn.tag = "bookmarked"
+        }
+        else{
+            holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_regular)
+            holder.bookmarkImgBtn.tag = "bookmark"
+        }
         //set on click listener for a button in a recycler View item that change into another image on click
         //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
         holder.bookmarkImgBtn.setOnClickListener {
