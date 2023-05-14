@@ -11,6 +11,9 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import com.google.android.material.slider.RangeSlider
 import com.google.android.material.slider.Slider
 
 // TODO: Rename parameter arguments, choose names that match
@@ -89,6 +92,18 @@ class SettingFragment : Fragment() {
         }
 
         val fontSizeSlider = view.findViewById<Slider>(R.id.settingFontsizeSB)
+        val curFontSizeTv = view.findViewById<TextView>(R.id.fontSizeTv)
+        fontSizeSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+                // Responds to when slider's touch event is being started
+                curFontSizeTv.setText(fontSizeSlider.value.toInt().toString())
+            }
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                // Responds to when slider's touch event is being stopped
+                curFontSizeTv.setText(fontSizeSlider.value.toInt().toString())
+            }
+        })
 
         val themeBtn = view.findViewById<Switch>(R.id.settingThemeSwitch)
         themeBtn.isChecked = isDark
@@ -98,10 +113,15 @@ class SettingFragment : Fragment() {
 
         val saveBtn = view.findViewById<Button>(R.id.settingSaveBtn)
         saveBtn.setOnClickListener(){
+            val fontSizeSlider = view.findViewById<Slider>(R.id.settingFontsizeSB)
+            var fontSize : Float = fontSizeSlider.value.toFloat()
+            setFragmentResult("settingResult",
+                bundleOf("fontSize" to fontSize,
+                            "fontFamily" to playfairDisplayBtn.typeface.toString()))
 //            Font Family
-            Toast.makeText(requireContext(), fontFamily.toString(), Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), fontFamily.toString(), Toast.LENGTH_SHORT).show()
 //            Font Size
-            Toast.makeText(requireContext(), fontSizeSlider.value.toString(), Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), fontSizeSlider.value.toString(), Toast.LENGTH_SHORT).show()
 //            Pop Back Stack & Change Mode
             requireActivity().supportFragmentManager.popBackStack()
             if(isDark) {

@@ -102,14 +102,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         init();
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .setTheme(R.style.LoginTheme)
-                .build(),
-            AUTH_REQUEST_CODE
-        )
+//        startActivityForResult(
+//            AuthUI.getInstance()
+//                .createSignInIntentBuilder()
+//                .setAvailableProviders(providers)
+//                .setTheme(R.style.LoginTheme)
+//                .build(),
+//            AUTH_REQUEST_CODE
+//        )
 //        for (i in 1..10){
 //            val listOfBook = arrayListOf<String>((i+1).toString(),(i+2).toString(),(i+3).toString(),(i+4).toString())
 //            val newAuthor = Author("Tac gia $i", "$i","Mo ta tac gia","img",listOfBook)
