@@ -46,12 +46,21 @@ class MyBooks_DownloadFragment() : Fragment() {
         return inflater.inflate(R.layout.fragment_my_books__download, container, false)
     }
 
+    fun getDownloadedBooks(user: User): List<UserBook> {
+        val books = mutableListOf<UserBook>()
+        user.listOfBooks.forEach {
+            if (it.downloaded == true) {
+                books.add(it)
+            }
+        }
+        return books
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
         val user = userViewModel.user
         if (user != null) {
-            books = user.listOfBooks
+            books = getDownloadedBooks(user)
         }
         val myBookRv = view.findViewById<RecyclerView>(R.id.downloadBooksRecyclerView)
         val myBookRvAdapter = MyBookAdapter(books)
