@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class MyRecyclerViewForRecentSearchs(
-    private val listOfSearch: Array<String>
+    private val listOfSearch: ArrayList<String>
 ) : RecyclerView.Adapter<MyRecyclerViewForRecentSearchs.ViewHolder>() {
     var onButtonClick: ((String) -> Unit)? = null
     var onItemClick: ((String) -> Unit)? = null

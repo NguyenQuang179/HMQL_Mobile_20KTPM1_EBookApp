@@ -8,7 +8,10 @@
 <!--        <item name="android:windowBackground">@drawable/rounded_corner</item>-->
         <item name="android:textColor">@color/black</item>
         <item name="android:background">@color/lightBackground</item>
-<!--        <item name="android:colorBackground">@color/</item>-->
+
+<!--        <item name="logo">@android:drawable/ic_menu_gallery</item>-->
+
+        <!--        <item name="android:colorBackground">@color/</item>-->
 <!--        <item name="android:colorForeground">@color/white</item>-->
 
         <item name="android:colorPrimary">@color/lightPrimary</item>

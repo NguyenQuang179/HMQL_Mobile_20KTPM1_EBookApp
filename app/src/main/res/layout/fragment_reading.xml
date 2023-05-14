@@ -5,15 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/backgroundColor"
-    tools:context=".ReadingFragment">
+    tools:context=".ReadingFragment"
+    >
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pagesRv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="84dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:descendantFocusability="afterDescendants"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout3"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="50dp"
         android:backgroundTint="?attr/backgroundColor"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintBottom_toTopOf="@+id/pagesRv"
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
@@ -161,49 +174,38 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="52dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="84dp"
-        android:contentDescription="Content Section"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+<!--    <ScrollView-->
+<!--        android:id="@+id/scrollView2"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginStart="24dp"-->
+<!--        android:layout_marginTop="52dp"-->
+<!--        android:layout_marginEnd="24dp"-->
+<!--        android:layout_marginBottom="84dp"-->
+<!--        android:contentDescription="Content Section"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.5"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
 
-        <TextView
-            android:id="@+id/pdfContentTv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/backgroundColor"
-            android:fontFamily="@font/inter_regular"
-            android:gravity="fill_horizontal"
-            android:justificationMode="inter_word"
-            android:lineSpacingExtra="8sp"
-            android:textColor="?attr/colorOnBackground"
-            android:textIsSelectable="true"
-            android:textSize="16sp"
-            android:textStyle="normal"
-            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+<!--        <TextView-->
+<!--            android:id="@+id/pdfContentTv"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:background="?attr/backgroundColor"-->
+<!--            android:fontFamily="@font/inter_regular"-->
+<!--            android:gravity="fill_horizontal"-->
+<!--            android:justificationMode="inter_word"-->
+<!--            android:lineSpacingExtra="8sp"-->
+<!--            android:textColor="?attr/colorOnBackground"-->
+<!--            android:textIsSelectable="true"-->
+<!--            android:textSize="16sp"-->
+<!--            android:textStyle="normal"-->
+<!--            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />-->
 
-    </ScrollView>
+<!--    </ScrollView>-->
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pagesRv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="84dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
 
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfview"
@@ -211,7 +213,6 @@
         android:layout_height="0dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="84dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

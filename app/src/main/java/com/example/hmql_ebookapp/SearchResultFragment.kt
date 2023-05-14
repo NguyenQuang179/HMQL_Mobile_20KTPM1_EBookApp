@@ -64,8 +64,6 @@ class SearchResultFragment : Fragment() {
 
         var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
         autoCompleteTV.setText(searchString);
-//                adapter.filter.filter(searchString)
-//                adapter.notifyDataSetChanged();
 
         autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
@@ -111,6 +109,8 @@ class SearchResultFragment : Fragment() {
                     Log.d("Books size", "Number of books: ${books.size}")
                     adapter = MyFilteredBookAdapter(books)
                     customRecyclerView!!.adapter = adapter
+                    adapter.filter.filter(searchString)
+                    adapter.notifyDataSetChanged();
                     val layoutManager = LinearLayoutManager(context)
                     customRecyclerView.layoutManager = layoutManager
                     val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,

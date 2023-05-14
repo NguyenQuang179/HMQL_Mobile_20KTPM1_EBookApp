@@ -3,7 +3,7 @@ package com.example.hmql_ebookapp
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.media.Image
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,14 +11,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.firebase.database.*
+import java.time.LocalDateTime
 
 @SuppressLint("NotifyDataSetChanged")
 @Deprecated("Deprecated in Java")
@@ -34,7 +40,24 @@ private const val ARG_PARAM2 = "param2"
  * Use the [BookIntroductionFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-
+fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User's list of books
+    if (user != null) {
+        val bookList = user.listOfBooks.toMutableList()
+        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+        if (existingBookIndex >= 0) {
+            // If the book already exists in the list, remove it
+            bookList.removeAt(existingBookIndex)
+        }
+        // Add the book to the beginning of the list
+        bookList.add(0, UserBook(book.bookID, book.title, "status", 1, true, false))
+        // Update the user's list of books in Firebase
+        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+        val userRef = user.userID?.let { usersRef.child(it) }
+        if (userRef != null) {
+            userRef.child("listOfBooks").setValue(bookList)
+        }
+    }
+}
 class BookIntroductionFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -45,107 +68,115 @@ class BookIntroductionFragment : Fragment() {
     lateinit var authorNameList : Array<String>
     lateinit var bookImgIdList : Array<Int>
 
+    lateinit var bookID: String;
+    private var bookRelated = ArrayList<Book>()
+    private var recommendationAdapter = RecommendationAdapter(bookRelated)
+    private lateinit var RecommendationBooksRV: RecyclerView
+    private lateinit var data: Book
+
+    private lateinit var adapter_review: ReviewAdapterClass
     private fun sampleDataInit() {
-        // Favourite Books
-        sampleBookList = arrayListOf<SampleBook>()
-
-        bookNameList = arrayOf(
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S...",
-            "Merry Christmas",
-            "Little Blue Truck's Halloween",
-            "Born a crime: Stories from a S..."
-        )
-
-        authorNameList = arrayOf(
-            "Alice Schertle, Jill McElmurry",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory",
-            "Alice Schertle, Jill McElmurry",
-            "Alice Schertle",
-            "Jill McElmurry",
-            "Bret Bais",
-            "Liana Moriatory"
-        )
-
-        bookImgIdList = arrayOf(
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1,
-            R.drawable.favbookimg2,
-            R.drawable.favbookimg3,
-            R.drawable.favbookimg1
-        )
-
-        for(i in bookNameList.indices) {
-            val sampleBook = SampleBook(bookNameList[i], authorNameList[i], bookImgIdList[i])
-            sampleBookList.add(sampleBook)
-        }
+        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book/${bookID}")
+        ref2.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    data = snapshot.getValue(Book::class.java)!!
+                    val bookTV = view?.findViewById<TextView>(R.id.bookTV);
+                    bookTV!!.setText(data!!.title)
+                    val authorTV = view?.findViewById<TextView>(R.id.authorTV);
+                    authorTV!!.setText(data!!.author)
+                    val ratingTV = view?.findViewById<TextView>(R.id.RatingTV);
+                    ratingTV!!.setText(data!!.averageStar.toString())
+                    val Synopsis_detailTV = view?.findViewById<TextView>(R.id.Synopsis_detailTV);
+                    Synopsis_detailTV!!.setText(data!!.description)
+                    val bookIV = view?.findViewById<ImageView>(R.id.bookIV);
+                    if (bookIV != null) {
+                        Glide.with(requireContext())
+                            .load(data.cover)
+                            .into(bookIV)
+                    };
+                    if (data.reviews.size > 0){
+                        reviewList = data.reviews as ArrayList<Review>
+                        Log.i("review", "${reviewList.size}")
+                        adapter_review = ReviewAdapterClass(reviewList)
+                        ReviewRV.adapter = adapter_review
+                    }
+                    if (data.categories.size > 0){
+                        categoryList = data.categories as ArrayList<Category>
+                        adapterTags = TagsAdapterClass(categoryList)
+                        TagsRV.adapter = adapterTags
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
-    private  lateinit var sampleReviewList : ArrayList<ReviewViewModel>
+    private fun recommendDataInit() {
+        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+        ref2.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val book = child.getValue(Book::class.java)
+                        if (book!!.bookID != data.bookID)
+                        {
+                            if (book!!.categories.size > 0)
+                            {
+                                if (data.categories.intersect(book.categories).isNotEmpty()){
+                                    book?.let { bookRelated.add(it) }
+                                }
+                                else if (data.author == book.author){
+                                    book?.let { bookRelated.add(it) }
+                                }
+                                else{
+
+                                }
+                            }
+                        }
+
+                    }
+                    Log.d("Books related size", "Number of books: ${bookRelated.size}")
+                    bookRelated.sortDescending();
+                    if (bookRelated.size > 5) bookRelated = ArrayList(bookRelated.subList(0, 5))
+                    recommendationAdapter = RecommendationAdapter(bookRelated)
+                    RecommendationBooksRV.layoutManager =
+                        LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    RecommendationBooksRV.adapter = recommendationAdapter
+                    recommendationAdapter.onItemClick = { book ->
+                        Log.i("In", "Chuyen trang")
+                        val bundle = Bundle()
+                        bundle.putString("bookID", book.bookID)
+
+                        val fragment = BookIntroductionFragment()
+                        fragment.arguments = bundle
+
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragment_container_view, fragment)
+                            setReorderingAllowed(true)
+                            addToBackStack("BookIntroductionFragment")
+                        }
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    private var reviewList = ArrayList<Review>()
     lateinit var reviewerImageList : Array<Int>
     lateinit var reviewerNameList : Array<String>
     lateinit var reviewRatingValueList : Array<Float>
     lateinit var reviewRateList : Array<String>
     lateinit var reviewTextList : Array<String>
     lateinit var ReviewRV : RecyclerView
-    private fun sampleReviewInit() {
-        // Favourite Books
-        sampleReviewList = arrayListOf<ReviewViewModel>()
-
-
-        reviewerNameList = arrayOf(
-            "Luu Hoang Minh",
-            "Truong Gia Huy",
-            "Nguyen Ngoc Quang",
-            "Ha Tuan Lam"
-        )
-
-        reviewerImageList = arrayOf(
-            R.drawable.sampleauthor1,
-            R.drawable.sampleauthor2,
-            R.drawable.sampleauthor3,
-            R.drawable.sampleauthor1
-        )
-
-        reviewRatingValueList = arrayOf(
-            5.0f,
-            4.0f,
-            2.5f,
-            1.5f
-        )
-
-        reviewRateList = arrayOf(
-            "5.0",
-            "4.0",
-            "2.5",
-            "1.5"
-        )
-
-        reviewTextList = arrayOf(
-            "This book is amazing",
-            "This book is shit",
-            "This book change my life, I am now a millionaire",
-            "This book makes me change my way of life"
-        )
-
-        for(i in reviewerNameList.indices) {
-            val sampleReview = ReviewViewModel(reviewerImageList[i], reviewerNameList[i], reviewRatingValueList[i], reviewRateList[i],reviewTextList[i] )
-            sampleReviewList.add(sampleReview)
-        }
-    }
+    lateinit var TagsRV: RecyclerView
+    lateinit var adapterTags: TagsAdapterClass
+    private var categoryList = ArrayList<Category>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -167,12 +198,16 @@ class BookIntroductionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bundle = arguments
+        if (bundle != null) {
+            bookID = bundle.getString("bookID").toString()
+            // Sử dụng giá trị dữ liệu trong SearchResultFragment
+        }
         sampleDataInit()
-        sampleReviewInit()
-
-        val TagsRV = view.findViewById<RecyclerView>(R.id.TagsRV)
+        recommendDataInit()
+        TagsRV = view.findViewById<RecyclerView>(R.id.TagsRV)
         val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
-        val RecommendationBooksRV = view.findViewById<RecyclerView>(R.id.RecommendationBooksRV)
+        RecommendationBooksRV = view.findViewById<RecyclerView>(R.id.RecommendationBooksRV)
         ReviewRV = view.findViewById<RecyclerView>(R.id.ReviewRV)
 
         val SeeMoreRecBtn = view.findViewById<Button>(R.id.SeeMoreRecBtn)
@@ -205,16 +240,14 @@ class BookIntroductionFragment : Fragment() {
         }
 
         // This will pass the ArrayList to our Adapter
-        val adapter_tags = TagsAdapterClass(data_tags)
         val adapter_chapters = ChapterAdapterClass(data_chapters)
-        val adapter_recommendations = RecommendationAdapter(sampleBookList)
-        val adapter_review = ReviewAdapterClass(sampleReviewList)
+
+        adapter_review = ReviewAdapterClass(reviewList)
 
         // Setting the Adapter with the recyclerview
-        TagsRV.adapter = adapter_tags
         ChaptersRV.adapter = adapter_chapters
-        RecommendationBooksRV.adapter = adapter_recommendations
-        adapter_recommendations.onItemClick = { book ->
+        RecommendationBooksRV.adapter = recommendationAdapter
+        recommendationAdapter.onItemClick = { book ->
             requireActivity().supportFragmentManager.commit {
                 replace<BookIntroductionFragment>(R.id.fragment_container_view)
                 setReorderingAllowed(true)
@@ -243,6 +276,14 @@ class BookIntroductionFragment : Fragment() {
                 replace<ReadingFragment>(R.id.fragment_container_view)
                 setReorderingAllowed(true)
                 addToBackStack("readFragment")
+                // Add To History, if already in history then pop it out and push it to the top
+
+                //set the user info
+                val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+                val user = userViewModel.user
+                addBookToUserList(user, data)
+                //Update user after update
+
             }
         }
 
@@ -262,6 +303,7 @@ class BookIntroductionFragment : Fragment() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -271,9 +313,9 @@ class BookIntroductionFragment : Fragment() {
             Log.d("REVIEW", review_text.toString())
             Log.d("RATING", rating_value.toString())
 
-            val new_review = ReviewViewModel(R.drawable.sampleauthor3, "New User", rating_bar_value.toFloat(), rating_value.toString(), review_text.toString() )
+            val newReview = Review("new ", "New User", rating_value.toString().toInt(), review_text.toString(), LocalDateTime.now().toString() )
 
-            sampleReviewList.add(0, new_review)
+            reviewList.add(0, newReview)
 
             ReviewRV.adapter?.notifyDataSetChanged()
         }

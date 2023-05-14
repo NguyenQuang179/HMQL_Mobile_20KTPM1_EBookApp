@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.text.style.BackgroundColorSpan
 import android.view.*
 import android.widget.TextView
@@ -43,9 +44,17 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
             menu.add(Menu.NONE, 2, Menu.NONE, "Highlight").setOnMenuItemClickListener {
                 val start = extractedTV.selectionStart
                 val end = extractedTV.selectionEnd
-                val highlightStr = SpannableString(extractedTV.text)
-                highlightStr.setSpan(BackgroundColorSpan(Color.YELLOW), start, end, 0)
-                extractedTV.text = highlightStr
+                if (start != -1 && end != -1) {
+                    val selectedText = extractedTV.text.subSequence(start, end)
+                    val hightlightStr = SpannableStringBuilder(extractedTV.text)
+                    hightlightStr.setSpan(
+                        BackgroundColorSpan(Color.YELLOW),
+                        start,
+                        end,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    extractedTV.text = hightlightStr
+                }
                 mode.finish()
                 true
             }
@@ -58,6 +67,7 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
                     val spannableStringBuilder = SpannableStringBuilder(extractedTV.text)
                     spannableStringBuilder.setSpan(NoteClickableSpan("lala"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     extractedTV.text = spannableStringBuilder
+
                 }
                 mode.finish()
                 true
@@ -102,68 +112,12 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
         pageTv.setText(page)
         pageTv.textSize = 20.0F
         extractedTV = holder.pageTv
-        holder.pageTv.customSelectionActionModeCallback = object : ActionMode.Callback {
-            // init the Translator class:
-            val translator = Translator()
-            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        extractedTV.setMovementMethod(LinkMovementMethod.getInstance());
+        extractedTV.isClickable = true
+        extractedTV.isFocusable = true
+        extractedTV.isFocusableInTouchMode = true
+        extractedTV.customSelectionActionModeCallback = mActionModeCallback
 
-                menu.add(Menu.NONE, 1, Menu.NONE, "Translate").setOnMenuItemClickListener {
-                    val start = extractedTV.selectionStart
-                    val end = extractedTV.selectionEnd
-                    val selectedText = extractedTV.text?.substring(start, end)
-                    // perform translation logic here
-                    //Toast.makeText(this@ReadingScreen, "Translate: $selectedText", Toast.LENGTH_SHORT).show()
-                    if (selectedText != null) {
-                        val translationCompleteListener = extractedTV.context.let { it1 ->
-                            MyTranslationCompleteListener(
-                                it1
-                            )
-                        }
-                        if (translationCompleteListener != null) {
-                            translator.translateText(selectedText, TranslateLanguage.VIETNAMESE, translationCompleteListener)
-                        }
-                    }
-                    mode.finish()
-                    true
-                }
-                menu.add(Menu.NONE, 2, Menu.NONE, "Highlight").setOnMenuItemClickListener {
-                    val start = extractedTV.selectionStart
-                    val end = extractedTV.selectionEnd
-                    val highlightStr = SpannableString(extractedTV.text)
-                    highlightStr.setSpan(BackgroundColorSpan(Color.YELLOW), start, end, 0)
-                    extractedTV.text = highlightStr
-                    mode.finish()
-                    true
-                }
-                menu.add(Menu.NONE, 3, Menu.NONE, "Add Notes").setOnMenuItemClickListener {
-                    val start = extractedTV.selectionStart
-                    val end = extractedTV.selectionEnd
-                    if (start != -1 && end != -1) {
-                        val selectedText = extractedTV.text.subSequence(start, end)
-                        val noteText = "This is a note for the selected text."
-                        val spannableStringBuilder = SpannableStringBuilder(extractedTV.text)
-                        spannableStringBuilder.setSpan(NoteClickableSpan("lala"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                        extractedTV.text = spannableStringBuilder
-                    }
-                    mode.finish()
-                    true
-                }
-                menu.add(Menu.NONE, 4, Menu.NONE, "Read Outloud").setOnMenuItemClickListener {
-                    mode.finish()
-                    true
-                }
-                return true
-            }
-
-            override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-                return false
-            }
-
-            override fun onDestroyActionMode(mode: ActionMode) {}
-            override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-                return false
-            }
-        }
     }
 
     override fun getItemCount(): Int = pages.size

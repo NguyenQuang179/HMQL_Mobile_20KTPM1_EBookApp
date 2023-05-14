@@ -37,11 +37,7 @@ class MyBooks_HistoryFragment() : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
-        val user = userViewModel.user
-        if (user != null) {
-            books = user.listOfBooks
-        }
+
     }
 
     override fun onCreateView(
@@ -54,6 +50,11 @@ class MyBooks_HistoryFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        val user = userViewModel.user
+        if (user != null) {
+            books = user.listOfBooks
+        }
         val myBookRv = view.findViewById<RecyclerView>(R.id.historyBooksRecyclerView)
         val myBookRvAdapter = MyBookAdapter(books)
 

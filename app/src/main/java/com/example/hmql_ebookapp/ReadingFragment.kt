@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.text.*
 import android.text.style.BackgroundColorSpan
 import android.text.style.ClickableSpan
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -56,6 +57,8 @@ private const val ARG_PARAM2 = "param2"
 class NoteClickableSpan(var noteText: String) : ClickableSpan() {
 
     override fun onClick(widget: View) {
+        Log.d("NoteClickableSpan", "onClick triggered for text: $noteText")
+
         val popup = PopupWindow(widget.context)
         popup.isFocusable = true
         popup.isTouchable = true
