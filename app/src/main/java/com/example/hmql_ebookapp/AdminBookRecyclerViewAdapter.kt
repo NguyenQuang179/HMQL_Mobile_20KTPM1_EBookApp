@@ -8,11 +8,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.firebase.database.FirebaseDatabase
 
-class AdminBookRecyclerViewAdapter(private val books : ArrayList<SampleBook>)
+class AdminBookRecyclerViewAdapter(private val books : ArrayList<Book>)
     : RecyclerView.Adapter<AdminBookRecyclerViewAdapter.ViewHolder>() {
 
-    var onItemClick: ((SampleBook) -> Unit)? = null
+    var onItemClick: ((Book) -> Unit)? = null
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
         val bookNameTv : TextView = listItemView.findViewById<TextView>(R.id.AdminBookNameTextView)!!
@@ -32,24 +34,36 @@ class AdminBookRecyclerViewAdapter(private val books : ArrayList<SampleBook>)
     }
 
     override fun onBindViewHolder(holder: AdminBookRecyclerViewAdapter.ViewHolder, position: Int) {
-        val book : SampleBook = books[position]
+        val book : Book = books[position]
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
-        bookNameTv.setText(book.bookName)
+        bookNameTv.setText(book.title)
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(book.authorName)
+        authorNameTv.setText(book.author)
         val bookImgView = holder.bookImgView
-        bookImgView.setImageResource(book.bookImg)
+        Glide.with(holder.bookImgView.context)
+            .load(book.cover)
+            .into(bookImgView);
         val delBtn = holder.delBtn
         val editBtn = holder.editBtn
         //set on click listener for a button in a recycler View item that change into another image on click
         //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
         holder.delBtn.setOnClickListener {
             Toast.makeText(holder.bookNameTv.context, "Delete Clicked On Item " + position, Toast.LENGTH_SHORT).show()
-            books.removeAt(position)
-            this.notifyDataSetChanged()
-            Toast.makeText(holder.bookNameTv.context, books.count().toString(), Toast.LENGTH_SHORT).show()
+            val ref = FirebaseDatabase.getInstance().getReference("book/${books[position].bookID}")
+            ref.removeValue()
+                .addOnSuccessListener {
+                    // Data deleted successfully
+                    books.removeAt(position)
+                    this.notifyDataSetChanged()
+                    Toast.makeText(holder.bookNameTv.context, books.count().toString(), Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    // Handle error
+                    println("Error deleting data: ${it.message}")
+                }
+
         }
 
         holder.editBtn.setOnClickListener {

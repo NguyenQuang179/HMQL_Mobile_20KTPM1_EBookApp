@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         AuthUI.IdpConfig.EmailBuilder().setAllowNewAccounts(true).build(), //Email Builder
             AuthUI.IdpConfig.GoogleBuilder().build(), //Google Builder
             //AuthUI.IdpConfig.FacebookBuilder().build(), //Facebook Builder
-            AuthUI.IdpConfig.PhoneBuilder().build(), //Phone Builder
+            //AuthUI.IdpConfig.PhoneBuilder().build(), //Phone Builder
 
         )
         firebaseAuth = FirebaseAuth.getInstance()
@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
                         .setTheme(R.style.LoginTheme)
+                        .setLogo(R.drawable.logo)
                         .build(), AUTH_REQUEST_CODE
                 )
             }
@@ -70,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
                         .setTheme(R.style.LoginTheme)
+                        .setLogo(R.drawable.logo)
                         .build(),
                     AUTH_REQUEST_CODE
                 )
@@ -162,13 +164,14 @@ class MainActivity : AppCompatActivity() {
 //
 //        })
 
-//        startActivityForResult(
-//            AuthUI.getInstance()
-//                .createSignInIntentBuilder()
-//                .setAvailableProviders(providers)
-//                .setTheme(R.style.LoginTheme)
-//                .build(), AUTH_REQUEST_CODE
-//        )
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTheme(R.style.LoginTheme)
+                .setLogo(R.drawable.logo)
+                .build(), AUTH_REQUEST_CODE
+        )
 
 
         supportFragmentManager.commit {
@@ -228,6 +231,10 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == AUTH_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // User successfully signed in
+                //Add a check for user isAdmin if yes launch Activity
+
+
+
                 val user = FirebaseAuth.getInstance().currentUser
                 Toast.makeText(this@MainActivity, "Welcome ${user?.displayName}", Toast.LENGTH_SHORT).show()
 
@@ -239,8 +246,19 @@ class MainActivity : AppCompatActivity() {
                 val name = user?.displayName
                 val email = user?.email
                 val userRef = usersRef.child(uid.toString())
+                userRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val user = snapshot.getValue(User::class.java)
+                        userViewModel.user = user
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle errors here
+                    }
+                })
                 userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        Log.e("Firebase", "onDataChange")
                         if (!dataSnapshot.exists()) {
                             // Get a reference to the current user's list of books
                             val userBooksRef = usersRef.child(uid.toString()).child("listOfBooks")
@@ -254,8 +272,9 @@ class MainActivity : AppCompatActivity() {
                             newList.add(book)
                             //userRef.child("listOfBooks").setValue(newList)
 
-                            val newUser = User(uid, email, name, newList)
+                            val newUser = User(false,uid, email, name, newList)
                             userRef.setValue(newUser)
+
                         }
 
                         // update the fragment_account_information
@@ -263,14 +282,41 @@ class MainActivity : AppCompatActivity() {
                         val user = dataSnapshot.getValue(User::class.java)
 
                         userViewModel.user = user
-                        // Reload current fragment
-                        // Reload current fragment
+                        if (user != null) {
+                            if(user.admin == true){
+                                startActivity(Intent(this@MainActivity, AdminMainActivity::class.java))
+                            }
 
-                        //introUserTV.text = "Hi ${user?.name}"
+                            else{
+                                // Reload to home fragment
+                                supportFragmentManager.commit {
+                                    replace<HomeFragment>(R.id.fragment_container_view)
+                                    setReorderingAllowed(true)
+                                    addToBackStack("home") // name can be null
+                                }
+                                //set nav bar
+                                val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
+                                navBar.selectedItemId = R.id.item_1
+
+                                //introUserTV.text = "Hi ${user?.name}"
+                            }
+                        }
+
+
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
                         Log.e("TAG", "onCancelled", databaseError.toException())
+                    }
+                })
+                userRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val user = snapshot.getValue(User::class.java)
+                        userViewModel.user = user
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle errors here
                     }
                 })
                 //Get current user data from firebase and
