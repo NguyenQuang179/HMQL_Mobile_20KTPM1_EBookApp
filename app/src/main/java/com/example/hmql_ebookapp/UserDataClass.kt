@@ -16,8 +16,10 @@ data class UserBook(
 )
 
 data class User(
+    val admin: Boolean? = null,
     val userID: String? = null,
     val email: String? = null,
     val name: String? = null,
     val listOfBooks: List<UserBook> = emptyList()
+
 )
