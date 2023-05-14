@@ -78,13 +78,13 @@ class HomeFragment : Fragment() {
         val favBookMoreBtn = view.findViewById<Button>(R.id.favouriteBooksMoreBtn)
         val popularAuthorMoreBtn = view.findViewById<Button>(R.id.popularAuthorsMoreBtn)
 
-        favBookRvAdapter.onItemClick = { book ->
-            requireActivity().supportFragmentManager.commit {
-                replace<BookIntroductionFragment>(R.id.fragment_container_view)
-                setReorderingAllowed(true)
-                addToBackStack("bookIntroductionFragment") // name can be null
-            }
-        }
+//        favBookRvAdapter.onItemClick = { book ->
+//            requireActivity().supportFragmentManager.commit {
+//                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+//                setReorderingAllowed(true)
+//                addToBackStack("bookIntroductionFragment") // name can be null
+//            }
+//        }
 
         popularAuthorRvAdapter.onItemClick = { author ->
             requireActivity().supportFragmentManager.commit {

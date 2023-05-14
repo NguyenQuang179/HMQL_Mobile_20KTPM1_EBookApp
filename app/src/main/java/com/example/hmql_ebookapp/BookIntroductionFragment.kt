@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.database.*
 import java.time.LocalDateTime
+import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")
 @Deprecated("Deprecated in Java")
@@ -67,6 +68,63 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
         }
     }
 }
+
+fun editFavoriteStatus(user: User?, book: Book, favorite_status: Boolean){
+    if(user != null){
+        val bookList = user.listOfBooks.toMutableList()
+        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+        val book_in_list = bookList[existingBookIndex]
+
+        //Update the favorite status
+        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded)
+
+        //udpate on database
+        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+        val userRef = user.userID?.let { usersRef.child(it) }
+        if (userRef != null) {
+            userRef.child("listOfBooks").setValue(bookList)
+        }
+    }
+}
+
+fun editDownloadedStatus(user: User?, book: Book, downloaded_status: Boolean){
+    if(user != null){
+        val bookList = user.listOfBooks.toMutableList()
+        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+        val book_in_list = bookList[existingBookIndex]
+
+        //Update the download status
+        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status)
+
+        //udpate on database
+        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+        val userRef = user.userID?.let { usersRef.child(it) }
+        if (userRef != null) {
+            userRef.child("listOfBooks").setValue(bookList)
+        }
+    }
+}
+
+fun addReviewTsoBookList(user: User?, book: Book) { //Function to add Book to User's list of books
+    if (user != null) {
+        val bookList = user.listOfBooks.toMutableList()
+        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+        if (existingBookIndex >= 0) {
+            // If the book already exists in the list, remove it
+            bookList.removeAt(existingBookIndex)
+        }
+        // Add the book to the beginning of the list
+        bookList.add(0, UserBook(book.bookID, book.title, "status", 1, true, false))
+        // Update the user's list of books in Firebase
+        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+        val userRef = user.userID?.let { usersRef.child(it) }
+        if (userRef != null) {
+            userRef.child("listOfBooks").setValue(bookList)
+        }
+    }
+}
+
+@Suppress("DEPRECATION")
 class BookIntroductionFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -190,7 +248,9 @@ class BookIntroductionFragment : Fragment() {
     private var categoryList = ArrayList<Category>()
 
     lateinit var bookPDFLink : String
-    lateinit var bookFavoriteStatus : String
+
+    lateinit var userViewModel : UserViewModel
+    lateinit var user : User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -214,20 +274,21 @@ class BookIntroductionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var bookFavouriteStatus : Boolean
+        var bookDownloadedStatus : Boolean
         val bundle = arguments
+
         if (bundle != null) {
             bookID = bundle.getString("bookID").toString()
             // Sử dụng giá trị dữ liệu trong SearchResultFragment
         }
-
         //set the user info
-        val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
-        val user = userViewModel.user
-
-
+        userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        user = userViewModel.user!!
 
         sampleDataInit()
         recommendDataInit()
+
         TagsRV = view.findViewById<RecyclerView>(R.id.TagsRV)
 //        val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
         RecommendationBooksRV = view.findViewById<RecyclerView>(R.id.RecommendationBooksRV)
@@ -242,21 +303,25 @@ class BookIntroductionFragment : Fragment() {
         val LikedButton = view.findViewById<ImageButton>(R.id.LikeBtn)
         val DownloadButton = view.findViewById<ImageButton>(R.id.downloadBtn)
 
-        for (book in user?.listOfBooks!!) {
-
+        for (book in user.listOfBooks) {
             if(book.bookID == bookID){
-
                 if(book.liked == true){
 //                    Toast.makeText(this.context,"${book.bookName} is liked",Toast.LENGTH_SHORT).show()
                     LikedButton.setImageResource(R.drawable.bookmark_solid)
                     LikedButton.tag = "bookmarked"
+                    bookFavouriteStatus = true
                 }
                 else {
 //                    Toast.makeText(this.context,"${book.bookName} is not liked",Toast.LENGTH_SHORT).show()
+                    LikedButton.setImageResource(R.drawable.bookmark_regular)
+                    LikedButton.tag = "bookmark"
+                    bookFavouriteStatus = false
                 }
-
+                bookDownloadedStatus = book.downloaded == true
             }
         }
+
+
 
         // this creates a vertical layout Manager
         TagsRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
@@ -304,13 +369,18 @@ class BookIntroductionFragment : Fragment() {
         }
 
         LikedButton.setOnClickListener {
+
             if (LikedButton.tag == "bookmark") {
                 LikedButton.setImageResource(R.drawable.bookmark_solid)
                 LikedButton.tag = "bookmarked"
+                bookFavouriteStatus = true
             } else {
                 LikedButton.setImageResource(R.drawable.bookmark_regular)
                 LikedButton.tag = "bookmark"
+                bookFavouriteStatus = false
             }
+
+            editFavoriteStatus(user, data, bookFavouriteStatus)
         }
 
         ReadButton.setOnClickListener {
@@ -330,7 +400,7 @@ class BookIntroductionFragment : Fragment() {
         }
 
         DownloadButton.setOnClickListener{
-            Toast.makeText(this.context, "PDF Link $bookPDFLink", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this.context, "PDF Link $bookPDFLink", Toast.LENGTH_SHORT).show()
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 if (requireActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_DENIED){
@@ -341,11 +411,15 @@ class BookIntroductionFragment : Fragment() {
                 }
                 else{
                     //permission already granted, perform download
+                    bookDownloadedStatus = true
+                    editDownloadedStatus(user, data, bookDownloadedStatus)
                     startDownloading()
                 }
             }
             else{
                 //system os is less than marshmallow, runtime permission not required, perform downlaod
+                bookDownloadedStatus = true
+                editDownloadedStatus(user, data, bookDownloadedStatus)
                 startDownloading()
             }
         }
@@ -363,9 +437,8 @@ class BookIntroductionFragment : Fragment() {
 
     private fun startDownloading() {
 
-        //get text/url from edit text
+        //get text/url
         val url : String = bookPDFLink
-//        url = urlEt.text.toString() TODO("Get book link to download")
 
         //download request
         val request = DownloadManager.Request(Uri.parse(url))
@@ -413,7 +486,7 @@ class BookIntroductionFragment : Fragment() {
             Log.d("REVIEW", review_text.toString())
             Log.d("RATING", rating_value.toString())
 
-            val newReview = Review("new ", "New User", rating_value.toString().toInt(), review_text.toString(), LocalDateTime.now().toString() )
+            val newReview = Review(user.name.toString(), "New User", rating_bar_value.toString().toInt(), review_text.toString(), LocalDateTime.now().toString() )
 
             reviewList.add(0, newReview)
 
