@@ -2,9 +2,14 @@ package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +21,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -25,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.database.*
 import java.time.LocalDateTime
+import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")
 @Deprecated("Deprecated in Java")
@@ -40,6 +48,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [BookIntroductionFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
+@Suppress("DEPRECATION")
 fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User's list of books
     if (user != null) {
         val bookList = user.listOfBooks.toMutableList()
@@ -49,7 +59,7 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
             bookList.removeAt(existingBookIndex)
         }
         // Add the book to the beginning of the list
-        bookList.add(0, UserBook(book.bookID, book.title, "status", 1, true, false))
+        bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, false, 3.5, book.cover, book.author))
         // Update the user's list of books in Firebase
         val usersRef = FirebaseDatabase.getInstance().getReference("Users")
         val userRef = user.userID?.let { usersRef.child(it) }
@@ -58,6 +68,74 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
         }
     }
 }
+
+fun editFavoriteStatus(user: User?, book: Book, favorite_status: Boolean){
+    if(user != null){
+        val bookList = user.listOfBooks.toMutableList()
+        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+        if(existingBookIndex > 0){
+            val book_in_list = bookList[existingBookIndex]
+
+            //Update the favorite status
+            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded, 3.5, book.cover, book.author)
+
+        }
+        else {
+            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, favorite_status, false, 3.5, book.cover, book.author))
+
+        }
+
+        //udpate on database
+        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+        val userRef = user.userID?.let { usersRef.child(it) }
+        if (userRef != null) {
+            userRef.child("listOfBooks").setValue(bookList)
+        }
+    }
+}
+
+fun editDownloadedStatus(user: User?, book: Book, downloaded_status: Boolean){
+    if(user != null){
+        val bookList = user.listOfBooks.toMutableList()
+        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+//        val book_in_list = bookList[existingBookIndex]
+        if(existingBookIndex > 0){
+            val book_in_list = bookList[existingBookIndex]
+
+            //Update the favorite status
+            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
+        }
+        else {
+            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, downloaded_status, 3.5, book.cover, book.author))
+        }
+
+        //Update the download status
+//        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
+
+        //udpate on database
+        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+        val userRef = user.userID?.let { usersRef.child(it) }
+        if (userRef != null) {
+            userRef.child("listOfBooks").setValue(bookList)
+        }
+    }
+}
+
+fun addReviewToBookList(user: User?, book: Book) { //Function to add Book to User's list of books
+    if (user != null) {
+//        val bookList = user.listOfBooks.toMutableList()
+//        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+//
+//        // Update the user's list of books in Firebase
+//        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+//        val userRef = user.userID?.let { usersRef.child(it) }
+//        if (userRef != null) {
+//            userRef.child("listOfBooks").setValue(bookList)
+//        }
+    }
+}
+
+@Suppress("DEPRECATION")
 class BookIntroductionFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -69,6 +147,7 @@ class BookIntroductionFragment : Fragment() {
     lateinit var bookImgIdList : Array<Int>
 
     lateinit var bookID: String;
+    lateinit var userID: String;
     private var bookRelated = ArrayList<Book>()
     private var recommendationAdapter = RecommendationAdapter(bookRelated)
     private lateinit var RecommendationBooksRV: RecyclerView
@@ -106,6 +185,8 @@ class BookIntroductionFragment : Fragment() {
                         adapterTags = TagsAdapterClass(categoryList)
                         TagsRV.adapter = adapterTags
                     }
+                    bookPDFLink = data.pdf
+
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -113,7 +194,6 @@ class BookIntroductionFragment : Fragment() {
             }
         })
     }
-
     private fun recommendDataInit() {
         val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
         ref2.addValueEventListener(object : ValueEventListener {
@@ -177,7 +257,12 @@ class BookIntroductionFragment : Fragment() {
     lateinit var TagsRV: RecyclerView
     lateinit var adapterTags: TagsAdapterClass
     private var categoryList = ArrayList<Category>()
-    
+
+    lateinit var bookPDFLink : String
+
+    lateinit var userViewModel : UserViewModel
+    lateinit var user : User
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -186,27 +271,37 @@ class BookIntroductionFragment : Fragment() {
         }
     }
 
+    val STORAGE_PERMISSION_CODE: Int = 1000
     val REQUEST_CODE = 123
-
+    var thiscontext: Context? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        thiscontext = container!!.context
         return inflater.inflate(R.layout.fragment_book_introduction, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var bookFavouriteStatus : Boolean
+        var bookDownloadedStatus : Boolean
         val bundle = arguments
+
         if (bundle != null) {
             bookID = bundle.getString("bookID").toString()
             // Sử dụng giá trị dữ liệu trong SearchResultFragment
         }
+        //set the user info
+        userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        user = userViewModel.user!!
+
         sampleDataInit()
         recommendDataInit()
+
         TagsRV = view.findViewById<RecyclerView>(R.id.TagsRV)
-        val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
+//        val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
         RecommendationBooksRV = view.findViewById<RecyclerView>(R.id.RecommendationBooksRV)
         ReviewRV = view.findViewById<RecyclerView>(R.id.ReviewRV)
 
@@ -220,15 +315,32 @@ class BookIntroductionFragment : Fragment() {
         val LikedButton = view.findViewById<ImageButton>(R.id.LikeBtn)
         val DownloadButton = view.findViewById<ImageButton>(R.id.downloadBtn)
 
-        LikedButton.tag = "bookmark"
+        for (book in user.listOfBooks) {
+//            Toast.makeText(this.context,"${book.bookName} and ${bookID}",Toast.LENGTH_SHORT).show()
+            if(book.bookID == bookID){
+
+                if(book.liked == true){
+//                    Toast.makeText(this.context,"${book.bookName} is liked",Toast.LENGTH_SHORT).show()
+                    LikedButton.setImageResource(R.drawable.bookmark_solid)
+                    LikedButton.tag = "bookmarked"
+                    bookFavouriteStatus = true
+                }
+                else {
+//                    Toast.makeText(this.context,"${book.bookName} is not liked",Toast.LENGTH_SHORT).show()
+                    LikedButton.setImageResource(R.drawable.bookmark_regular)
+                    LikedButton.tag = "bookmark"
+                    bookFavouriteStatus = false
+                }
+                bookDownloadedStatus = book.downloaded == true
+            }
+        }
+
+
 
         // this creates a vertical layout Manager
-        TagsRV.layoutManager =
-            LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
-        ChaptersRV.layoutManager =
-            LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        RecommendationBooksRV.layoutManager =
-            LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+        TagsRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+//        ChaptersRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        RecommendationBooksRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
         ReviewRV.layoutManager =
             LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
@@ -250,7 +362,7 @@ class BookIntroductionFragment : Fragment() {
         adapter_review = ReviewAdapterClass(reviewList)
 
         // Setting the Adapter with the recyclerview
-        ChaptersRV.adapter = adapter_chapters
+//        ChaptersRV.adapter = adapter_chapters
         RecommendationBooksRV.adapter = recommendationAdapter
         recommendationAdapter.onItemClick = { book ->
             requireActivity().supportFragmentManager.commit {
@@ -263,17 +375,27 @@ class BookIntroductionFragment : Fragment() {
         ReviewRV.adapter = adapter_review
 
         SeeMoreRecBtn!!.setOnClickListener() {
-            Toast.makeText(this.context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this.context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.commit {
+                replace<HomeFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("homeFragment")
+            }
         }
 
         LikedButton.setOnClickListener {
+//            Toast.makeText(this.context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
             if (LikedButton.tag == "bookmark") {
                 LikedButton.setImageResource(R.drawable.bookmark_solid)
                 LikedButton.tag = "bookmarked"
+                bookFavouriteStatus = true
             } else {
                 LikedButton.setImageResource(R.drawable.bookmark_regular)
                 LikedButton.tag = "bookmark"
+                bookFavouriteStatus = false
             }
+
+            editFavoriteStatus(user, data, bookFavouriteStatus)
         }
 
         ReadButton.setOnClickListener {
@@ -298,6 +420,7 @@ class BookIntroductionFragment : Fragment() {
             }
         }
 
+
         ReadAsPDFButton.setOnClickListener {
             val readingFragmentBundle = Bundle()
             readingFragmentBundle.putString("readingMode", "pdf")
@@ -311,8 +434,29 @@ class BookIntroductionFragment : Fragment() {
             }
         }
 
-        DownloadButton.setOnClickListener {
-            Toast.makeText(this.context, "Downloading!", Toast.LENGTH_SHORT).show()
+        DownloadButton.setOnClickListener{
+//            Toast.makeText(this.context, "PDF Link $bookPDFLink", Toast.LENGTH_SHORT).show()
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (requireActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_DENIED){
+                    //permission denied, request it
+
+                    //show popup for runtime permisison
+                    requestPermissions(arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
+                }
+                else{
+                    //permission already granted, perform download
+                    bookDownloadedStatus = true
+                    editDownloadedStatus(user, data, bookDownloadedStatus)
+                    startDownloading()
+                }
+            }
+            else{
+                //system os is less than marshmallow, runtime permission not required, perform downlaod
+                bookDownloadedStatus = true
+                editDownloadedStatus(user, data, bookDownloadedStatus)
+                startDownloading()
+            }
         }
 
         BackButton.setOnClickListener {
@@ -329,6 +473,47 @@ class BookIntroductionFragment : Fragment() {
         }
     }
 
+    private fun startDownloading() {
+
+        //get text/url
+        val url : String = bookPDFLink
+
+        //download request
+        val request = DownloadManager.Request(Uri.parse(url))
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+        request.setTitle("Download")
+        request.setDescription("The file is downloading...")
+
+        request.allowScanningByMediaScanner()
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "${System.currentTimeMillis()}")
+
+        //get download service, and enqueue file
+        val manager = requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        manager.enqueue(request)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+            STORAGE_PERMISSION_CODE -> {
+                if(grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED){
+                    //permission from popup was granted, perform download
+                    startDownloading()
+                }
+                else {
+                    //permission from popup was denied, show error message
+                    Toast.makeText(this.context, "Permission denied", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -339,7 +524,7 @@ class BookIntroductionFragment : Fragment() {
             Log.d("REVIEW", review_text.toString())
             Log.d("RATING", rating_value.toString())
 
-            val newReview = Review("new ", "New User", rating_value.toString().toInt(), review_text.toString(), LocalDateTime.now().toString() )
+            val newReview = Review(user.name.toString(), "New User", rating_bar_value.toString().toInt(), review_text.toString(), LocalDateTime.now().toString() )
 
             reviewList.add(0, newReview)
 

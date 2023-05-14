@@ -9,8 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 
 fun getColor(context: Context, colorResId: Int): Int {
@@ -53,17 +57,38 @@ class MyBookAdapter(private val books : List<UserBook>)
         val bookNameTv = holder.bookNameTv
         bookNameTv.setText(book.bookName)
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText("TB Added")
+        authorNameTv.setText(book.author)
         //val bookImgView = holder.bookImgView
         //bookImgView.setImageResource(book.bookImg)
-
+        val imgTV = holder.bookImgView
+        if (imgTV != null) {
+            Glide.with(imgTV.context)
+                .load(book.cover)
+                .into(imgTV)
+        };
+        if (book.liked == true) {
+            holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_solid)
+            holder.bookmarkImgBtn.tag = "bookmarked"
+        }
+        else{
+            holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_regular)
+            holder.bookmarkImgBtn.tag = "bookmark"
+        }
         //set on click listener for a button in a recycler View item that change into another image on click
         //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
         holder.bookmarkImgBtn.setOnClickListener {
             if (holder.bookmarkImgBtn.tag == "bookmark") {
+                //update the liked status to true in the firebase
+                val databaseRef = FirebaseDatabase.getInstance().getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/listOfBooks/${position}")
+                databaseRef.child("liked").setValue(true)
                 holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_solid)
                 holder.bookmarkImgBtn.tag = "bookmarked"
+
+
             } else {
+                //update the liked status to false in the firebase
+                val databaseRef = FirebaseDatabase.getInstance().getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/listOfBooks/${position}")
+                databaseRef.child("liked").setValue(false)
                 holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_regular)
                 holder.bookmarkImgBtn.tag = "bookmark"
             }

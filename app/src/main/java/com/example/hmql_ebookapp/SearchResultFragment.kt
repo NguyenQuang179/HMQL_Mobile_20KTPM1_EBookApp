@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -109,6 +111,13 @@ class SearchResultFragment : Fragment() {
                     Log.d("Books size", "Number of books: ${books.size}")
                     adapter = MyFilteredBookAdapter(books)
                     customRecyclerView!!.adapter = adapter
+                    adapter.onItemClick = { book ->
+                        requireActivity().supportFragmentManager.commit {
+                            replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                            setReorderingAllowed(true)
+                            addToBackStack("bookIntroductionFragment")
+                        }
+                    }
                     adapter.filter.filter(searchString)
                     adapter.notifyDataSetChanged();
                     val layoutManager = LinearLayoutManager(context)
@@ -116,6 +125,23 @@ class SearchResultFragment : Fragment() {
                     val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
                         DividerItemDecoration.VERTICAL)
                     customRecyclerView.addItemDecoration(itemDecoration)
+                    var tempArray = ArrayList<String>()
+                    tempArray.add("truyen dai")
+                    adapter.setCategoriesToFilter(tempArray)
+                    adapter.onItemClick = { book ->
+                        Log.i("In", "Chuyen trang")
+                        val bundle = Bundle()
+                        bundle.putString("bookID", book.bookID)
+
+                        val fragment = BookIntroductionFragment()
+                        fragment.arguments = bundle
+
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragment_container_view, fragment)
+                            setReorderingAllowed(true)
+                            addToBackStack("BookIntroductionFragment")
+                        }
+                    }
                 }
             }
 

@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,12 +46,21 @@ class MyBooks_DownloadFragment() : Fragment() {
         return inflater.inflate(R.layout.fragment_my_books__download, container, false)
     }
 
+    fun getDownloadedBooks(user: User): List<UserBook> {
+        val books = mutableListOf<UserBook>()
+        user.listOfBooks.forEach {
+            if (it.downloaded == true) {
+                books.add(it)
+            }
+        }
+        return books
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
         val user = userViewModel.user
         if (user != null) {
-            books = user.listOfBooks
+            books = getDownloadedBooks(user)
         }
         val myBookRv = view.findViewById<RecyclerView>(R.id.downloadBooksRecyclerView)
         val myBookRvAdapter = MyBookAdapter(books)
@@ -57,6 +68,14 @@ class MyBooks_DownloadFragment() : Fragment() {
 
         myBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         myBookRv.adapter = myBookRvAdapter
+
+        myBookRvAdapter.onItemClick = { book ->
+            requireActivity().supportFragmentManager.commit {
+                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("bookIntroductionFragment") // name can be null
+            }
+        }
 
     }
     companion object {

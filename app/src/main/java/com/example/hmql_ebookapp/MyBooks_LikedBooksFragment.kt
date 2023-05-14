@@ -50,12 +50,23 @@ class MyBooks_LikedBooksFragment() : Fragment() {
         return inflater.inflate(R.layout.fragment_my_books__liked_books, container, false)
     }
 
+    fun getLikedBooks(user: User): List<UserBook> {
+        val books = mutableListOf<UserBook>()
+        user.listOfBooks.forEach {
+            if (it.liked == true) {
+                books.add(it)
+            }
+        }
+        return books
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
         val user = userViewModel.user
         if (user != null) {
-            books = user.listOfBooks
+            books = getLikedBooks(user)
+
+
         }
         val myBookRv = view.findViewById<RecyclerView>(R.id.likedBooksRecyclerView)
         val myBookRvAdapter = MyBookAdapter(books)
@@ -64,6 +75,13 @@ class MyBooks_LikedBooksFragment() : Fragment() {
         myBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         myBookRv.adapter = myBookRvAdapter
 
+        myBookRvAdapter.onItemClick = { book ->
+            requireActivity().supportFragmentManager.commit {
+                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                setReorderingAllowed(true)
+                addToBackStack("bookIntroductionFragment") // name can be null
+            }
+        }
     }
 
     companion object {

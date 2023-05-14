@@ -261,7 +261,7 @@ class MainActivity : AppCompatActivity() {
                             val userBooksRef = usersRef.child(uid.toString()).child("listOfBooks")
 
                         // Create a new UserBook object
-                            val book = UserBook("bookID", "bookName", "status", 1, true, false)
+                            val book = UserBook("bookID", "bookName", 1, 1, true, false, 1.0, "", "bookAuthor")
 
                              // Add the book to the list of books for the current user
                             //val newList = user?.listOfBooks.orEmpty().toMutableList()
@@ -269,7 +269,7 @@ class MainActivity : AppCompatActivity() {
                             newList.add(book)
                             //userRef.child("listOfBooks").setValue(newList)
 
-                            val newUser = User(uid, email, name, newList)
+                            val newUser = User(false,uid, email, name, newList)
                             userRef.setValue(newUser)
 
                         }
@@ -279,17 +279,27 @@ class MainActivity : AppCompatActivity() {
                         val user = dataSnapshot.getValue(User::class.java)
 
                         userViewModel.user = user
-                        // Reload to home fragment
-                        supportFragmentManager.commit {
-                            replace<HomeFragment>(R.id.fragment_container_view)
-                            setReorderingAllowed(true)
-                            addToBackStack("home") // name can be null
-                        }
-                        //set nav bar
-                        val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
-                        navBar.selectedItemId = R.id.item_1
+                        if (user != null) {
+                            if(user.admin == true){
+                                startActivity(Intent(this@MainActivity, AdminMainActivity::class.java))
+                            }
 
-                        //introUserTV.text = "Hi ${user?.name}"
+                            else{
+                                // Reload to home fragment
+                                supportFragmentManager.commit {
+                                    replace<HomeFragment>(R.id.fragment_container_view)
+                                    setReorderingAllowed(true)
+                                    addToBackStack("home") // name can be null
+                                }
+                                //set nav bar
+                                val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
+                                navBar.selectedItemId = R.id.item_1
+
+                                //introUserTV.text = "Hi ${user?.name}"
+                            }
+                        }
+
+
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
