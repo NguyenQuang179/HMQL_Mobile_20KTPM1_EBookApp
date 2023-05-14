@@ -309,6 +309,7 @@ class BookIntroductionFragment : Fragment() {
         val AddReviewButton = view.findViewById<Button>(R.id.WriteReviewBtn)
 
         val ReadButton = view.findViewById<Button>(R.id.ReadBtn)
+        val ReadAsPDFButton = view.findViewById<Button>(R.id.ReadAsPDFBtn)
 
         val BackButton = view.findViewById<ImageButton>(R.id.backBtn)
         val LikedButton = view.findViewById<ImageButton>(R.id.LikeBtn)
@@ -341,7 +342,8 @@ class BookIntroductionFragment : Fragment() {
 //        ChaptersRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         RecommendationBooksRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
-        ReviewRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        ReviewRV.layoutManager =
+            LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
         val data_tags = ArrayList<TagsViewModel>()
         val data_chapters = ArrayList<ChapterViewModel>()
@@ -397,18 +399,38 @@ class BookIntroductionFragment : Fragment() {
         }
 
         ReadButton.setOnClickListener {
+            val readingFragmentBundle = Bundle()
+            readingFragmentBundle.putString("readingMode", "text")
+            readingFragmentBundle.putString("bookId", data.bookID)
+            val readingFragment = ReadingFragment()
+            readingFragment.arguments = readingFragmentBundle
             requireActivity().supportFragmentManager.commit {
-                replace<ReadingFragment>(R.id.fragment_container_view)
+                replace(R.id.fragment_container_view, readingFragment)
                 setReorderingAllowed(true)
                 addToBackStack("readFragment")
                 // Add To History, if already in history then pop it out and push it to the top
 
                 //set the user info
-                val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+                val userViewModel =
+                    ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
                 val user = userViewModel.user
                 addBookToUserList(user, data)
                 //Update user after update
 
+            }
+        }
+
+
+        ReadAsPDFButton.setOnClickListener {
+            val readingFragmentBundle = Bundle()
+            readingFragmentBundle.putString("readingMode", "pdf")
+            readingFragmentBundle.putString("bookId", data.bookID)
+            val readingFragment = ReadingFragment()
+            readingFragment.arguments = readingFragmentBundle
+            requireActivity().supportFragmentManager.commit {
+                replace(R.id.fragment_container_view, readingFragment)
+                setReorderingAllowed(true)
+                addToBackStack("readFragment")
             }
         }
 
@@ -444,7 +466,10 @@ class BookIntroductionFragment : Fragment() {
         AddReviewButton.setOnClickListener {
             val reviewPopUp = ReviewPopupFragment()
             reviewPopUp.setTargetFragment(this, REQUEST_CODE)
-            reviewPopUp.show((this.context as AppCompatActivity).supportFragmentManager, "reviewPopup")
+            reviewPopUp.show(
+                (this.context as AppCompatActivity).supportFragmentManager,
+                "reviewPopup"
+            )
         }
     }
 

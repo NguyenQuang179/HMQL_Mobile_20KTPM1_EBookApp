@@ -1,8 +1,13 @@
 package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.fonts.FontFamily
+import android.graphics.fonts.FontStyle
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -15,15 +20,22 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.github.barteksc.pdfviewer.PDFView
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
+import com.google.firebase.database.*
 import com.google.mlkit.nl.translate.TranslateLanguage
+import com.itextpdf.text.Font
+import com.itextpdf.text.Font.getFamily
+import com.itextpdf.text.Font.getStyleValue
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import java.io.BufferedInputStream
@@ -89,13 +101,16 @@ class NoteClickableSpan(var noteText: String) : ClickableSpan() {
     }
 }
 
-class RetrievePDFFromURL(pdfView: PDFView, isVertical : Boolean, curPageEt : EditText) : AsyncTask<String, Void, InputStream>() {
+class RetrievePDFFromURL(pdfView: PDFView, isVertical : Boolean, curPageEt : EditText, pages : ArrayList<String>, adapter: PDFReaderAdapter) : AsyncTask<String, Void, InputStream>() {
     // on below line we are creating a variable for our pdf view.
     @SuppressLint("StaticFieldLeak")
     val pdfView: PDFView = pdfView
     val isVertical = isVertical
     val curPageEt = curPageEt
     val curPage = curPageEt.text.toString().toInt() - 1
+    // Text View Element
+    val pages = pages
+    val adapter = adapter
 
     // on below line we are calling our do in background method.
     override fun doInBackground(vararg params: String?): InputStream? {
@@ -132,23 +147,81 @@ class RetrievePDFFromURL(pdfView: PDFView, isVertical : Boolean, curPageEt : Edi
     override fun onPostExecute(result: InputStream?) {
         // on below line we are loading url within our
         // pdf view on below line using input stream.
-        pdfView.fromStream(result)
-            .swipeHorizontal(true)
-            .load()
+
+        // PDF VIEW
         var isNightMode : Boolean = false
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) isNightMode = true
-        pdfView.fromAsset("samplebook.pdf")
+        pdfView.fromStream(result)
             .nightMode(isNightMode)
             .swipeHorizontal(!isVertical)
             .defaultPage(curPage)
             .pageSnap(true)
-            .onLongPress {
-                Toast.makeText(pdfView.context, pdfView.currentPage.toString(), Toast.LENGTH_SHORT).show()
-            }
+//            .onLongPress {
+//                Toast.makeText(pdfView.context, pdfView.currentPage.toString(), Toast.LENGTH_SHORT).show()
+//            }
             .onPageChange(OnPageChangeListener { page, pageCount ->
                 curPageEt.setText((pdfView.currentPage + 1).toString())
             })
             .load()
+    }
+}
+
+class UpdateTextViewFromStream(pages : ArrayList<String>, adapter: PDFReaderAdapter, totalPageTv : TextView) : AsyncTask<String, Void, InputStream>() {
+    // Text View Element
+    val pages = pages
+    val adapter = adapter
+    val totalPageTv = totalPageTv
+    var totalPageValue : Int = 0
+
+    // on below line we are calling our do in background method.
+    override fun doInBackground(vararg params: String?): InputStream? {
+        // on below line we are creating a variable for our input stream.
+        var inputStream: InputStream? = null
+        try {
+            // on below line we are creating an url
+            // for our url which we are passing as a string.
+            val url = URL(params.get(0))
+
+            // on below line we are creating our http url connection.
+            val urlConnection: HttpURLConnection = url.openConnection() as HttpsURLConnection
+
+            // on below line we are checking if the response
+            // is successful with the help of response code
+            // 200 response code means response is successful
+            if (urlConnection.responseCode == 200) {
+                // on below line we are initializing our input stream
+                // if the response is successful.
+                inputStream = BufferedInputStream(urlConnection.inputStream)
+            }
+        }
+        // on below line we are adding catch block to handle exception
+        catch (e: Exception) {
+            // on below line we are simply printing
+            // our exception and returning null
+            e.printStackTrace()
+            return null;
+        }
+
+        val pdfReader : PdfReader = PdfReader(inputStream)
+        pdfReader.removeAnnotations()
+        val n = pdfReader.numberOfPages
+        totalPageValue = n
+        var extractedText = ""
+        pages.clear()
+        for (i in 0 until n) {
+            extractedText = PdfTextExtractor.getTextFromPage(pdfReader, i + 1)
+            pages.add(extractedText)
+        }
+        pdfReader.close()
+
+        // on below line we are returning input stream.
+        return inputStream;
+    }
+
+    override fun onPostExecute(result: InputStream?) {
+        adapter.notifyDataSetChanged()
+        totalPageTv.text = "/ ${totalPageValue.toString()}"
+        Log.i("TOTAL PAGE", pages.size.toString())
     }
 }
 
@@ -233,6 +306,11 @@ class ReadingFragment : Fragment() {
     var isText : Boolean = true
     var pages = ArrayList<String>()
 
+//    UI ELEMENTS
+    lateinit var backBtn : Button
+    lateinit var pagesRv : RecyclerView
+    lateinit var adapter : PDFReaderAdapter
+
     private fun extractData() {
         try {
             var extractedText = ""
@@ -261,17 +339,14 @@ class ReadingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        extractData()
+        //extractData()
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_reading, container, false)
     }
@@ -280,119 +355,170 @@ class ReadingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        extractedTV = view.findViewById(R.id.pdfContentTv)
-//        extractedTV.movementMethod = LinkMovementMethod.getInstance()
-//        extractedTV.customSelectionActionModeCallback = mActionModeCallback
+        val args = this.arguments
+        val bookId = args?.getString("bookId", "")
+        val readingMode = args?.getString("readingMode", "text")
+        Toast.makeText(requireContext(), "${bookId} - ${readingMode}", Toast.LENGTH_SHORT).show()
 
-        var totalPageTv = view.findViewById<TextView>(R.id.totalPageTv)
-        totalPageTv.setText("/ ${pages.size.toString()}")
-        var curPageEt = view.findViewById<EditText>(R.id.curPageEt)
-        curPageEt.setText("1")
+        val ref : DatabaseReference = FirebaseDatabase.getInstance().getReference("book/${bookId}")
+        backBtn = view.findViewById<Button>(R.id.readingBackBtn)
+        backBtn.setOnClickListener(){
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+        var data : Book
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    data = snapshot.getValue(Book::class.java)!!
+                    //val refUser : DatabaseReference = FirebaseDatabase.getInstance().getReference("user/")
+                    Toast.makeText(requireContext(), data.pdf.toString(), Toast.LENGTH_SHORT).show()
 
-        val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(null)
+                    var backBtn = view.findViewById<Button>(R.id.readingBackBtn)
+                    Toast.makeText(requireContext(), backBtn.textSize.toString(), Toast.LENGTH_SHORT).show()
 
-        var pdfView = view.findViewById<PDFView>(R.id.pdfview)
-        pdfView.visibility = View.GONE
+                    var totalPageTv = view.findViewById<TextView>(R.id.totalPageTv)
+                    totalPageTv.setText("/ ${pages.size.toString()}")
+                    var curPageEt = view.findViewById<EditText>(R.id.curPageEt)
+                    curPageEt.setText("1")
 
-        var pagesRv = view.findViewById<RecyclerView>(R.id.pagesRv)
-        var adapter = PDFReaderAdapter(pages)
-        //adapter.pageTV.customSelectionActionModeCallback = mActionModeCallback
-        pagesRv.adapter = adapter
-        pagesRv.layoutManager = LinearLayoutManager(requireContext())
+                    val snapHelper = PagerSnapHelper()
+                    snapHelper.attachToRecyclerView(null)
 
-//        adapter.onItemClick = { page ->
-//            //Toast.makeText(requireContext(), (pages.indexOf(page) + 1).toString(), Toast.LENGTH_SHORT).show()
-//        }
+                    var pdfView = view.findViewById<PDFView>(R.id.pdfview)
+                    pdfView.visibility = View.GONE
+
+                    pagesRv = view.findViewById<RecyclerView>(R.id.pagesRv)
+                    adapter = PDFReaderAdapter(pages)
+                    pagesRv.adapter = adapter
+                    pagesRv.layoutManager = LinearLayoutManager(requireContext())
+                    adapter.onItemClick = { page ->
+                        //Toast.makeText(requireContext(), (pages.indexOf(page) + 1).toString(), Toast.LENGTH_SHORT).show()
+                    }
+
+                    // LOAD DATA TO TEXT & PDF FIRST TIME
+                    UpdateTextViewFromStream(pages, adapter, totalPageTv).execute(data.pdf)
+                    RetrievePDFFromURL(pdfView, isVertical, curPageEt, pages, adapter).execute(data.pdf)
+
+                    isText = readingMode == "text"
+                    if(isText) {
+                        pagesRv.visibility = View.VISIBLE
+                        pdfView.visibility = View.GONE
+                    }
+                    else {
+                        pdfView.visibility = View.VISIBLE
+                        pagesRv.visibility = View.GONE
+                    }
 
 //        Paging Text View
-        pagesRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    val position: Int = (pagesRv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                    Toast.makeText(requireContext(), (position + 1).toString(), Toast.LENGTH_SHORT).show()
-                    curPageEt.setText((position + 1).toString())
-                }
-            }
-        })
+                    pagesRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                            super.onScrollStateChanged(recyclerView, newState)
+                            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                val position: Int = (pagesRv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                                Toast.makeText(requireContext(), (position + 1).toString(), Toast.LENGTH_SHORT).show()
+                                curPageEt.setText((position + 1).toString())
+                            }
+                        }
+                    })
 
 //        Next Page Btn
-        val nextBtn = view.findViewById<Button>(R.id.nextPageBtn)
-        nextBtn.setOnClickListener(){
-            curPageEt.setText((curPageEt.text.toString().toInt() + 1).toString())
-            pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
-            pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
-        }
+                    val nextBtn = view.findViewById<Button>(R.id.nextPageBtn)
+                    nextBtn.setOnClickListener(){
+                        curPageEt.setText((curPageEt.text.toString().toInt() + 1).toString())
+                        pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                        pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
+                    }
 
 //        Prev Page Btn
-        val prevBtn = view.findViewById<Button>(R.id.prevPageBtn)
-        prevBtn.setOnClickListener(){
-            curPageEt.setText((curPageEt.text.toString().toInt() - 1).toString())
-            pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
-            pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
-        }
+                    val prevBtn = view.findViewById<Button>(R.id.prevPageBtn)
+                    prevBtn.setOnClickListener(){
+                        curPageEt.setText((curPageEt.text.toString().toInt() - 1).toString())
+                        pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                        pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
+                    }
 
-        curPageEt.setOnFocusChangeListener{ _, hasFocus ->
+                    curPageEt.setOnFocusChangeListener{ _, hasFocus ->
 //            Not Focus
-            if(!hasFocus){
-                Toast.makeText(requireContext(), curPageEt.text.toString(), Toast.LENGTH_SHORT).show()
-                var totalPageNum : Int = totalPageTv.text.toString().substring(2).toString().toInt()
-                if((curPageEt.text.toString() == "") || (curPageEt.text.toString().toInt() > totalPageNum) || (curPageEt.text.toString().toInt() < 1) )
-                    // set back text to current page
-                    curPageEt.setText(((pagesRv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() + 1).toString())
-                else {
-                    pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
-                    pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
-                }
-            }
+                        if(!hasFocus){
+                            Toast.makeText(requireContext(), curPageEt.text.toString(), Toast.LENGTH_SHORT).show()
+                            var totalPageNum : Int = totalPageTv.text.toString().substring(2).toString().toInt()
+                            if((curPageEt.text.toString() == "") || (curPageEt.text.toString().toInt() > totalPageNum) || (curPageEt.text.toString().toInt() < 1) )
+                            // set back text to current page
+                                curPageEt.setText(((pagesRv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() + 1).toString())
+                            else {
+                                pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                                pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
+                            }
+                        }
 //            Focus
-        }
+                    }
 
-        val scrollModeBtn = view.findViewById<Button>(R.id.scrollModeBtn)
-        scrollModeBtn.setOnClickListener(){
-            if(isVertical) {
-                isVertical = false
-                snapHelper.attachToRecyclerView(pagesRv)
-                scrollModeBtn.setText("\uf337")
-                pagesRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
-                if(!isText) RetrievePDFFromURL(pdfView, isVertical, curPageEt).execute("")
-            }
-            else {
-                isVertical = true
-                snapHelper.attachToRecyclerView(null)
-                scrollModeBtn.setText("\uf338")
-                pagesRv.layoutManager = LinearLayoutManager(requireContext())
-                pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
-                if(!isText) RetrievePDFFromURL(pdfView, isVertical, curPageEt).execute("")
-            }
-            //pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
-            //pagesRv.scrollToPosition(5)
-        }
+                    val scrollModeBtn = view.findViewById<Button>(R.id.scrollModeBtn)
+                    scrollModeBtn.setOnClickListener(){
+                        if(isVertical) {
+                            isVertical = false
+                            snapHelper.attachToRecyclerView(pagesRv)
+                            scrollModeBtn.setText("\uf337")
+                            pagesRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                            pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                            if(!isText) RetrievePDFFromURL(pdfView, isVertical, curPageEt, pages, adapter).execute(data.pdf)
+                        }
+                        else {
+                            isVertical = true
+                            snapHelper.attachToRecyclerView(null)
+                            scrollModeBtn.setText("\uf338")
+                            pagesRv.layoutManager = LinearLayoutManager(requireContext())
+                            pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                            if(!isText) RetrievePDFFromURL(pdfView, isVertical, curPageEt, pages, adapter).execute(data.pdf)
+                        }
+                        //pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                        //pagesRv.scrollToPosition(5)
+                    }
 
-        val viewModebtn = view.findViewById<Button>(R.id.viewModeBtn)
-        viewModebtn.setOnClickListener(){
-            if(isText) {
-                isText = false
-                pdfView.visibility = View.VISIBLE
-                pagesRv.visibility = View.GONE
-                RetrievePDFFromURL(pdfView, isVertical, curPageEt).execute("")
-            }
-            else {
-                isText = true
-                pagesRv.visibility = View.VISIBLE
-                pdfView.visibility = View.GONE
-            }
-        }
+                    val viewModebtn = view.findViewById<Button>(R.id.viewModeBtn)
+                    viewModebtn.setOnClickListener(){
+                        if(isText) {
+                            isText = false
+                            pdfView.visibility = View.VISIBLE
+                            pagesRv.visibility = View.GONE
+                            RetrievePDFFromURL(pdfView, isVertical, curPageEt, pages, adapter).execute(data.pdf)
+                        }
+                        else {
+                            isText = true
+                            pagesRv.visibility = View.VISIBLE
+                            pdfView.visibility = View.GONE
+                        }
+                    }
 
-        val settingBtn = view.findViewById<ImageButton>(R.id.settingBtn)
-        settingBtn!!.setOnClickListener(){
-            requireActivity().supportFragmentManager.commit {
-                replace<SettingFragment>(R.id.fragment_container_view)
-                setReorderingAllowed(true)
-                addToBackStack("settingFragment")
+                    val settingBtn = view.findViewById<ImageButton>(R.id.settingBtn)
+                    settingBtn!!.setOnClickListener(){
+                        requireActivity().supportFragmentManager.commit {
+                            replace<SettingFragment>(R.id.fragment_container_view)
+                            setReorderingAllowed(true)
+                            addToBackStack("settingFragment")
+                        }
+                    }
+
+                }
+
             }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+        setFragmentResultListener("settingResult") { _, bundle ->
+            val fontFamily = bundle.getString("fontFamily")
+            val fontSize = bundle.getFloat("fontSize")
+            val newtypeface : Typeface = Typeface.createFromAsset(requireActivity().assets, "playfair_display.ttf")
+            backBtn.setTypeface(newtypeface)
+            val viewChildren= pagesRv.findViewHolderForAdapterPosition(1)
+            val page : TextView? = viewChildren?.itemView?.findViewById(R.id.pageTv)
+            Toast.makeText(requireContext(), page?.textSize.toString(), Toast.LENGTH_SHORT).show()
+            page?.textSize = 1.0F
+            Toast.makeText(requireContext(), page?.textSize.toString(), Toast.LENGTH_SHORT).show()
+            adapter.notifyDataSetChanged()
+            backBtn.textSize = fontSize.toFloat()
+            //Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show()
         }
     }
 

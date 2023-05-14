@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
