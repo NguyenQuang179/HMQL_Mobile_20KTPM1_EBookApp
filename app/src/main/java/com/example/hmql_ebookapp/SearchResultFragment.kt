@@ -125,6 +125,23 @@ class SearchResultFragment : Fragment() {
                     val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
                         DividerItemDecoration.VERTICAL)
                     customRecyclerView.addItemDecoration(itemDecoration)
+                    var tempArray = ArrayList<String>()
+                    tempArray.add("truyen dai")
+                    adapter.setCategoriesToFilter(tempArray)
+                    adapter.onItemClick = { book ->
+                        Log.i("In", "Chuyen trang")
+                        val bundle = Bundle()
+                        bundle.putString("bookID", book.bookID)
+
+                        val fragment = BookIntroductionFragment()
+                        fragment.arguments = bundle
+
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragment_container_view, fragment)
+                            setReorderingAllowed(true)
+                            addToBackStack("BookIntroductionFragment")
+                        }
+                    }
                 }
             }
 

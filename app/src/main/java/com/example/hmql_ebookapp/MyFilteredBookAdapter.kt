@@ -15,6 +15,12 @@ import android.content.Context
 class MyFilteredBookAdapter(private val books : ArrayList<Book>)
     : RecyclerView.Adapter<MyFilteredBookAdapter.ViewHolder>(), Filterable{
 
+    private var categoriesToFilter = ArrayList<String>()
+
+    fun setCategoriesToFilter(categories: ArrayList<String>) {
+        categoriesToFilter = categories
+    }
+
     var onItemClick: ((Book) -> Unit)? = null
     var filteredBooks = ArrayList<Book>();
     init{
@@ -83,17 +89,25 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>)
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val charSearch = constraint.toString()
-                if (charSearch.isEmpty()) {
-                    filteredBooks = books as ArrayList<Book>
-                } else {
-                    val resultList = ArrayList<Book>()
-                    for (row in books) {
-                        if (row.title.toLowerCase().contains(constraint.toString().toLowerCase())) {
+
+                val resultList = ArrayList<Book>()
+                for (row in books) {
+                    if (row.title.toLowerCase().contains(charSearch.toLowerCase())) {
+                        if (categoriesToFilter.size > 0){
+                            Log.i("Filter size", categoriesToFilter.size.toString())
+                            for (category in row.categories){
+                                if (categoriesToFilter.contains(category.categoryName)){
+                                    resultList.add(row)
+                                    break
+                                }
+                            }
+                        }
+                        else{
                             resultList.add(row)
                         }
                     }
-                    filteredBooks = resultList
                 }
+                filteredBooks = resultList
                 val filterResults = FilterResults()
                 filterResults.values = filteredBooks
                 return filterResults
