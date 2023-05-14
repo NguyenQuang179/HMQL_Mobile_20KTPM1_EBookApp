@@ -49,7 +49,7 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
             bookList.removeAt(existingBookIndex)
         }
         // Add the book to the beginning of the list
-        bookList.add(0, UserBook(book.bookID, book.title, "status", 1, true, false))
+        bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, false, 3.5, book.cover, book.author))
         // Update the user's list of books in Firebase
         val usersRef = FirebaseDatabase.getInstance().getReference("Users")
         val userRef = user.userID?.let { usersRef.child(it) }
