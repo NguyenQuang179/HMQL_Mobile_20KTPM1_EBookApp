@@ -9,10 +9,13 @@ class UserViewModel : ViewModel() {
 data class UserBook(
     val bookID: String? = null,
     val bookName: String? = null,
-    val status: String? = null,
+    val status: Int? = null,
     val readingProgress: Int? = null,
     val liked: Boolean? = null,
-    val downloaded: Boolean? = null
+    val downloaded: Boolean? = null,
+    val reviewScore: Double? = null,
+    var cover: String? = null,
+    var author: String? = null
 )
 
 data class User(

@@ -9,8 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 
 fun getColor(context: Context, colorResId: Int): Int {
@@ -53,10 +55,15 @@ class MyBookAdapter(private val books : List<UserBook>)
         val bookNameTv = holder.bookNameTv
         bookNameTv.setText(book.bookName)
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText("TB Added")
+        authorNameTv.setText(book.author)
         //val bookImgView = holder.bookImgView
         //bookImgView.setImageResource(book.bookImg)
-
+        val imgTV = holder.bookImgView
+        if (imgTV != null) {
+            Glide.with(imgTV.context)
+                .load(book.cover)
+                .into(imgTV)
+        };
         //set on click listener for a button in a recycler View item that change into another image on click
         //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
         holder.bookmarkImgBtn.setOnClickListener {

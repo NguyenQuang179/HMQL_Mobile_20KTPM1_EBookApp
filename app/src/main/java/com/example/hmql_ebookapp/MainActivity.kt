@@ -264,7 +264,7 @@ class MainActivity : AppCompatActivity() {
                             val userBooksRef = usersRef.child(uid.toString()).child("listOfBooks")
 
                         // Create a new UserBook object
-                            val book = UserBook("bookID", "bookName", "status", 1, true, false)
+                            val book = UserBook("bookID", "bookName", 1, 1, true, false, 1.0, "", "bookAuthor")
 
                              // Add the book to the list of books for the current user
                             //val newList = user?.listOfBooks.orEmpty().toMutableList()
