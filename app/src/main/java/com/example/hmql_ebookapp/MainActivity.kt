@@ -91,9 +91,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userViewModel: UserViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
-
-
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             setTheme(R.style.darkTheme) //when dark mode is enabled, we use the dark theme
         } else {
@@ -164,14 +161,14 @@ class MainActivity : AppCompatActivity() {
 //
 //        })
 
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .setTheme(R.style.LoginTheme)
-                .setLogo(R.drawable.logo)
-                .build(), AUTH_REQUEST_CODE
-        )
+//        startActivityForResult(
+//            AuthUI.getInstance()
+//                .createSignInIntentBuilder()
+//                .setAvailableProviders(providers)
+//                .setTheme(R.style.LoginTheme)
+//                .setLogo(R.drawable.logo)
+//                .build(), AUTH_REQUEST_CODE
+//        )
 
 
         supportFragmentManager.commit {

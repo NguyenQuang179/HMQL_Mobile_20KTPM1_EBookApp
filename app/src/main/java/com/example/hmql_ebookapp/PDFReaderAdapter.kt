@@ -110,7 +110,6 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
         // Set item views based on your views and data model
         val pageTv = holder.pageTv
         pageTv.setText(page)
-        pageTv.textSize = 20.0F
         extractedTV = holder.pageTv
         extractedTV.setMovementMethod(LinkMovementMethod.getInstance());
         extractedTV.isClickable = true
