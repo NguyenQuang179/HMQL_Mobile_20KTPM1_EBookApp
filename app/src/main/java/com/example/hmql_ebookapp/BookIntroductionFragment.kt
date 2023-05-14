@@ -73,10 +73,17 @@ fun editFavoriteStatus(user: User?, book: Book, favorite_status: Boolean){
     if(user != null){
         val bookList = user.listOfBooks.toMutableList()
         val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
-        val book_in_list = bookList[existingBookIndex]
+        if(existingBookIndex > 0){
+            val book_in_list = bookList[existingBookIndex]
 
-        //Update the favorite status
-        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded, 3.5, book.cover, book.author)
+            //Update the favorite status
+            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded, 3.5, book.cover, book.author)
+
+        }
+        else {
+            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, favorite_status, false, 3.5, book.cover, book.author))
+
+        }
 
         //udpate on database
         val usersRef = FirebaseDatabase.getInstance().getReference("Users")
@@ -91,10 +98,19 @@ fun editDownloadedStatus(user: User?, book: Book, downloaded_status: Boolean){
     if(user != null){
         val bookList = user.listOfBooks.toMutableList()
         val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
-        val book_in_list = bookList[existingBookIndex]
+//        val book_in_list = bookList[existingBookIndex]
+        if(existingBookIndex > 0){
+            val book_in_list = bookList[existingBookIndex]
+
+            //Update the favorite status
+            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
+        }
+        else {
+            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, downloaded_status, 3.5, book.cover, book.author))
+        }
 
         //Update the download status
-        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
+//        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
 
         //udpate on database
         val usersRef = FirebaseDatabase.getInstance().getReference("Users")
@@ -377,7 +393,7 @@ class BookIntroductionFragment : Fragment() {
                 bookFavouriteStatus = false
             }
 
-//            editFavoriteStatus(user, data, bookFavouriteStatus)
+            editFavoriteStatus(user, data, bookFavouriteStatus)
         }
 
         ReadButton.setOnClickListener {
