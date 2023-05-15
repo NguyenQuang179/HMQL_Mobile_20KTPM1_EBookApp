@@ -1,8 +1,6 @@
 package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Application
 import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Color
@@ -10,6 +8,7 @@ import android.graphics.Typeface
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.text.*
 import android.text.style.BackgroundColorSpan
 import android.text.style.ClickableSpan
@@ -322,7 +321,8 @@ class UpdateTextViewFromStream(pages : ArrayList<String>, adapter: PDFReaderAdap
     }
 }
 
-class ReadingFragment : Fragment() {
+
+class ReadingFragment : Fragment(), TextToSpeech.OnInitListener {
     private val mActionModeCallback = object : ActionMode.Callback {
         // init the Translator class:
         val translator = Translator()
@@ -410,6 +410,8 @@ class ReadingFragment : Fragment() {
     lateinit var adapter : PDFReaderAdapter
     lateinit var pdfView : PDFView
 
+    private var tts: TextToSpeech? = null
+
     private fun extractData() {
         try {
             var extractedText = ""
@@ -481,13 +483,13 @@ class ReadingFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
+        tts = TextToSpeech(context, this)
         return inflater.inflate(R.layout.fragment_reading, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val args = this.arguments
         val bookId = args?.getString("bookId", "")
         val readingMode = args?.getString("readingMode", "text")
@@ -534,6 +536,7 @@ class ReadingFragment : Fragment() {
                     val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
                     val user = userViewModel.user
                     adapter = PDFReaderAdapter(pages, user, spannablePages)
+                    adapter.tts = tts!!
                     adapter.fontSize = readingSize
                     adapter.typeface = readingTypeface
                     pagesRv.adapter = adapter
@@ -659,6 +662,14 @@ class ReadingFragment : Fragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -677,5 +688,13 @@ class ReadingFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // Text-to-speech engine initialization successful
+        } else {
+            // Text-to-speech engine initialization failed
+        }
     }
 }
