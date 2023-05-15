@@ -34,13 +34,13 @@ class RecommendationAdapter(private val books : ArrayList<Book>)
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
-        bookNameTv.setText(book.title)
+        bookNameTv.text = book.title
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(book.author)
+        authorNameTv.text = book.author
         val bookImgView = holder.bookImgView
         Glide.with(holder.bookImgView.context)
             .load(book.cover)
-            .into(bookImgView);
+            .into(bookImgView)
     }
 
     override fun getItemCount(): Int = books.size

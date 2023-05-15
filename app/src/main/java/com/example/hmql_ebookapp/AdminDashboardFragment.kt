@@ -44,7 +44,7 @@ class AdminDashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val booksCard : ConstraintLayout = view.findViewById<ConstraintLayout>(R.id.AdminDashboardBookCard)
-        booksCard.setOnClickListener(){
+        booksCard.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 replace<AdminBooksFragment>(R.id.fragmentContainerView2)
                 setReorderingAllowed(true)
@@ -53,7 +53,7 @@ class AdminDashboardFragment : Fragment() {
         }
 
         val categoriesCard : ConstraintLayout = view.findViewById<ConstraintLayout>(R.id.AdminDashboardTagCard)
-        categoriesCard.setOnClickListener() {
+        categoriesCard.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 replace<AdminCategoriesFragment>(R.id.fragmentContainerView2)
                 setReorderingAllowed(true)
@@ -62,7 +62,7 @@ class AdminDashboardFragment : Fragment() {
         }
 
         val authorCard : ConstraintLayout = view.findViewById<ConstraintLayout>(R.id.AdminDashboardAuthorCard)
-        authorCard.setOnClickListener(){
+        authorCard.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 replace<AdminAuthorsFragment>(R.id.fragmentContainerView2)
                 setReorderingAllowed(true)

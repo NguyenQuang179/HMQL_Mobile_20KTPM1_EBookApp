@@ -27,9 +27,18 @@ data class UserBook(
 
 )
 
+data class UserReview(
+    val userName: String? = null,
+    val userAvatar: String? = null,
+    val star: String? = null,
+    val date: String? = null,
+    val content: String? = null
+)
+
 data class User(
     val admin: Boolean? = null,
     val userID: String? = null,
+    val userAvatar: String? = null,
     val email: String? = null,
     val name: String? = null,
     val listOfBooks: List<UserBook> = emptyList()

@@ -56,9 +56,9 @@ class MyBookAdapter(private val books : List<UserBook>)
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
-        bookNameTv.setText(book.bookName)
+        bookNameTv.text = book.bookName
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(book.author)
+        authorNameTv.text = book.author
         //val bookImgView = holder.bookImgView
         //bookImgView.setImageResource(book.bookImg)
         val ratingTV = holder.ratingTv
@@ -68,7 +68,7 @@ class MyBookAdapter(private val books : List<UserBook>)
             Glide.with(imgTV.context)
                 .load(book.cover)
                 .into(imgTV)
-        };
+        }
         if (book.liked == true) {
             holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_solid)
             holder.bookmarkImgBtn.tag = "bookmarked"
@@ -98,7 +98,7 @@ class MyBookAdapter(private val books : List<UserBook>)
         }
         //make statusTextView Change its text color, background colors, and text on click
         holder.statusTextView.setOnClickListener {
-            holder.statusTextView.setText("Finished")
+            holder.statusTextView.text = "Finished"
             holder.statusTextView.setTextColor(getColor(holder.statusTextView.context, com.google.android.material.R.attr.colorOnSecondary))
             holder.statusTextView.background.setTint(getColor(holder.statusTextView.context, com.google.android.material.R.attr.colorSecondary))
         }

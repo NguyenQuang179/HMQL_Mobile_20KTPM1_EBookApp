@@ -2,6 +2,8 @@ package com.example.hmql_ebookapp
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.speech.tts.TextToSpeech
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -22,7 +24,7 @@ class PDFReaderAdapter(private val pages: ArrayList<String>, private val user: U
     lateinit var extractedTV : TextView
     var fontSize : Float = 14.0F
     var typeface : Typeface = Typeface.DEFAULT
-
+    lateinit var tts: TextToSpeech
     private val mActionModeCallback = object : ActionMode.Callback {
         // init the Translator class:
         val translator = Translator()
@@ -113,6 +115,15 @@ class PDFReaderAdapter(private val pages: ArrayList<String>, private val user: U
                 true
             }
             menu.add(Menu.NONE, 4, Menu.NONE, "Read Outloud").setOnMenuItemClickListener {
+                Log.i("in", "true")
+
+                val start = extractedTV.selectionStart
+                val end = extractedTV.selectionEnd
+                val selectedText = extractedTV.text?.substring(start, end)
+                if (selectedText != null) {
+                    Log.i("Text", selectedText)
+                    tts!!.speak(selectedText.toString(), TextToSpeech.QUEUE_FLUSH, null,"")
+                }
                 mode.finish()
                 true
             }
@@ -159,6 +170,7 @@ class PDFReaderAdapter(private val pages: ArrayList<String>, private val user: U
 //        Log.e("adapter","binding ${position} and ${spannablePages[5]}")
         // Set item views based on your views and data model
         val pageTv = holder.pageTv
+        // pageTv.text = page
 
         pageTv.text = spannablePage
         pageTv.textSize = fontSize

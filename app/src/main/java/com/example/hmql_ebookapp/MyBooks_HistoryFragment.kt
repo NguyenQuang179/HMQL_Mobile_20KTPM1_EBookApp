@@ -22,7 +22,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [MyBooks_HistoryFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MyBooks_HistoryFragment() : Fragment() {
+class MyBooks_HistoryFragment : Fragment() {
     lateinit var books: List<UserBook>
 
 

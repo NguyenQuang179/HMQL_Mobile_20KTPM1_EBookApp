@@ -40,9 +40,7 @@
                     android:layout_marginTop="16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:shapeAppearanceOverlay="@style/circleAvatar"
-                    app:srcCompat="@drawable/sampleauthor1"
-                    tools:src="@drawable/sampleauthor1" />
+                    app:shapeAppearanceOverlay="@style/circleAvatar" />
 
                 <TextView
                     android:id="@+id/Reviewer_nameTV"
