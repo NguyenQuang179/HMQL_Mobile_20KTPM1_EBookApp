@@ -35,7 +35,7 @@ class AdminAuthorsRecyclerViewAdapter(private val authors : ArrayList<Author>)
         val author : Author = authors[position]
 
         val authorName = holder.authorNameTv
-        authorName.setText(author.name)
+        authorName.text = author.name
         val authorImg = holder.authorImgView
         Glide.with(holder.authorImgView.context)
             .load(author.img)

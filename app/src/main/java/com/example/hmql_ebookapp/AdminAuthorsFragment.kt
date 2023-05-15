@@ -53,7 +53,7 @@ class AdminAuthorsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val backBtn = view.findViewById<Button>(R.id.AdminAuthorBackBtn)
-        backBtn.setOnClickListener(){
+        backBtn.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
@@ -121,6 +121,23 @@ class AdminAuthorsFragment : Fragment() {
                 }
             }
 
+        // setFragmentResultListener("editAuthor") { key, bundle ->
+        //     val newName = bundle.getString("newName")
+        //     val newDesc = bundle.getString("newDesc")
+        //     val newImg = bundle.getInt("newImg")
+        //     val authorIndex = bundle.getInt("authorIndex")
+        //     listOfAuthor[authorIndex].name = newName.toString()
+        //     listOfAuthor[authorIndex].description = newDesc.toString()
+        //     listOfAuthor[authorIndex].img = newImg.toString()
+        //     authorsRvAdapter.notifyDataSetChanged()
+        // }
+
+        // val addBtn = view.findViewById<FloatingActionButton>(R.id.AdminAuthorAddBtn)
+        // addBtn.setOnClickListener {
+        //     requireActivity().supportFragmentManager.commit {
+        //         replace<AdminAuthorAddFragment>(R.id.fragmentContainerView2)
+        //         setReorderingAllowed(true)
+        //         addToBackStack("adminAuthorAdd")
             override fun onCancelled(error: DatabaseError) {
                 Log.e("Error", "Failed to read value.", error.toException())
             }

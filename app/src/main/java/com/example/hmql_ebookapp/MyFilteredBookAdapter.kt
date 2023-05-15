@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import android.content.Context
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MyFilteredBookAdapter(private val books : ArrayList<Book>, private var categoriesToFilter : ArrayList<String> )
     : RecyclerView.Adapter<MyFilteredBookAdapter.ViewHolder>(), Filterable{
@@ -26,9 +28,10 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>, private var cat
     }
 
     var onItemClick: ((Book) -> Unit)? = null
-    var filteredBooks = ArrayList<Book>();
+    var filteredBooks = ArrayList<Book>()
+
     init{
-        filteredBooks = books as ArrayList<Book>
+        filteredBooks = books
     }
 
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
@@ -37,7 +40,7 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>, private var cat
         val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.authorTextView)!!
         val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.bookImageView)!!
         val bookmarkImgBtn : ImageView = listItemView.findViewById<ImageView>(R.id.bookmarkImageButton)!!
-        val ratingTV: TextView = listItemView.findViewById<TextView>(R.id.ratingTextView);
+        val ratingTV: TextView = listItemView.findViewById<TextView>(R.id.ratingTextView)
         val bookmarkImageButton = listItemView.findViewById<ImageButton>(R.id.bookmarkImageButton)
         init { listItemView.setOnClickListener { onItemClick?.invoke(filteredBooks[adapterPosition]) } }
     }
@@ -53,20 +56,20 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>, private var cat
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Get the data model based on position
         val book : Book = filteredBooks[position]
-        holder.statusTextView.visibility = View.INVISIBLE;
-        holder.bookmarkImgBtn.visibility = View.INVISIBLE;
+        holder.statusTextView.visibility = View.INVISIBLE
+        holder.bookmarkImgBtn.visibility = View.INVISIBLE
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
-        bookNameTv.setText(book.title)
+        bookNameTv.text = book.title
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(book.author)
+        authorNameTv.text = book.author
         val ratingStarTV = holder.ratingTV
-        ratingStarTV.setText(book.averageStar.toString())
+        ratingStarTV.text = book.averageStar.toString()
         val bookImgView = holder.bookImgView
         Glide.with(holder.bookImgView.context)
             .load(book.cover)
-            .into(bookImgView);
+            .into(bookImgView)
 
         //set on click listener for a button in a recycler View item that change into another image on click
         //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
@@ -81,7 +84,7 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>, private var cat
         }
         //make statusTextView Change its text color, background colors, and text on click
         holder.statusTextView.setOnClickListener {
-            holder.statusTextView.setText("Finished")
+            holder.statusTextView.text = "Finished"
             holder.statusTextView.setTextColor(getColor(holder.statusTextView.context, com.google.android.material.R.attr.colorOnSecondary))
             holder.statusTextView.background.setTint(getColor(holder.statusTextView.context, com.google.android.material.R.attr.colorSecondary))
         }

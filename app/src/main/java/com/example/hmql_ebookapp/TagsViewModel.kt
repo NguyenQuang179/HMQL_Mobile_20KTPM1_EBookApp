@@ -1,4 +1,3 @@
 package com.example.hmql_ebookapp
 
-class TagsViewModel (val tag: String) {
-}
+class TagsViewModel (val tag: String)

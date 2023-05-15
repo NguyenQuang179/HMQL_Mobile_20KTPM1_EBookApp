@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var firebaseAuth: FirebaseAuth
     lateinit var listener:FirebaseAuth.AuthStateListener
     lateinit var providers:List<AuthUI.IdpConfig>
-    public fun init(){ //init login
+    fun init(){ //init login
         providers = arrayListOf(
         AuthUI.IdpConfig.EmailBuilder().setAllowNewAccounts(true).build(), //Email Builder
             AuthUI.IdpConfig.GoogleBuilder().build(), //Google Builder
@@ -101,14 +101,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         init();
-//        startActivityForResult(
-//            AuthUI.getInstance()
-//                .createSignInIntentBuilder()
-//                .setAvailableProviders(providers)
-//                .setTheme(R.style.LoginTheme)
-//                .build(),
-//            AUTH_REQUEST_CODE
-//        )
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTheme(R.style.LoginTheme)
+                .build(),
+            AUTH_REQUEST_CODE
+        )
 
 //        for (i in 1..10){
 //            val listOfBook = arrayListOf<String>((i+1).toString(),(i+2).toString(),(i+3).toString(),(i+4).toString())
@@ -171,12 +171,12 @@ class MainActivity : AppCompatActivity() {
 //        )
 
 
-        supportFragmentManager.commit {
-            //add<ReadingFragment>(R.id.fragment_container_view)
-            add<HomeFragment>(R.id.fragment_container_view)
-//            setReorderingAllowed(true)
-//            addToBackStack("name") // name can be null
-        }
+//        supportFragmentManager.commit {
+//            add<ReadingFragment>(R.id.fragment_container_view)
+//            //add<HomeFragment>(R.id.fragment_container_view)
+////            setReorderingAllowed(true)
+////            addToBackStack("name") // name can be null
+//        }
         val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
         //Bottom Navigation Menu
             navBar.setOnItemSelectedListener{ item ->
@@ -268,8 +268,7 @@ class MainActivity : AppCompatActivity() {
                             val newList = mutableListOf<UserBook>()
                             newList.add(book)
                             //userRef.child("listOfBooks").setValue(newList)
-
-                            val newUser = User(false,uid, email, name, newList)
+                            val newUser = User(false,uid,"This user Avatar", email, name, newList)
                             userRef.setValue(newUser)
 
                         }

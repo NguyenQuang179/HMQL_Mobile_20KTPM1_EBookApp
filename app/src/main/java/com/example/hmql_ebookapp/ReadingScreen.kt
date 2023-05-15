@@ -21,7 +21,7 @@ class MyTranslationCompleteListener(val context: Context) : Translator.OnTransla
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.translate_popup)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.findViewById<TextView>(R.id.translated_text).setText(translatedText)
+        dialog.findViewById<TextView>(R.id.translated_text).text = translatedText
         dialog.show()
     }
 
@@ -97,7 +97,7 @@ class ReadingScreen : AppCompatActivity() {
         extractedTV.customSelectionActionModeCallback = mActionModeCallback
 
         val settingBtn = findViewById<ImageButton>(R.id.settingBtn)
-        settingBtn!!.setOnClickListener(){
+        settingBtn!!.setOnClickListener {
             val intent : Intent = Intent(this, Settings::class.java)
             startActivity(intent)
         }
@@ -122,7 +122,7 @@ class ReadingScreen : AppCompatActivity() {
                  """.trimIndent()
                 // to extract the PDF content from the different pages
             }
-            extractedTV.setText("Guilty" + extractedText)
+            extractedTV.text = "Guilty" + extractedText
             pdfReader.close()
         }
         catch (e: Exception) {
