@@ -66,6 +66,17 @@ class NoteClickableSpan(var noteText: String?, var start: Int?, var end: Int, va
         val imm = widget.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(etNoteText, InputMethodManager.SHOW_IMPLICIT)
         val btnSave = view.findViewById<Button>(R.id.btn_save_note)
+
+        // Set the desired coordinates for the popup
+        val x = 100 // Specify your desired x-coordinate
+        val y = 200 // Specify your desired y-coordinate
+
+        // Show the popup at the specified coordinates
+        popup.contentView = view
+        popup.width = ViewGroup.LayoutParams.WRAP_CONTENT
+        popup.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        popup.showAtLocation(widget, Gravity.NO_GRAVITY, x, y)
+
         btnSave.setOnClickListener {
             val updatedNoteText = etNoteText.text.toString()
             if (updatedNoteText.isNotEmpty()) {
@@ -114,7 +125,7 @@ class NoteClickableSpan(var noteText: String?, var start: Int?, var end: Int, va
 //                )
 //                widget.invalidate()
             } else {
-                Toast.makeText(widget.context, "Note cannot be empty", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(widget.context, "Note cannot be empty", Toast.LENGTH_SHORT).show()
             }
         }
         view.findViewById<Button>(R.id.btn_close_note).setOnClickListener {
@@ -493,7 +504,7 @@ class ReadingFragment : Fragment() {
         val readingMode = args?.getString("readingMode", "text")
         var readingSize : Float = 14.0F
         var readingTypeface : Typeface = Typeface.DEFAULT
-        Toast.makeText(requireContext(), "${bookId} - ${readingMode}", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "${bookId} - ${readingMode}", Toast.LENGTH_SHORT).show()
 
         setFragmentResultListener("settingResult") { _, bundle ->
             val fontFamily = bundle.getString("fontFamily")
@@ -509,12 +520,12 @@ class ReadingFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
         }
         var data : Book
-        ref.addValueEventListener(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
                     data = snapshot.getValue(Book::class.java)!!
                     //val refUser : DatabaseReference = FirebaseDatabase.getInstance().getReference("user/")
-                    Toast.makeText(requireContext(), data.pdf.toString(), Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(requireContext(), data.pdf.toString(), Toast.LENGTH_SHORT).show()
 
                     var backBtn = view.findViewById<Button>(R.id.readingBackBtn)
 
@@ -537,6 +548,7 @@ class ReadingFragment : Fragment() {
                     adapter.fontSize = readingSize
                     adapter.typeface = readingTypeface
                     pagesRv.adapter = adapter
+
                     pagesRv.layoutManager = LinearLayoutManager(requireContext())
 
 
@@ -561,8 +573,9 @@ class ReadingFragment : Fragment() {
                             super.onScrollStateChanged(recyclerView, newState)
                             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                                 val position: Int = (pagesRv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                                Toast.makeText(requireContext(), (position + 1).toString(), Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(requireContext(), (position + 1).toString(), Toast.LENGTH_SHORT).show()
                                 curPageEt.setText((position + 1).toString())
+                                adapter.setActivePage(position)
                             }
                         }
                     })
@@ -571,6 +584,7 @@ class ReadingFragment : Fragment() {
                     val nextBtn = view.findViewById<Button>(R.id.nextPageBtn)
                     nextBtn.setOnClickListener(){
                         curPageEt.setText((curPageEt.text.toString().toInt() + 1).toString())
+                        adapter.setActivePage(curPageEt.text.toString().toInt() - 1)
                         pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
                         pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
                     }
@@ -579,6 +593,7 @@ class ReadingFragment : Fragment() {
                     val prevBtn = view.findViewById<Button>(R.id.prevPageBtn)
                     prevBtn.setOnClickListener(){
                         curPageEt.setText((curPageEt.text.toString().toInt() - 1).toString())
+                        adapter.setActivePage(curPageEt.text.toString().toInt() - 1)
                         pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
                         pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
                     }
@@ -586,13 +601,14 @@ class ReadingFragment : Fragment() {
                     curPageEt.setOnFocusChangeListener{ _, hasFocus ->
 //            Not Focus
                         if(!hasFocus){
-                            Toast.makeText(requireContext(), curPageEt.text.toString(), Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(requireContext(), curPageEt.text.toString(), Toast.LENGTH_SHORT).show()
                             var totalPageNum : Int = totalPageTv.text.toString().substring(2).toString().toInt()
-                            if((curPageEt.text.toString() == "") || (curPageEt.text.toString().toInt() > totalPageNum) || (curPageEt.text.toString().toInt() < 1) )
-                            // set back text to current page
+                            if((curPageEt.text.toString() == "") || (curPageEt.text.toString().toInt() > totalPageNum) || (curPageEt.text.toString().toInt() < 1) ) {// set back text to current page
                                 curPageEt.setText(((pagesRv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() + 1).toString())
+                            }
                             else {
                                 pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                                adapter.setActivePage((curPageEt.text.toString().toInt() - 1))
                                 pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
                             }
                         }
@@ -607,6 +623,7 @@ class ReadingFragment : Fragment() {
                             scrollModeBtn.setText("\uf337")
                             pagesRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                             pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                            adapter.setActivePage(curPageEt.text.toString().toInt() - 1)
                             if(!isText) RetrievePDFFromURL(pdfView, isVertical, curPageEt, pages, adapter).execute(data.pdf)
                         }
                         else {
@@ -615,6 +632,7 @@ class ReadingFragment : Fragment() {
                             scrollModeBtn.setText("\uf338")
                             pagesRv.layoutManager = LinearLayoutManager(requireContext())
                             pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                            adapter.setActivePage(curPageEt.text.toString().toInt() - 1)
                             if(!isText) RetrievePDFFromURL(pdfView, isVertical, curPageEt, pages, adapter).execute(data.pdf)
                         }
                         //pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
@@ -633,6 +651,7 @@ class ReadingFragment : Fragment() {
                             isText = true
                             pagesRv.visibility = View.VISIBLE
                             pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
+                            adapter.setActivePage(curPageEt.text.toString().toInt() - 1)
                             pdfView.visibility = View.GONE
                         }
                     }

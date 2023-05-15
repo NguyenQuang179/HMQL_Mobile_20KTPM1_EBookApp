@@ -6,6 +6,7 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.BackgroundColorSpan
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -26,10 +27,12 @@ class PDFReaderAdapter(private val pages: ArrayList<String>, private val user: U
         // init the Translator class:
         val translator = Translator()
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-
             menu.add(Menu.NONE, 1, Menu.NONE, "Translate").setOnMenuItemClickListener {
+                Log.d("TextViewContent", extractedTV.text.toString())
                 val start = extractedTV.selectionStart
                 val end = extractedTV.selectionEnd
+                Log.e("start", "$start, and $end")
+                if (start != -1 && end != -1){
                 val selectedText = extractedTV.text?.substring(start, end)
                 // perform translation logic here
                 //Toast.makeText(this@ReadingScreen, "Translate: $selectedText", Toast.LENGTH_SHORT).show()
@@ -42,9 +45,11 @@ class PDFReaderAdapter(private val pages: ArrayList<String>, private val user: U
                     if (translationCompleteListener != null) {
                         translator.translateText(selectedText, TranslateLanguage.VIETNAMESE, translationCompleteListener)
                     }
+                    }
                 }
                 mode.finish()
                 true
+
             }
             menu.add(Menu.NONE, 2, Menu.NONE, "Highlight").setOnMenuItemClickListener {
                 val start = extractedTV.selectionStart
@@ -141,6 +146,10 @@ class PDFReaderAdapter(private val pages: ArrayList<String>, private val user: U
         return ViewHolder(pageView)
     }
     var curPos: Int = 0;
+    var actPage: Int = 0;
+    fun setActivePage(page: Int) {
+        actPage = page
+    }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Get the data model based on position
         curPos = position
@@ -154,12 +163,13 @@ class PDFReaderAdapter(private val pages: ArrayList<String>, private val user: U
         pageTv.text = spannablePage
         pageTv.textSize = fontSize
         pageTv.typeface = typeface
-        extractedTV = holder.pageTv
+        extractedTV = pageTv
         extractedTV.setMovementMethod(LinkMovementMethod.getInstance());
         extractedTV.isClickable = true
         extractedTV.isFocusable = true
         extractedTV.isFocusableInTouchMode = true
         extractedTV.customSelectionActionModeCallback = mActionModeCallback
+        extractedTV.setTextIsSelectable(true)
 
     }
 

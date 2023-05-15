@@ -66,7 +66,18 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
         bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val userBook = snapshot.getValue(UserBook::class.java)
-                val notesData = userBook?.notes
+                notesData = userBook?.notes
+                Log.e("PuData", "${notesData.toString()}")
+
+                bookList.add(0, UserBook(book.bookID, book.title, 1, 1,
+                    userBook?.liked, userBook?.downloaded, book.averageStar, book.cover, book.author, notesData))
+                //}
+                // Update the user's list of books in Firebase
+                val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+                val userRef = user.userID?.let { usersRef.child(it) }
+                if (userRef != null) {
+                    userRef.child("listOfBooks").setValue(bookList)
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -76,15 +87,8 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
 
 
         // Add the book to the beginning of the list
-        if (tempBook != null) {
-            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, false, 3.5, book.cover, book.author, notesData))
-        }
-        // Update the user's list of books in Firebase
-        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
-        val userRef = user.userID?.let { usersRef.child(it) }
-        if (userRef != null) {
-            userRef.child("listOfBooks").setValue(bookList)
-        }
+        //if (tempBook != null) {
+
     }
 }
 
@@ -92,24 +96,42 @@ fun editFavoriteStatus(user: User?, book: Book, favorite_status: Boolean){
     if(user != null){
         val bookList = user.listOfBooks.toMutableList()
         val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
-        if(existingBookIndex > 0){
-            val book_in_list = bookList[existingBookIndex]
+        // Store note data in Firebase Realtime Database
+        val database = FirebaseDatabase.getInstance()
+        val bookRef = database.getReference("/Users/${user!!.userID}/listOfBooks/${existingBookIndex}")
+        var notesData: NotesData? = null;
+        bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userBook = snapshot.getValue(UserBook::class.java)
+                notesData = userBook?.notes
+                Log.e("PuData", "${notesData.toString()}")
 
-            //Update the favorite status
-            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded, 3.5, book.cover, book.author)
 
-        }
-        else {
-            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, favorite_status, false, 3.5, book.cover, book.author))
+                if(existingBookIndex > 0){
+                    val book_in_list = bookList[existingBookIndex]
+                    //}
+                    //Update the favorite status
+                    bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded, book.averageStar, book.cover, book.author, notesData)
 
-        }
+                }
+                else {
+                    bookList.add(0, UserBook(book.bookID, book.title, userBook?.status, userBook?.readingProgress, favorite_status, userBook?.downloaded, book.averageStar, book.cover, book.author, notesData))
 
-        //udpate on database
-        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
-        val userRef = user.userID?.let { usersRef.child(it) }
-        if (userRef != null) {
-            userRef.child("listOfBooks").setValue(bookList)
-        }
+                }
+
+                //udpate on database
+                val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+                val userRef = user.userID?.let { usersRef.child(it) }
+                if (userRef != null) {
+                    userRef.child("listOfBooks").setValue(bookList)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle errors here
+            }
+        })
+
     }
 }
 
@@ -122,10 +144,10 @@ fun editDownloadedStatus(user: User?, book: Book, downloaded_status: Boolean){
             val book_in_list = bookList[existingBookIndex]
 
             //Update the favorite status
-            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
+            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, book.averageStar, book.cover, book.author)
         }
         else {
-            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, downloaded_status, 3.5, book.cover, book.author))
+            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, downloaded_status, book.averageStar, book.cover, book.author))
         }
 
         //Update the download status
@@ -215,7 +237,7 @@ class BookIntroductionFragment : Fragment() {
     }
     private fun recommendDataInit() {
         val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
-        ref2.addValueEventListener(object : ValueEventListener {
+        ref2.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     for (child in snapshot.children) {

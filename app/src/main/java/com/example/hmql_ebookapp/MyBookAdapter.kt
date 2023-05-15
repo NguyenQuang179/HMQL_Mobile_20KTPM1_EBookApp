@@ -37,6 +37,7 @@ class MyBookAdapter(private val books : List<UserBook>)
         val statusTextView : TextView = listItemView.findViewById<TextView>(R.id.statusTextView)!!
         val bookNameTv : TextView = listItemView.findViewById<TextView>(R.id.bookNameTextView)!!
         val authorNameTv : TextView = listItemView.findViewById<TextView>(R.id.authorTextView)!!
+        val ratingTv : TextView = listItemView.findViewById<TextView>(R.id.ratingTextView)!!
         val bookImgView : ImageView = listItemView.findViewById<ImageView>(R.id.bookImageView)!!
         val bookmarkImgBtn : ImageView = listItemView.findViewById<ImageView>(R.id.bookmarkImageButton)!!
         init { listItemView.setOnClickListener { onItemClick?.invoke(books[adapterPosition]) } }
@@ -60,6 +61,8 @@ class MyBookAdapter(private val books : List<UserBook>)
         authorNameTv.setText(book.author)
         //val bookImgView = holder.bookImgView
         //bookImgView.setImageResource(book.bookImg)
+        val ratingTV = holder.ratingTv
+        ratingTV.setText(book.reviewScore.toString())
         val imgTV = holder.bookImgView
         if (imgTV != null) {
             Glide.with(imgTV.context)
