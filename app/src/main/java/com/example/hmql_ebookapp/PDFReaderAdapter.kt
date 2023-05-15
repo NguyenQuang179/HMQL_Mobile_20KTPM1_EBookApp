@@ -16,6 +16,8 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
     : RecyclerView.Adapter<PDFReaderAdapter.ViewHolder>(){
 
     lateinit var extractedTV : TextView
+    var fontSize : Float = 14.0F
+    var typeface : Typeface = Typeface.DEFAULT
 
     private val mActionModeCallback = object : ActionMode.Callback {
         // init the Translator class:
@@ -101,6 +103,8 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
         val inflater = LayoutInflater.from(context)
         // Inflate the custom layout
         val pageView : View = inflater.inflate(R.layout.pdf_reader_file_layout, parent, false)
+        pageView.findViewById<TextView>(R.id.pageTv).textSize = fontSize
+        pageView.findViewById<TextView>(R.id.pageTv).typeface = typeface
         return ViewHolder(pageView)
     }
 
@@ -110,6 +114,8 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
         // Set item views based on your views and data model
         val pageTv = holder.pageTv
         pageTv.setText(page)
+        pageTv.textSize = fontSize
+        pageTv.typeface = typeface
         extractedTV = holder.pageTv
         extractedTV.setMovementMethod(LinkMovementMethod.getInstance());
         extractedTV.isClickable = true
@@ -120,4 +126,9 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
     }
 
     override fun getItemCount(): Int = pages.size
+
+    fun setFontSize(size : Float) : Boolean {
+        fontSize = size
+        return true
+    }
 }
