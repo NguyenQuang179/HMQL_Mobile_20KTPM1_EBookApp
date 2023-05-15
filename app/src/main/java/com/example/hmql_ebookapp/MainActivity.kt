@@ -172,8 +172,8 @@ class MainActivity : AppCompatActivity() {
 
 
         supportFragmentManager.commit {
-            add<ReadingFragment>(R.id.fragment_container_view)
-            //add<HomeFragment>(R.id.fragment_container_view)
+            //add<ReadingFragment>(R.id.fragment_container_view)
+            add<HomeFragment>(R.id.fragment_container_view)
 //            setReorderingAllowed(true)
 //            addToBackStack("name") // name can be null
         }

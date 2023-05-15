@@ -8,8 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.commit
-import androidx.fragment.app.replace
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +15,6 @@ import com.google.firebase.database.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,8 +33,9 @@ class SearchBookFragment : Fragment() {
     private var param2: String? = null
 
     lateinit var categoryList: ArrayList<Category>
+    var categoryChoiceList = ArrayList<String>();
     lateinit var categoryChoiceRecyclerView: RecyclerView
-    var categoryAdapter = MyRecyclerViewForCategoryChoice(ArrayList<Category>())
+    var categoryAdapter = MyRecyclerViewForCategoryChoice(ArrayList<Category>(), null)
     var listOfSearchs = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +63,7 @@ class SearchBookFragment : Fragment() {
 // do something with your item
             val bundle = Bundle()
             bundle.putString("searchString", item)
-
+            bundle.putStringArrayList("choiceList", ArrayList<String>());
             val fragment = SearchResultFragment()
             fragment.arguments = bundle
 
@@ -124,7 +122,9 @@ class SearchBookFragment : Fragment() {
                 writeDataToFile()
             }
             val bundle = Bundle()
+
             bundle.putString("searchString", autoCompleteTextView.text.toString())
+            bundle.putStringArrayList("choiceList", categoryAdapter.getCategoryChoiceList());
 
             val fragment = SearchResultFragment()
             fragment.arguments = bundle
@@ -198,7 +198,7 @@ class SearchBookFragment : Fragment() {
                         category?.let { categoryList.add(it) }
                     }
                     Log.d("Books size", "Number of books: ${categoryList.size}")
-                    categoryAdapter = MyRecyclerViewForCategoryChoice(categoryList)
+                    categoryAdapter = MyRecyclerViewForCategoryChoice(categoryList, null)
                     categoryChoiceRecyclerView!!.adapter = categoryAdapter
                     val categoryLayoutManager = GridLayoutManager(context, 2)
                     categoryChoiceRecyclerView.layoutManager = categoryLayoutManager
