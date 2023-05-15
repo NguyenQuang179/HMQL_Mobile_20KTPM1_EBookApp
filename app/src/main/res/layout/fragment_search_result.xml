@@ -10,8 +10,8 @@
     <!-- TODO: Update blank fragment layout -->
     <AutoCompleteTextView
         android:id="@+id/searchResultAutoCompleteTextView"
-        android:layout_width="299dp"
-        android:layout_height="48dp"
+        android:layout_width="334dp"
+        android:layout_height="45dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:hint="Search"
@@ -19,37 +19,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/searchResultImageButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@android:color/transparent"
-        android:padding="12dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/filter_solid"
-        app:layout_constraintBottom_toBottomOf="@+id/searchResultAutoCompleteTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/searchResultTypeSpinner"
-        app:layout_constraintTop_toTopOf="@+id/searchResultAutoCompleteTextView"
-        app:layout_constraintVertical_bias="0.0" />
-
     <Spinner
         android:id="@+id/searchResultTypeSpinner"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/searchResultAutoCompleteTextView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/searchResultAutoCompleteTextView"
         app:layout_constraintTop_toTopOf="@+id/searchResultAutoCompleteTextView"
         app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResultRV"
-        android:layout_width="409dp"
+        android:layout_width="410dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryChoiceRV" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/categoryChoiceRV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchResultAutoCompleteTextView" />
 
