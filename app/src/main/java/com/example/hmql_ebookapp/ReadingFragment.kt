@@ -1,13 +1,9 @@
 package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.fonts.FontFamily
-import android.graphics.fonts.FontStyle
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -20,22 +16,19 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.github.barteksc.pdfviewer.PDFView
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.mlkit.nl.translate.TranslateLanguage
-import com.itextpdf.text.Font
-import com.itextpdf.text.Font.getFamily
-import com.itextpdf.text.Font.getStyleValue
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import java.io.BufferedInputStream
@@ -55,8 +48,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ReadingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class NoteClickableSpan(var noteText: String) : ClickableSpan() {
-
+class NoteClickableSpan(var noteText: String?, var start: Int?, var end: Int, var page: Int) : ClickableSpan() {
     override fun onClick(widget: View) {
         Log.d("NoteClickableSpan", "onClick triggered for text: $noteText")
 
@@ -75,14 +67,49 @@ class NoteClickableSpan(var noteText: String) : ClickableSpan() {
             val updatedNoteText = etNoteText.text.toString()
             if (updatedNoteText.isNotEmpty()) {
                 popup.dismiss()
+
                 noteText = updatedNoteText
-                val newNote = SpannableString("[$noteText] ")
-                newNote.setSpan(
-                    NoteClickableSpan(noteText),
-                    0, newNote.length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                widget.invalidate()
+                //save to db
+                val user = FirebaseAuth.getInstance().currentUser
+                val database = FirebaseDatabase.getInstance()
+                val bookRef = database.getReference("/Users/${user!!.uid}/listOfBooks/0")
+                val noteData = NoteData(noteText, start, end, page)
+                bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val userBook = snapshot.getValue(UserBook::class.java)
+                        val notesData = userBook?.notes
+                        val noteDataList = notesData?.curPos?.toMutableList() ?: mutableListOf()
+
+                        // Find the index of the first matching NoteData object
+                        val index = noteDataList.indexOfFirst { it.start == noteData.start && it.end == noteData.end && it.page == noteData.page }
+
+                        if (index != -1) {
+                            // NoteData with the same attributes already exists, update the existing entry
+                            noteDataList[index] = noteData
+                        }
+                        //if not do nothing
+
+                        if (notesData == null) {
+                            userBook?.notes = NotesData(noteDataList)
+                        } else {
+                            notesData.curPos = noteDataList
+                        }
+
+                        // Update the UserBook object on Firebase
+                        bookRef.setValue(userBook)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle errors here
+                    }
+                })
+//                val newNote = SpannableString("[$noteText] ")
+//                newNote.setSpan(
+//                    NoteClickableSpan(noteText),
+//                    0, newNote.length,
+//                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+//                )
+//                widget.invalidate()
             } else {
                 Toast.makeText(widget.context, "Note cannot be empty", Toast.LENGTH_SHORT).show()
             }
@@ -166,13 +193,13 @@ class RetrievePDFFromURL(pdfView: PDFView, isVertical : Boolean, curPageEt : Edi
     }
 }
 
-class UpdateTextViewFromStream(pages : ArrayList<String>, adapter: PDFReaderAdapter, totalPageTv : TextView) : AsyncTask<String, Void, InputStream>() {
+class UpdateTextViewFromStream(pages : ArrayList<String>, adapter: PDFReaderAdapter, totalPageTv : TextView, spannablePages : MutableList<SpannableStringBuilder>) : AsyncTask<String, Void, InputStream>() {
     // Text View Element
     val pages = pages
     val adapter = adapter
     val totalPageTv = totalPageTv
     var totalPageValue : Int = 0
-
+    val spannablePages = spannablePages
     // on below line we are calling our do in background method.
     override fun doInBackground(vararg params: String?): InputStream? {
         // on below line we are creating a variable for our input stream.
@@ -208,12 +235,87 @@ class UpdateTextViewFromStream(pages : ArrayList<String>, adapter: PDFReaderAdap
         totalPageValue = n
         var extractedText = ""
         pages.clear()
-        for (i in 0 until n) {
-            extractedText = PdfTextExtractor.getTextFromPage(pdfReader, i + 1)
-            pages.add(extractedText)
-        }
-        pdfReader.close()
+        //Huy
 
+        var spannableStringBuilder : SpannableStringBuilder;
+        for (i in 0 until n) {
+//                extractedText =
+//                    """
+//                 $extractedText${
+//                        PdfTextExtractor.getTextFromPage(pdfReader, i + 1).trim { it <= ' ' }
+//                    }
+//                 """.trimIndent()
+                extractedText = PdfTextExtractor.getTextFromPage(pdfReader, i + 1)
+                pages.add(extractedText)
+
+                spannableStringBuilder = SpannableStringBuilder(extractedText)
+//                //get List of NoteData from extractedText
+//                val user = FirebaseAuth.getInstance().currentUser
+//                val database = FirebaseDatabase.getInstance()
+//                val bookRef = database.getReference("/Users/${user!!.uid}/listOfBooks/0/notes/${i}")
+//                bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
+//                    override fun onDataChange(snapshot: DataSnapshot) {
+//                        if (!snapshot.exists()) {
+//                            // If the reference is null or does not exist, skip further processing
+//                            //return
+//                        }
+//                        val notesList = mutableListOf<NoteData>()
+//                        //build SpannableStringBuilder with extractedText
+//                        for (noteSnapshot in snapshot.children) {
+//                            val note = noteSnapshot.getValue(NoteData::class.java)
+//
+//                            spannableStringBuilder.setSpan(
+//                                NoteClickableSpan(note!!.noteText),
+//                                note.start!!,
+//                                note.end!!,
+//                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+//                            )
+//                        }
+//
+//                    }
+//                    override fun onCancelled(error: DatabaseError) {
+//                        // Handle errors here
+//                    }
+//                })
+
+                spannablePages.add(spannableStringBuilder)
+                // to extract the PDF content from the different pages
+            }
+
+        pdfReader.close()
+        //Retrieve List of Notes iterate through it and add it to correpsonding spannablePages
+        // Store note data in Firebase Realtime Database
+        //get List of NoteData from extractedText
+        val user = FirebaseAuth.getInstance().currentUser
+        val database = FirebaseDatabase.getInstance()
+        val bookRef = database.getReference("/Users/${user!!.uid}/listOfBooks/0")
+        //Get list at that point
+        bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userBook = snapshot.getValue(UserBook::class.java)
+                val notesData = userBook?.notes
+                val noteDataList = notesData?.curPos?.toMutableList() ?: mutableListOf()
+                // Get the current list of NoteData objects, or create a new mutable list if it's null
+
+                for (note in noteDataList){
+                    //Log.e("StartingNote", "start Note: ${spannablePages[note.page!!]}")
+                    val spanPage = spannablePages[note.page!!]
+                    spanPage.setSpan(
+                                NoteClickableSpan(note!!.noteText, note.start!!, note.end!!, note.page),
+                                note.start!!,
+                                note.end!!,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                    spannablePages[note.page!!] = spanPage
+                    //Log.e("StartingNote", "end Note: ${spannablePages[note.page!!]}")
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle errors here
+            }
+        })
         // on below line we are returning input stream.
         return inputStream;
     }
@@ -274,7 +376,7 @@ class ReadingFragment : Fragment() {
                     val selectedText = extractedTV.text.subSequence(start, end)
                     val noteText = "This is a note for the selected text."
                     val spannableStringBuilder = SpannableStringBuilder(extractedTV.text)
-                    spannableStringBuilder.setSpan(NoteClickableSpan("lala"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    //spannableStringBuilder.setSpan(NoteClickableSpan("lala", start ,end, page), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     extractedTV.text = spannableStringBuilder
                 }
                 mode.finish()
@@ -305,6 +407,7 @@ class ReadingFragment : Fragment() {
     var isVertical : Boolean = true
     var isText : Boolean = true
     var pages = ArrayList<String>()
+    var spannablePages : MutableList<SpannableStringBuilder> = mutableListOf()
 
 //    UI ELEMENTS
     lateinit var backBtn : Button
@@ -317,7 +420,9 @@ class ReadingFragment : Fragment() {
             val pdfReader: PdfReader = PdfReader("res/raw/samplebook.pdf")
             pdfReader.removeAnnotations()
             val n = pdfReader.numberOfPages
+            //Huy
 
+            var spannableStringBuilder : SpannableStringBuilder;
             for (i in 0 until n) {
 //                extractedText =
 //                    """
@@ -327,9 +432,42 @@ class ReadingFragment : Fragment() {
 //                 """.trimIndent()
                 extractedText = PdfTextExtractor.getTextFromPage(pdfReader, i + 1)
                 pages.add(extractedText)
+
+                spannableStringBuilder = SpannableStringBuilder(extractedText)
+                //get List of NoteData from extractedText
+                val user = FirebaseAuth.getInstance().currentUser
+                val database = FirebaseDatabase.getInstance()
+                val bookRef = database.getReference("/Users/${user!!.uid}/listOfBooks/0/notes/${i}")
+                bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (!snapshot.exists()) {
+                            // If the reference is null or does not exist, skip further processing
+                            //return
+                        }
+                        val notesList = mutableListOf<NoteData>()
+                        //build SpannableStringBuilder with extractedText
+                        for (noteSnapshot in snapshot.children) {
+                            val note = noteSnapshot.getValue(NoteData::class.java)
+
+                            spannableStringBuilder.setSpan(
+                                NoteClickableSpan(note!!.noteText, note.start!!, note.end!!, note.page!!),
+                                note.start!!,
+                                note.end!!,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle errors here
+                    }
+                })
+
+                spannablePages.add(spannableStringBuilder)
                 // to extract the PDF content from the different pages
             }
             //extractedTV.setText(extractedText)
+
             pdfReader.close()
         }
         catch (e: Exception) {
@@ -388,15 +526,19 @@ class ReadingFragment : Fragment() {
                     pdfView.visibility = View.GONE
 
                     pagesRv = view.findViewById<RecyclerView>(R.id.pagesRv)
-                    adapter = PDFReaderAdapter(pages)
+
+                    val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+                    val user = userViewModel.user
+
+                    adapter = PDFReaderAdapter(pages, user, spannablePages)
                     pagesRv.adapter = adapter
                     pagesRv.layoutManager = LinearLayoutManager(requireContext())
-                    adapter.onItemClick = { page ->
-                        //Toast.makeText(requireContext(), (pages.indexOf(page) + 1).toString(), Toast.LENGTH_SHORT).show()
-                    }
+//                    adapter.onItemClick = { page ->
+//                        //Toast.makeText(requireContext(), (pages.indexOf(page) + 1).toString(), Toast.LENGTH_SHORT).show()
+//                    }
 
                     // LOAD DATA TO TEXT & PDF FIRST TIME
-                    UpdateTextViewFromStream(pages, adapter, totalPageTv).execute(data.pdf)
+                    UpdateTextViewFromStream(pages, adapter, totalPageTv, spannablePages).execute(data.pdf)
                     RetrievePDFFromURL(pdfView, isVertical, curPageEt, pages, adapter).execute(data.pdf)
 
                     isText = readingMode == "text"

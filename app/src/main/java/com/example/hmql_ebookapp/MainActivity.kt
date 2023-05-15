@@ -101,14 +101,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         init();
-//        startActivityForResult(
-//            AuthUI.getInstance()
-//                .createSignInIntentBuilder()
-//                .setAvailableProviders(providers)
-//                .setTheme(R.style.LoginTheme)
-//                .build(),
-//            AUTH_REQUEST_CODE
-//        )
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTheme(R.style.LoginTheme)
+                .build(),
+            AUTH_REQUEST_CODE
+        )
 
 //        for (i in 1..10){
 //            val listOfBook = arrayListOf<String>((i+1).toString(),(i+2).toString(),(i+3).toString(),(i+4).toString())
@@ -171,12 +171,12 @@ class MainActivity : AppCompatActivity() {
 //        )
 
 
-        supportFragmentManager.commit {
-            add<ReadingFragment>(R.id.fragment_container_view)
-            //add<HomeFragment>(R.id.fragment_container_view)
-//            setReorderingAllowed(true)
-//            addToBackStack("name") // name can be null
-        }
+//        supportFragmentManager.commit {
+//            add<ReadingFragment>(R.id.fragment_container_view)
+//            //add<HomeFragment>(R.id.fragment_container_view)
+////            setReorderingAllowed(true)
+////            addToBackStack("name") // name can be null
+//        }
         val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
         //Bottom Navigation Menu
             navBar.setOnItemSelectedListener{ item ->

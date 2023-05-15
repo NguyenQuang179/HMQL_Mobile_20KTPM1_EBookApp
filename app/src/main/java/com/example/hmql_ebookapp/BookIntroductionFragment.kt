@@ -21,8 +21,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.checkSelfPermission
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -32,7 +30,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.database.*
 import java.time.LocalDateTime
-import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")
 @Deprecated("Deprecated in Java")
@@ -54,12 +51,34 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
     if (user != null) {
         val bookList = user.listOfBooks.toMutableList()
         val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+        var tempBook: UserBook? = null;
         if (existingBookIndex >= 0) {
             // If the book already exists in the list, remove it
+            tempBook = bookList[existingBookIndex]
             bookList.removeAt(existingBookIndex)
         }
+
+        // Store note data in Firebase Realtime Database
+        val database = FirebaseDatabase.getInstance()
+        val bookRef = database.getReference("/Users/${user!!.userID}/listOfBooks/${existingBookIndex}")
+        var notesData: NotesData? = null;
+        //Get list at that point
+        bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userBook = snapshot.getValue(UserBook::class.java)
+                val notesData = userBook?.notes
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle errors here
+            }
+        })
+
+
         // Add the book to the beginning of the list
-        bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, false, 3.5, book.cover, book.author))
+        if (tempBook != null) {
+            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, false, 3.5, book.cover, book.author, notesData))
+        }
         // Update the user's list of books in Firebase
         val usersRef = FirebaseDatabase.getInstance().getReference("Users")
         val userRef = user.userID?.let { usersRef.child(it) }
@@ -156,7 +175,7 @@ class BookIntroductionFragment : Fragment() {
     private lateinit var adapter_review: ReviewAdapterClass
     private fun sampleDataInit() {
         val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book/${bookID}")
-        ref2.addValueEventListener(object : ValueEventListener {
+        ref2.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
                     data = snapshot.getValue(Book::class.java)!!
@@ -417,6 +436,7 @@ class BookIntroductionFragment : Fragment() {
                 addBookToUserList(user, data)
                 //Update user after update
 
+                //update
             }
         }
 

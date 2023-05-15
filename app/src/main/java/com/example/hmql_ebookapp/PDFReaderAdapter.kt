@@ -1,8 +1,6 @@
 package com.example.hmql_ebookapp
 
 import android.graphics.Color
-import android.graphics.Typeface
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -10,9 +8,13 @@ import android.text.style.BackgroundColorSpan
 import android.view.*
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.mlkit.nl.translate.TranslateLanguage
 
-class PDFReaderAdapter(private val pages : ArrayList<String>)
+class PDFReaderAdapter(private val pages: ArrayList<String>, private val user: User?, private val spannablePages: List<SpannableStringBuilder>)
     : RecyclerView.Adapter<PDFReaderAdapter.ViewHolder>(){
 
     lateinit var extractedTV : TextView
@@ -65,8 +67,38 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
                     val selectedText = extractedTV.text.subSequence(start, end)
                     val noteText = "This is a note for the selected text."
                     val spannableStringBuilder = SpannableStringBuilder(extractedTV.text)
-                    spannableStringBuilder.setSpan(NoteClickableSpan("lala"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannableStringBuilder.setSpan(NoteClickableSpan("Add Note", start, end, curPos), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     extractedTV.text = spannableStringBuilder
+                    spannablePages[curPos].setSpan(NoteClickableSpan("Add Note", start, end, curPos), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    // Store note data in Firebase Realtime Database
+                    val database = FirebaseDatabase.getInstance()
+                    val bookRef = database.getReference("/Users/${user!!.userID}/listOfBooks/0")
+                    val noteData = NoteData(noteText, start, end, curPos)
+                    //Get list at that point
+                    bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val userBook = snapshot.getValue(UserBook::class.java)
+                            val notesData = userBook?.notes
+                            val noteDataList = notesData?.curPos?.toMutableList() ?: mutableListOf()
+                            // Get the current list of NoteData objects, or create a new mutable list if it's null
+
+                            noteDataList.add(noteData)
+                            // Add the new NoteData object to the list
+                            if (notesData == null) {
+                                userBook?.notes = NotesData(noteDataList)
+                            } else {
+                                notesData.curPos = noteDataList
+                            }
+
+                            // Update the UserBook object on Firebase
+                            bookRef.setValue(userBook)
+
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Handle errors here
+                        }
+                    })
 
                 }
                 mode.finish()
@@ -103,13 +135,18 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
         val pageView : View = inflater.inflate(R.layout.pdf_reader_file_layout, parent, false)
         return ViewHolder(pageView)
     }
-
+    var curPos: Int = 0;
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Get the data model based on position
+        curPos = position
         val page: String = pages.get(position)
+        val spannablePage: SpannableStringBuilder = spannablePages[position]
+//        Log.e("adapter","binding ${position} and ${spannablePages.size}")
+//        Log.e("adapter","binding ${position} and ${spannablePages[5]}")
         // Set item views based on your views and data model
         val pageTv = holder.pageTv
-        pageTv.setText(page)
+        pageTv.text = spannablePage
+
         extractedTV = holder.pageTv
         extractedTV.setMovementMethod(LinkMovementMethod.getInstance());
         extractedTV.isClickable = true
