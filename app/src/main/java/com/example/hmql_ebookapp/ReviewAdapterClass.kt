@@ -1,14 +1,18 @@
 package com.example.hmql_ebookapp
 
 import android.media.Rating
+import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.URLUtil
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
 
 class ReviewAdapterClass(private val mList: List<ReviewViewModel>) : RecyclerView.Adapter<ReviewAdapterClass.ViewHolder>() {
 
@@ -33,8 +37,19 @@ class ReviewAdapterClass(private val mList: List<ReviewViewModel>) : RecyclerVie
         holder.ReviewRate.text = review.rating_rate
         holder.ReviewTextTV.text = review.review_text
         holder.ReviewDateTV.text = review.review_date
-        Glide.with(holder.ReviewerIV.context)
-            .load(review.reviewer_avatar)
+
+        val reviewer_avatar_link = Uri.parse(review.reviewer_avatar)
+//        if( URLUtil.isValidUrl(reviewer_avatar_link.toString())){
+//            Log.d("Avatar", "$reviewer_avatar_link")
+//        }
+
+//        Glide.with(holder.ReviewerIV.context)
+//            .load(review.reviewer_avatar)
+//            .into(holder.ReviewerIV)
+        Picasso.get()
+            .load(reviewer_avatar_link) // or the file link obtained from the file picker
+            .fit()
+            .centerCrop()
             .into(holder.ReviewerIV)
 
     }

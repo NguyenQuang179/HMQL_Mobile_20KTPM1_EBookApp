@@ -55,10 +55,17 @@ class AccountInformationFragment : Fragment() {
     }
 
     val REQUEST_FILE_PICKER = 111
+    lateinit var user : User
+    lateinit var userViewModel : UserViewModel
     lateinit var UserAvatarIV : ShapeableImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        user = userViewModel.user!!
+
+
 
         val signoutButton = view.findViewById<TextView>(R.id.signOutTv)
         signoutButton.setOnClickListener {
@@ -74,6 +81,15 @@ class AccountInformationFragment : Fragment() {
         }
 
         UserAvatarIV = view.findViewById<ShapeableImageView>(R.id.ReviewerIV)
+
+        val reviewer_avatar_link = Uri.parse(user.userAvatar)
+//        Log.d("AVATAR_LINK", "avatar link is ${reviewer_avatar_link}")
+        Picasso.get()
+            .load(reviewer_avatar_link) // or the file link obtained from the file picker
+            .fit()
+            .centerCrop()
+            .into(UserAvatarIV)
+
         UserAvatarIV.setOnClickListener {
             // Open a file picker
             val intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -91,13 +107,13 @@ class AccountInformationFragment : Fragment() {
         accountEmailTV.text = user?.email
     }
 
-    fun updateUserAvatar(user: User?, avatar_link: Uri){
+    fun updateUserAvatar(user: User?, avatar_link: Uri?){
         if(user != null){
             Log.d("AVATAR_LINK", "avatar link is ${avatar_link}")
             val usersRef = FirebaseDatabase.getInstance().getReference("Users")
             val userRef = user.userID?.let { usersRef.child(it) }
             if (userRef != null) {
-                userRef.child("userAvatar").setValue(avatar_link)
+                userRef.child("userAvatar").setValue(avatar_link.toString())
             }
         }
     }
@@ -114,6 +130,8 @@ class AccountInformationFragment : Fragment() {
                 .fit()
                 .centerCrop()
                 .into(UserAvatarIV)
+
+            updateUserAvatar(user, selectedFileUri)
             // Process the selected file
             // ...
         }

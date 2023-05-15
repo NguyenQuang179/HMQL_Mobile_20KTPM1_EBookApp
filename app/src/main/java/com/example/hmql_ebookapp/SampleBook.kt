@@ -1,8 +1,5 @@
 package com.example.hmql_ebookapp
 
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.io.Serializable
 import java.util.Date
 
@@ -26,12 +23,12 @@ data class Book(
 data class Review(
     var userName: String,
     var userAvatar: String,
-    val rating : String,
+    val rating: Double,
     var content: String,
     var datetime: String
 ): Comparable<Review> {
     override fun compareTo(other: Review): Int = this.datetime.compareTo(other.datetime)
-    constructor() : this("", "", "0","0", "",)
+    constructor() : this("", "", 0.0,"0", "",)
 
 }
 

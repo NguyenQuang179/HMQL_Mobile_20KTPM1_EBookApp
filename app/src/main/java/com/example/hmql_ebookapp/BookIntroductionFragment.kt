@@ -31,7 +31,6 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 //import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
-import kotlin.properties.Delegates
 
 
 @SuppressLint("NotifyDataSetChanged")
@@ -133,8 +132,8 @@ fun addReviewToBookList(user: User?, book: Book?, review: ReviewViewModel): Bool
 //            reviewlist[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, downloaded_status, 3.5, book.cover, book.author)
         }
         else {
-            Log.d("User_NOT_EXISTS", "Adding new review to list")
-            reviewlist_for_adding.add(0, Review(user.name.toString(), user.userAvatar.toString(), review.rating_rate, review.review_text, review.review_date))
+//            Log.d("Avatar", "${user.userAvatar.toString()}")
+            reviewlist_for_adding.add(0, Review(user.name.toString(), user.userAvatar.toString(), review.rating_rate.toDouble(), review.review_text, review.review_date))
             confirmation = true
         }
         // Update the user's list of books in Firebase
@@ -145,8 +144,6 @@ fun addReviewToBookList(user: User?, book: Book?, review: ReviewViewModel): Bool
 //            Log.d("AVG_RATING", "average rating is ${averagerating.toString()}")
 
         }
-
-
     }
     return confirmation
 }
@@ -193,9 +190,12 @@ class BookIntroductionFragment : Fragment() {
                     val authorTV = view?.findViewById<TextView>(R.id.authorTV)
                     authorTV!!.text = data.author
                     val ratingTV = view?.findViewById<TextView>(R.id.RatingTV)
+                    val ratingNumberTV = view?.findViewById<TextView>(R.id.ReviewNumbersTV)
                     // Change to auto calculating average star
 
+                    var total_reviews : Int = 0
                     val rating_list: ArrayList<Float> = arrayListOf()
+
 //                    ratingTV!!.text = data.averageStar.toString()
                     val Synopsis_detailTV = view?.findViewById<TextView>(R.id.Synopsis_detailTV)
                     Synopsis_detailTV!!.text = data.description
@@ -206,20 +206,22 @@ class BookIntroductionFragment : Fragment() {
                             .into(bookIV)
                     }
                     if (data.reviews.size > 0){
-                        reviewList.clear()
+//                        reviewList.clear()
                         for(review in data.reviews){
-                            Log.d("BOOK_RATING", "Book rating is ${data.reviews}")
+//                            Log.d("BOOK_RATING", "Book rating is ${review.rating}")
+                            total_reviews++
                             val rating= review.rating.toString() + "f"
                             rating_list.add(review.rating.toFloat())
-                            val user_review = ReviewViewModel(review.userAvatar, review.userName, rating.toFloat(), review.rating, review.content, review.datetime)
+
+                            val user_review = ReviewViewModel(review.userAvatar, review.userName, rating.toFloat(), review.rating.toString(), review.content, review.datetime)
                             reviewList.add(user_review)
                         }
 
 //                        reviewList = data.reviews as ArrayList<Review>
                         Log.i("review", "${reviewList.size}")
                         adapter_review = ReviewAdapterClass(reviewList)
+//                        Log.d("NOTIFY", "Recycler view updated")
                         ReviewRV.adapter = adapter_review
-
 
                     }
 
@@ -233,6 +235,15 @@ class BookIntroductionFragment : Fragment() {
                         else {
                             ratingTV.text = average_rating.toString()
                             editAvgRatingForBook(user,data,average_rating)
+                        }
+                    }
+
+                    if (ratingNumberTV != null) {
+                        if(total_reviews <= 1){
+                            ratingNumberTV.text = "$total_reviews review"
+                        }
+                        else{
+                            ratingNumberTV.text = "$total_reviews reviews"
                         }
 
                     }
@@ -436,7 +447,7 @@ class BookIntroductionFragment : Fragment() {
         }
 
         ReviewRV.adapter = adapter_review
-//        ReviewRV.adapter?.notifyDataSetChanged()
+        ReviewRV.adapter?.notifyDataSetChanged()
         SeeMoreRecBtn!!.setOnClickListener {
 //            Toast.makeText(this.context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
             requireActivity().supportFragmentManager.commit {
@@ -593,7 +604,8 @@ class BookIntroductionFragment : Fragment() {
             val date = datetime.toLocalDate()
             val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
             val formatted_date = date.format(formatter)
-            val newReview = ReviewViewModel(user.userAvatar.toString(), user.name.toString(), rating_bar_value.toString().toFloat(), rating_value.toString(), review_text.toString(), formatted_date.toString() )
+            Log.d("USER_AVATAR", "${user.userAvatar.toString()}")
+            val newReview = ReviewViewModel(user.userAvatar.toString(), user.name.toString(), rating_bar_value.toFloat(), rating_value.toString(), review_text.toString(), formatted_date.toString() )
 
 //            reviewList.add(0, newReview)
             val confirmation_adding_review : Boolean = addReviewToBookList(user,data,newReview) == true
@@ -606,8 +618,10 @@ class BookIntroductionFragment : Fragment() {
                Toast.makeText(this.context,"You have already added a review for this book", Toast.LENGTH_SHORT).show()
 
            }
-//            ReviewRV.adapter?.notifyDataSetChanged()
+
+
             reviewList.clear()
+            sampleDataInit()
         }
     }
 
