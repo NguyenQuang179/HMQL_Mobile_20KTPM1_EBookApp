@@ -50,7 +50,7 @@ class AdminBookAddFragment : Fragment() {
         val AdminBookAddDescEt = view.findViewById<EditText>(R.id.AdminBookAddDescEt)
         val AdminBookAddTagsEt = view.findViewById<EditText>(R.id.AdminBookAddTagsEt)
         val saveBtn = view.findViewById<Button>(R.id.AdminBookAddSaveBtn)
-        saveBtn.setOnClickListener(){
+        saveBtn.setOnClickListener {
             val title : String = bookTitleEt.text.toString()
             val author : String = bookAuthorEt.text.toString()
             val newCategoryList: String = AdminBookAddTagsEt.text.toString()

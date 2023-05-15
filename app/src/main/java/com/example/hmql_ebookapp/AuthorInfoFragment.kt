@@ -95,17 +95,17 @@ class AuthorInfoFragment : Fragment() {
                 if (snapshot.exists()){
                     val data = snapshot.getValue(Author::class.java)
                     val authorNameInfoTV = view?.findViewById<TextView>(R.id.authorNameInfoTV)
-                    authorNameInfoTV!!.setText(data!!.name);
+                    authorNameInfoTV!!.text = data!!.name
                     val authorDescriptionTV = view?.findViewById<TextView>(R.id.authorDescriptionTV)
-                    authorDescriptionTV!!.setText(data!!.description);
-                    val authorIV = view?.findViewById<ImageView>(R.id.authorImgInfoIV);
+                    authorDescriptionTV!!.text = data.description
+                    val authorIV = view?.findViewById<ImageView>(R.id.authorImgInfoIV)
                     if (authorIV != null) {
                         Glide.with(requireContext())
                             .load(data.img)
                             .into(authorIV)
-                    };
-                    var authorWorkList = ArrayList<Book>();
-                        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+                    }
+                    var authorWorkList = ArrayList<Book>()
+                    val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
                         ref2.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 if (snapshot.exists()) {
@@ -118,7 +118,7 @@ class AuthorInfoFragment : Fragment() {
 
                                     }
                                     Log.d("Books related size", "Number of books: ${authorWorkList.size}")
-                                    authorWorkList.sortDescending();
+                                    authorWorkList.sortDescending()
                                     if (authorWorkList.size > 5) authorWorkList = ArrayList(authorWorkList.subList(0, 5))
                                     authorWorksRvAdapter = FavouriteBookAdapter(authorWorkList)
                                     authorWorksRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

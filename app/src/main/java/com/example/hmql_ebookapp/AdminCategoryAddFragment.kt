@@ -46,14 +46,14 @@ class AdminCategoryAddFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val backBtn = view.findViewById<Button>(R.id.AdminCategoryAddBackBtn)
-        backBtn.setOnClickListener(){
+        backBtn.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
         val categoryIdEt = view.findViewById<EditText>(R.id.AdminCategoryAddIdEt)
         val categoryNameEt = view.findViewById<EditText>(R.id.AdminCategoryAddNameEt)
         val saveBtn = view.findViewById<Button>(R.id.AdminCategoryAddSaveBtn)
-        saveBtn.setOnClickListener(){
+        saveBtn.setOnClickListener {
             val id : String = categoryIdEt.text.toString()
             val name : String = categoryNameEt.text.toString()
             if(id == "" || name == "") {

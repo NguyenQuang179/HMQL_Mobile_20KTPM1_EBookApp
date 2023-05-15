@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var firebaseAuth: FirebaseAuth
     lateinit var listener:FirebaseAuth.AuthStateListener
     lateinit var providers:List<AuthUI.IdpConfig>
-    public fun init(){ //init login
+    fun init(){ //init login
         providers = arrayListOf(
         AuthUI.IdpConfig.EmailBuilder().setAllowNewAccounts(true).build(), //Email Builder
             AuthUI.IdpConfig.GoogleBuilder().build(), //Google Builder
@@ -268,8 +268,7 @@ class MainActivity : AppCompatActivity() {
                             val newList = mutableListOf<UserBook>()
                             newList.add(book)
                             //userRef.child("listOfBooks").setValue(newList)
-
-                            val newUser = User(false,uid, email, name, newList)
+                            val newUser = User(false,uid,"This user Avatar", email, name, newList)
                             userRef.setValue(newUser)
 
                         }

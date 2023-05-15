@@ -51,7 +51,7 @@ class AdminCategoryDetailFragment : Fragment() {
         val categoryIndex : Int = args.getInt("categoryIndex")
 
         val backBtn = view.findViewById<Button>(R.id.AdminCategoryDetailBackBtn)
-        backBtn.setOnClickListener(){
+        backBtn.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
@@ -63,7 +63,7 @@ class AdminCategoryDetailFragment : Fragment() {
         categoryId.isEnabled = false
 
         val saveBtn = view.findViewById<Button>(R.id.AdminCategoryDetailSaveBtn)
-        saveBtn.setOnClickListener(){
+        saveBtn.setOnClickListener {
             val newName = categoryName.text.toString()
             if(newName == "") {
                 Toast.makeText(requireContext(), "Please fill all information before u save", Toast.LENGTH_SHORT).show()

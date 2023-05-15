@@ -50,7 +50,7 @@ class AdminAuthorAddFragment : Fragment() {
         val authorImg = view.findViewById<EditText>(R.id.AdminAuthorAddImgEt)
 
         val saveBtn = view.findViewById<Button>(R.id.AdminAuthorAddSaveBtn)
-        saveBtn.setOnClickListener(){
+        saveBtn.setOnClickListener {
             val name = authorName.text.toString()
             val desc = authorDesc.text.toString()
             val img = R.drawable.sampleauthor1

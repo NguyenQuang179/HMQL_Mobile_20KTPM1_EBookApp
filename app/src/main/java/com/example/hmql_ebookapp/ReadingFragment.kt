@@ -177,10 +177,10 @@ class RetrievePDFFromURL(pdfView: PDFView, isVertical : Boolean, curPageEt : Edi
             // on below line we are simply printing
             // our exception and returning null
             e.printStackTrace()
-            return null;
+            return null
         }
         // on below line we are returning input stream.
-        return inputStream;
+        return inputStream
     }
 
     override fun onPostExecute(result: InputStream?) {

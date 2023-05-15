@@ -14,11 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -29,7 +25,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.database.*
-import java.time.LocalDateTime
+import com.jakewharton.threetenabp.AndroidThreeTen
+//import java.time.LocalDate
+//import java.time.LocalDateTime
+//import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
+import kotlin.properties.Delegates
+
 
 @SuppressLint("NotifyDataSetChanged")
 @Deprecated("Deprecated in Java")
@@ -88,19 +91,21 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
     }
 }
 
-fun editFavoriteStatus(user: User?, book: Book, favorite_status: Boolean){
+fun editStatus_Favorite_Download(user: User?, book: Book, favorite_status: Boolean, downloaded_status: Boolean){
     if(user != null){
         val bookList = user.listOfBooks.toMutableList()
         val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
-        if(existingBookIndex > 0){
+        if(existingBookIndex >= 0){
+            Log.d("Book_EXISTS", "Book exist in database, editing in list")
             val book_in_list = bookList[existingBookIndex]
 
             //Update the favorite status
-            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded, 3.5, book.cover, book.author)
+            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, downloaded_status, 3.5, book.cover, book.author)
 
         }
         else {
-            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, favorite_status, false, 3.5, book.cover, book.author))
+            Log.d("Book_NOT_EXISTS", "Book not exist in database, adding to user list")
+            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, favorite_status, downloaded_status, 3.5, book.cover, book.author))
 
         }
 
@@ -113,44 +118,47 @@ fun editFavoriteStatus(user: User?, book: Book, favorite_status: Boolean){
     }
 }
 
-fun editDownloadedStatus(user: User?, book: Book, downloaded_status: Boolean){
-    if(user != null){
-        val bookList = user.listOfBooks.toMutableList()
-        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
-//        val book_in_list = bookList[existingBookIndex]
-        if(existingBookIndex > 0){
-            val book_in_list = bookList[existingBookIndex]
+fun addReviewToBookList(user: User?, book: Book?, review: ReviewViewModel): Boolean? { //Function to add Book to User's list of books
+    var confirmation : Boolean = false
+    if (user != null && book != null) {
 
-            //Update the favorite status
-            bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
+        val reviewlist_for_adding = book.reviews.toMutableList()
+        val existingUserNameIndex = reviewlist_for_adding.indexOfFirst { it.userName == user.name}
+        if(existingUserNameIndex >= 0){ //TODO: check thêm avatar người dùng nếu cần
+            Log.d("User_Exists", "Will not add another review")
+
+//            val book_in_list = reviewlist[existingUserNameIndex]
+
+//            //Update the favorite status
+//            reviewlist[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, downloaded_status, 3.5, book.cover, book.author)
         }
         else {
-            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, downloaded_status, 3.5, book.cover, book.author))
+            Log.d("User_NOT_EXISTS", "Adding new review to list")
+            reviewlist_for_adding.add(0, Review(user.name.toString(), user.userAvatar.toString(), review.rating_rate, review.review_text, review.review_date))
+            confirmation = true
+        }
+        // Update the user's list of books in Firebase
+        val booksRef = FirebaseDatabase.getInstance().getReference("book")
+        val bookRef = book.bookID.let { booksRef.child(it) }
+        if (bookRef != null) {
+            bookRef.child("reviews").setValue(reviewlist_for_adding)
+//            Log.d("AVG_RATING", "average rating is ${averagerating.toString()}")
+
         }
 
-        //Update the download status
-//        bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, book_in_list.liked, downloaded_status, 3.5, book.cover, book.author)
 
-        //udpate on database
-        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
-        val userRef = user.userID?.let { usersRef.child(it) }
-        if (userRef != null) {
-            userRef.child("listOfBooks").setValue(bookList)
-        }
     }
+    return confirmation
 }
 
-fun addReviewToBookList(user: User?, book: Book) { //Function to add Book to User's list of books
-    if (user != null) {
-//        val bookList = user.listOfBooks.toMutableList()
-//        val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
-//
-//        // Update the user's list of books in Firebase
-//        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
-//        val userRef = user.userID?.let { usersRef.child(it) }
-//        if (userRef != null) {
-//            userRef.child("listOfBooks").setValue(bookList)
-//        }
+fun editAvgRatingForBook(user: User?, book: Book?, averagerating: Double){
+    if(book != null){
+        Log.d("AVG_RATING", "average rating is ${averagerating}")
+        val booksRef = FirebaseDatabase.getInstance().getReference("book")
+        val bookRef = book.bookID.let { booksRef.child(it) }
+        if(bookRef != null && !averagerating.isNaN()){
+            bookRef.child("averageStar").setValue(averagerating)
+        }
     }
 }
 
@@ -165,12 +173,13 @@ class BookIntroductionFragment : Fragment() {
     lateinit var authorNameList : Array<String>
     lateinit var bookImgIdList : Array<Int>
 
-    lateinit var bookID: String;
-    lateinit var userID: String;
+    lateinit var bookID: String
+    lateinit var userID: String
     private var bookRelated = ArrayList<Book>()
     private var recommendationAdapter = RecommendationAdapter(bookRelated)
     private lateinit var RecommendationBooksRV: RecyclerView
     private lateinit var data: Book
+    private var average_rating : Double = 0.0
 
     private lateinit var adapter_review: ReviewAdapterClass
     private fun sampleDataInit() {
@@ -179,26 +188,55 @@ class BookIntroductionFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
                     data = snapshot.getValue(Book::class.java)!!
-                    val bookTV = view?.findViewById<TextView>(R.id.bookTV);
-                    bookTV!!.setText(data!!.title)
-                    val authorTV = view?.findViewById<TextView>(R.id.authorTV);
-                    authorTV!!.setText(data!!.author)
-                    val ratingTV = view?.findViewById<TextView>(R.id.RatingTV);
-                    ratingTV!!.setText(data!!.averageStar.toString())
-                    val Synopsis_detailTV = view?.findViewById<TextView>(R.id.Synopsis_detailTV);
-                    Synopsis_detailTV!!.setText(data!!.description)
-                    val bookIV = view?.findViewById<ImageView>(R.id.bookIV);
+                    val bookTV = view?.findViewById<TextView>(R.id.bookTV)
+                    bookTV!!.text = data.title
+                    val authorTV = view?.findViewById<TextView>(R.id.authorTV)
+                    authorTV!!.text = data.author
+                    val ratingTV = view?.findViewById<TextView>(R.id.RatingTV)
+                    // Change to auto calculating average star
+
+                    val rating_list: ArrayList<Float> = arrayListOf()
+//                    ratingTV!!.text = data.averageStar.toString()
+                    val Synopsis_detailTV = view?.findViewById<TextView>(R.id.Synopsis_detailTV)
+                    Synopsis_detailTV!!.text = data.description
+                    val bookIV = view?.findViewById<ImageView>(R.id.bookIV)
                     if (bookIV != null) {
                         Glide.with(requireContext())
                             .load(data.cover)
                             .into(bookIV)
-                    };
+                    }
                     if (data.reviews.size > 0){
-                        reviewList = data.reviews as ArrayList<Review>
+                        reviewList.clear()
+                        for(review in data.reviews){
+                            Log.d("BOOK_RATING", "Book rating is ${data.reviews}")
+                            val rating= review.rating.toString() + "f"
+                            rating_list.add(review.rating.toFloat())
+                            val user_review = ReviewViewModel(review.userAvatar, review.userName, rating.toFloat(), review.rating, review.content, review.datetime)
+                            reviewList.add(user_review)
+                        }
+
+//                        reviewList = data.reviews as ArrayList<Review>
                         Log.i("review", "${reviewList.size}")
                         adapter_review = ReviewAdapterClass(reviewList)
                         ReviewRV.adapter = adapter_review
+
+
                     }
+
+                    average_rating = rating_list.average().toDouble()
+                    if (ratingTV != null) {
+//                        Log.d("BOOK_RATING", "Book rating is $average_rating")
+                        if(average_rating.toString() == "NaN"){
+                            ratingTV.text = "0.0"
+                            editAvgRatingForBook(user,data,0.0)
+                        }
+                        else {
+                            ratingTV.text = average_rating.toString()
+                            editAvgRatingForBook(user,data,average_rating)
+                        }
+
+                    }
+
                     if (data.categories.size > 0){
                         categoryList = data.categories as ArrayList<Category>
                         adapterTags = TagsAdapterClass(categoryList)
@@ -222,13 +260,13 @@ class BookIntroductionFragment : Fragment() {
                         val book = child.getValue(Book::class.java)
                         if (book!!.bookID != data.bookID)
                         {
-                            if (book!!.categories.size > 0)
+                            if (book.categories.size > 0)
                             {
                                 if (data.categories.intersect(book.categories).isNotEmpty()){
-                                    book?.let { bookRelated.add(it) }
+                                    book.let { bookRelated.add(it) }
                                 }
                                 else if (data.author == book.author){
-                                    book?.let { bookRelated.add(it) }
+                                    book.let { bookRelated.add(it) }
                                 }
                                 else{
 
@@ -238,7 +276,7 @@ class BookIntroductionFragment : Fragment() {
 
                     }
                     Log.d("Books related size", "Number of books: ${bookRelated.size}")
-                    bookRelated.sortDescending();
+                    bookRelated.sortDescending()
                     if (bookRelated.size > 5) bookRelated = ArrayList(bookRelated.subList(0, 5))
                     recommendationAdapter = RecommendationAdapter(bookRelated)
                     RecommendationBooksRV.layoutManager =
@@ -266,7 +304,7 @@ class BookIntroductionFragment : Fragment() {
         })
     }
 
-    private var reviewList = ArrayList<Review>()
+    private var reviewList = ArrayList<ReviewViewModel>()
     lateinit var reviewerImageList : Array<Int>
     lateinit var reviewerNameList : Array<String>
     lateinit var reviewRatingValueList : Array<Float>
@@ -293,6 +331,7 @@ class BookIntroductionFragment : Fragment() {
     val STORAGE_PERMISSION_CODE: Int = 1000
     val REQUEST_CODE = 123
     var thiscontext: Context? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -304,8 +343,9 @@ class BookIntroductionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var bookFavouriteStatus : Boolean
-        var bookDownloadedStatus : Boolean
+        AndroidThreeTen.init(this.context)
+        var bookFavouriteStatus : Boolean = false
+        var bookDownloadedStatus : Boolean = false
         val bundle = arguments
 
         if (bundle != null) {
@@ -318,6 +358,7 @@ class BookIntroductionFragment : Fragment() {
 
         sampleDataInit()
         recommendDataInit()
+
 
         TagsRV = view.findViewById<RecyclerView>(R.id.TagsRV)
 //        val ChaptersRV = view.findViewById<RecyclerView>(R.id.ChaptersRV)
@@ -336,24 +377,27 @@ class BookIntroductionFragment : Fragment() {
 
         for (book in user.listOfBooks) {
 //            Toast.makeText(this.context,"${book.bookName} and ${bookID}",Toast.LENGTH_SHORT).show()
-            if(book.bookID == bookID){
+            if(book != null){
+                if(book.bookID == bookID){
 
-                if(book.liked == true){
+                    if(book.liked == true){
 //                    Toast.makeText(this.context,"${book.bookName} is liked",Toast.LENGTH_SHORT).show()
-                    LikedButton.setImageResource(R.drawable.bookmark_solid)
-                    LikedButton.tag = "bookmarked"
-                    bookFavouriteStatus = true
-                }
-                else {
+                        LikedButton.setImageResource(R.drawable.bookmark_solid)
+                        LikedButton.tag = "bookmarked"
+                    }
+                    else {
 //                    Toast.makeText(this.context,"${book.bookName} is not liked",Toast.LENGTH_SHORT).show()
-                    LikedButton.setImageResource(R.drawable.bookmark_regular)
-                    LikedButton.tag = "bookmark"
-                    bookFavouriteStatus = false
+                        LikedButton.setImageResource(R.drawable.bookmark_regular)
+                        LikedButton.tag = "bookmark"
+                    }
+                    bookFavouriteStatus = book.liked == true
+                    bookDownloadedStatus = book.downloaded == true
+//                    Toast.makeText(this.context, "this bookID: ${book.bookID}", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this.context, "book is liked: ${book.liked} and is downloaded: ${book.downloaded}", Toast.LENGTH_SHORT).show()
                 }
-                bookDownloadedStatus = book.downloaded == true
             }
-        }
 
+        }
 
 
         // this creates a vertical layout Manager
@@ -392,8 +436,8 @@ class BookIntroductionFragment : Fragment() {
         }
 
         ReviewRV.adapter = adapter_review
-
-        SeeMoreRecBtn!!.setOnClickListener() {
+//        ReviewRV.adapter?.notifyDataSetChanged()
+        SeeMoreRecBtn!!.setOnClickListener {
 //            Toast.makeText(this.context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
             requireActivity().supportFragmentManager.commit {
                 replace<HomeFragment>(R.id.fragment_container_view)
@@ -414,7 +458,7 @@ class BookIntroductionFragment : Fragment() {
                 bookFavouriteStatus = false
             }
 
-            editFavoriteStatus(user, data, bookFavouriteStatus)
+            editStatus_Favorite_Download(user, data, bookFavouriteStatus, bookDownloadedStatus)
         }
 
         ReadButton.setOnClickListener {
@@ -467,14 +511,14 @@ class BookIntroductionFragment : Fragment() {
                 else{
                     //permission already granted, perform download
                     bookDownloadedStatus = true
-                    editDownloadedStatus(user, data, bookDownloadedStatus)
+                    editStatus_Favorite_Download(user, data, bookFavouriteStatus, bookDownloadedStatus)
                     startDownloading()
                 }
             }
             else{
                 //system os is less than marshmallow, runtime permission not required, perform downlaod
                 bookDownloadedStatus = true
-                editDownloadedStatus(user, data, bookDownloadedStatus)
+                editStatus_Favorite_Download(user, data, bookFavouriteStatus, bookDownloadedStatus)
                 startDownloading()
             }
         }
@@ -534,21 +578,36 @@ class BookIntroductionFragment : Fragment() {
         }
     }
 
+
+
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, result_data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, result_data)
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val review_text = data!!.extras!!.getString("REVIEW")
-            val rating_value = data.extras!!.getString("RATING")
+            val review_text = result_data!!.extras!!.getString("REVIEW")
+            val rating_value = result_data.extras!!.getString("RATING")
             val rating_bar_value = rating_value + "f"
             Log.d("REVIEW", review_text.toString())
             Log.d("RATING", rating_value.toString())
+            var datetime = LocalDateTime.now()
+            val date = datetime.toLocalDate()
+            val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+            val formatted_date = date.format(formatter)
+            val newReview = ReviewViewModel(user.userAvatar.toString(), user.name.toString(), rating_bar_value.toString().toFloat(), rating_value.toString(), review_text.toString(), formatted_date.toString() )
 
-            val newReview = Review(user.name.toString(), "New User", rating_bar_value.toString().toInt(), review_text.toString(), LocalDateTime.now().toString() )
+//            reviewList.add(0, newReview)
+            val confirmation_adding_review : Boolean = addReviewToBookList(user,data,newReview) == true
+//            addAvgRatingForBook(user,data,average_rating)
 
-            reviewList.add(0, newReview)
+           if(confirmation_adding_review){
+               Toast.makeText(this.context,"Successfully adding review to this book! Thank you for your time", Toast.LENGTH_SHORT).show()
+           }
+            else{
+               Toast.makeText(this.context,"You have already added a review for this book", Toast.LENGTH_SHORT).show()
 
-            ReviewRV.adapter?.notifyDataSetChanged()
+           }
+//            ReviewRV.adapter?.notifyDataSetChanged()
+            reviewList.clear()
         }
     }
 

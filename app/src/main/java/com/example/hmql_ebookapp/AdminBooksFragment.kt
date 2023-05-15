@@ -58,7 +58,7 @@ class AdminBooksFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val backBtn = view.findViewById<Button>(R.id.AdminBookBackBtn)
-        backBtn.setOnClickListener(){
+        backBtn.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
@@ -95,12 +95,12 @@ class AdminBooksFragment : Fragment() {
                         val newAuthor = bundle.getString("newAuthor")
                         val bookID = bundle.getString("bookID")
                         val newDesc = bundle.getString("newDesc")
-                        var newTag = bundle.getString("newCategoryList");
+                        var newTag = bundle.getString("newCategoryList")
                         val bookIndex = bundle.getString("bookIndex")?.toInt()
 
                         listOfBook[bookIndex!!].title = newTitle!!
-                        listOfBook[bookIndex!!].author = newAuthor!!
-                        listOfBook[bookIndex!!].description = newDesc!!
+                        listOfBook[bookIndex].author = newAuthor!!
+                        listOfBook[bookIndex].description = newDesc!!
                         newTag = newTag?.replace(", ", ",")
                         val substrings = newTag?.split(",")
                         val listOfCategory = ArrayList<Category>()
@@ -110,9 +110,9 @@ class AdminBooksFragment : Fragment() {
                                 listOfCategory.add(newCategory)
                             }
                         }
-                        listOfBook[bookIndex!!].categories = listOfCategory!!
-                        val refTemp = FirebaseDatabase.getInstance().getReference("book/${bookID}");
-                        refTemp.setValue(listOfBook[bookIndex!!])
+                        listOfBook[bookIndex].categories = listOfCategory
+                        val refTemp = FirebaseDatabase.getInstance().getReference("book/${bookID}")
+                        refTemp.setValue(listOfBook[bookIndex])
                         booksRvAdapter.notifyDataSetChanged()
                     }
 
@@ -120,7 +120,7 @@ class AdminBooksFragment : Fragment() {
                         val newTitle = bundle.getString("newTitle")
                         val newAuthor = bundle.getString("newAuthor")
                         val newDesc = bundle.getString("newDesc")
-                        var newTag = bundle.getString("newCategoryList");
+                        var newTag = bundle.getString("newCategoryList")
                         newTag = newTag?.replace(", ", ",")
                         val substrings = newTag?.split(",")
                         val listOfCategory = ArrayList<Category>()
@@ -130,16 +130,16 @@ class AdminBooksFragment : Fragment() {
                                 listOfCategory.add(newCategory)
                             }
                         }
-                        val refTemp = FirebaseDatabase.getInstance().getReference("book");
+                        val refTemp = FirebaseDatabase.getInstance().getReference("book")
                         val newChild = refTemp.push()
-                        var newBook : Book? = newChild!!.key?.let { Book(it,newTitle!!, newAuthor!!, newDesc!!, 2002, 0.0, 0,"","", listOfCategory)}
-                        newChild.setValue(newBook);
+                        var newBook : Book? = newChild.key?.let { Book(it,newTitle!!, newAuthor!!, newDesc!!, 2002, 0.0, 0,"","", listOfCategory)}
+                        newChild.setValue(newBook)
                         listOfBook.add(newBook!!)
                         booksRvAdapter.notifyDataSetChanged()
                     }
 
                     val addBtn = view.findViewById<FloatingActionButton>(R.id.AdminBookAddBtn)
-                    addBtn.setOnClickListener(){
+                    addBtn.setOnClickListener {
                         requireActivity().supportFragmentManager.commit {
                             replace<AdminBookAddFragment>(R.id.fragmentContainerView2)
                             setReorderingAllowed(true)

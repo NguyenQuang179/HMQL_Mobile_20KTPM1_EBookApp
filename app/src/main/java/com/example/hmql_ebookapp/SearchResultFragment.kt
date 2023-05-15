@@ -71,14 +71,14 @@ class SearchResultFragment : Fragment() {
         sampleDataInit()
 
         var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
-        autoCompleteTV.setText(searchString);
+        autoCompleteTV.setText(searchString)
 
         autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                adapter?.filter?.filter(p0)
-                adapter.notifyDataSetChanged();
+                adapter.filter?.filter(p0)
+                adapter.notifyDataSetChanged()
                 //customRecyclerView!!.adapter = adapter
             }
         })
