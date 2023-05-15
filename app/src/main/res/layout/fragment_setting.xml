@@ -66,7 +66,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="44dp"
         android:contentDescription="Font Size Slider"
         android:stepSize="2"
@@ -78,7 +78,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settingFontSizeTv"
+        app:layout_constraintTop_toBottomOf="@+id/fontSizeTv"
         app:thumbColor="?attr/colorPrimary"
         app:thumbRadius="14dp"
         app:tickColorActive="?attr/colorSecondary"
@@ -229,5 +229,20 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settingSaveBtn" />
+
+    <TextView
+        android:id="@+id/fontSizeTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_semibold"
+        android:text="14"
+        android:textAlignment="center"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingFontSizeTv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

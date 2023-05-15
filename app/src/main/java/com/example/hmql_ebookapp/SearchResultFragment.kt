@@ -1,6 +1,5 @@
 package com.example.hmql_ebookapp
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,9 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.Toast
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -36,8 +33,12 @@ class SearchResultFragment : Fragment() {
 
     lateinit var books : ArrayList<Book>
     lateinit var searchString: String
-    lateinit var customRecyclerView: RecyclerView
-    lateinit var adapter: MyFilteredBookAdapter
+    var categoryChoiceList = ArrayList<String>()
+    lateinit var customRecyclerView: RecyclerView;
+    lateinit var adapter: MyFilteredBookAdapter;
+    lateinit var customRecyclerView2: RecyclerView
+    var categoryList = ArrayList<Category>()
+    var adapter2 = MyRecyclerViewForCategoryChoice(ArrayList(), null)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -59,8 +60,13 @@ class SearchResultFragment : Fragment() {
         val bundle = arguments
         if (bundle != null) {
             searchString = bundle.getString("searchString").toString()
-            // Sử dụng giá trị dữ liệu trong SearchResultFragment
+            categoryChoiceList = bundle.getStringArrayList("choiceList") as ArrayList<String>;
+            for (category in categoryChoiceList) {
+                Log.i("Choice", category)
+            }
         }
+        customRecyclerView2 = view.findViewById<RecyclerView>(R.id.categoryChoiceRV)
+
         customRecyclerView = view.findViewById<RecyclerView>(R.id.searchResultRV)
         sampleDataInit()
 
@@ -109,8 +115,8 @@ class SearchResultFragment : Fragment() {
                         book?.let { books.add(it) }
                     }
                     Log.d("Books size", "Number of books: ${books.size}")
-                    adapter = MyFilteredBookAdapter(books)
-                    customRecyclerView.adapter = adapter
+                    adapter = MyFilteredBookAdapter(books, categoryChoiceList)
+                    customRecyclerView!!.adapter = adapter
                     adapter.onItemClick = { book ->
                         requireActivity().supportFragmentManager.commit {
                             replace<BookIntroductionFragment>(R.id.fragment_container_view)
@@ -119,12 +125,54 @@ class SearchResultFragment : Fragment() {
                         }
                     }
                     adapter.filter.filter(searchString)
-                    adapter.notifyDataSetChanged()
+                    adapter.notifyDataSetChanged();
+                    adapter2.setAdapter2(adapter)
+                    adapter2.notifyDataSetChanged()
                     val layoutManager = LinearLayoutManager(context)
                     customRecyclerView.layoutManager = layoutManager
                     val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,
                         DividerItemDecoration.VERTICAL)
                     customRecyclerView.addItemDecoration(itemDecoration)
+                    adapter.onItemClick = { book ->
+                        Log.i("In", "Chuyen trang")
+                        val bundle = Bundle()
+                        bundle.putString("bookID", book.bookID)
+
+                        val fragment = BookIntroductionFragment()
+                        fragment.arguments = bundle
+
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragment_container_view, fragment)
+                            setReorderingAllowed(true)
+                            addToBackStack("BookIntroductionFragment")
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Error", "Failed to read value.", error.toException())
+            }
+        })
+
+        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("category")
+        ref2.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val category = child.getValue(Category::class.java)
+                        category?.let { categoryList.add(it) }
+                    }
+                    Log.d("Books size", "Number of books: ${books.size}")
+                    adapter2 = MyRecyclerViewForCategoryChoice(categoryList, adapter)
+                    customRecyclerView2!!.adapter = adapter2
+                    adapter2.setCategoryChoiceList(categoryChoiceList)
+                    val layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    customRecyclerView2.layoutManager = layoutManager
+                    adapter2.onItemClick = { category ->
+                        Log.i("Click", "HEllo")
+                    }
                 }
             }
 

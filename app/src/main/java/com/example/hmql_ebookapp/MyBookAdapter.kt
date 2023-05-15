@@ -13,6 +13,8 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 
 fun getColor(context: Context, colorResId: Int): Int {
@@ -76,9 +78,17 @@ class MyBookAdapter(private val books : List<UserBook>)
         //holder.bookImgView.setOnClickListener { holder.bookImgView.setImageResource(R.drawable.ic_baseline_favorite_24) }
         holder.bookmarkImgBtn.setOnClickListener {
             if (holder.bookmarkImgBtn.tag == "bookmark") {
+                //update the liked status to true in the firebase
+                val databaseRef = FirebaseDatabase.getInstance().getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/listOfBooks/${position}")
+                databaseRef.child("liked").setValue(true)
                 holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_solid)
                 holder.bookmarkImgBtn.tag = "bookmarked"
+
+
             } else {
+                //update the liked status to false in the firebase
+                val databaseRef = FirebaseDatabase.getInstance().getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/listOfBooks/${position}")
+                databaseRef.child("liked").setValue(false)
                 holder.bookmarkImgBtn.setImageResource(R.drawable.bookmark_regular)
                 holder.bookmarkImgBtn.tag = "bookmark"
             }

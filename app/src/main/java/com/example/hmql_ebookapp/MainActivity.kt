@@ -91,9 +91,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userViewModel: UserViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
-
-
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             setTheme(R.style.darkTheme) //when dark mode is enabled, we use the dark theme
         } else {
@@ -103,15 +100,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        init()
-//        startActivityForResult(
-//            AuthUI.getInstance()
-//                .createSignInIntentBuilder()
-//                .setAvailableProviders(providers)
-//                .setTheme(R.style.LoginTheme)
-//                .build(),
-//            AUTH_REQUEST_CODE
-//        )
+        init();
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTheme(R.style.LoginTheme)
+                .build(),
+            AUTH_REQUEST_CODE
+        )
 
 //        for (i in 1..10){
 //            val listOfBook = arrayListOf<String>((i+1).toString(),(i+2).toString(),(i+3).toString(),(i+4).toString())
@@ -129,23 +126,23 @@ class MainActivity : AppCompatActivity() {
         //init the ViewModel for mainActivity
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
-        val list = arrayListOf<Book>()
-        val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
-        ref1.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()){
-                    for (child in snapshot.children){
-                        val book = child.getValue(Book::class.java)
-                        list.add(book!!)
-                    }
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
-        Log.d("Book on main activity", "Number of books: ${list.size}")
+//        val list = arrayListOf<Book>();
+//        val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+//        ref1.addValueEventListener(object : ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                if (snapshot.exists()){
+//                    for (child in snapshot.children){
+//                        val book = child.getValue(Book::class.java)
+//                        list.add(book!!);
+//                    }
+//                }
+//            }
+//            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+//            }
+//
+//        })
+//        Log.d("Book on main activity", "Number of books: ${list.size}")
 //
 //        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book/sadfsdfadf")
 //        ref2.addValueEventListener(object : ValueEventListener{
@@ -164,14 +161,14 @@ class MainActivity : AppCompatActivity() {
 //
 //        })
 
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .setTheme(R.style.LoginTheme)
-                .setLogo(R.drawable.logo)
-                .build(), AUTH_REQUEST_CODE
-        )
+//        startActivityForResult(
+//            AuthUI.getInstance()
+//                .createSignInIntentBuilder()
+//                .setAvailableProviders(providers)
+//                .setTheme(R.style.LoginTheme)
+//                .setLogo(R.drawable.logo)
+//                .build(), AUTH_REQUEST_CODE
+//        )
 
 
 //        supportFragmentManager.commit {

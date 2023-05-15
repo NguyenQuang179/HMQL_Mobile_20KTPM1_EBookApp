@@ -54,12 +54,34 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
     if (user != null) {
         val bookList = user.listOfBooks.toMutableList()
         val existingBookIndex = bookList.indexOfFirst { it.bookID == book.bookID }
+        var tempBook: UserBook? = null;
         if (existingBookIndex >= 0) {
             // If the book already exists in the list, remove it
+            tempBook = bookList[existingBookIndex]
             bookList.removeAt(existingBookIndex)
         }
+
+        // Store note data in Firebase Realtime Database
+        val database = FirebaseDatabase.getInstance()
+        val bookRef = database.getReference("/Users/${user!!.userID}/listOfBooks/${existingBookIndex}")
+        var notesData: NotesData? = null;
+        //Get list at that point
+        bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userBook = snapshot.getValue(UserBook::class.java)
+                val notesData = userBook?.notes
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle errors here
+            }
+        })
+
+
         // Add the book to the beginning of the list
-        bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, false, 3.5, book.cover, book.author))
+        if (tempBook != null) {
+            bookList.add(0, UserBook(book.bookID, book.title, 1, 1, false, false, 3.5, book.cover, book.author, notesData))
+        }
         // Update the user's list of books in Firebase
         val usersRef = FirebaseDatabase.getInstance().getReference("Users")
         val userRef = user.userID?.let { usersRef.child(it) }
@@ -162,7 +184,7 @@ class BookIntroductionFragment : Fragment() {
     private lateinit var adapter_review: ReviewAdapterClass
     private fun sampleDataInit() {
         val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book/${bookID}")
-        ref2.addValueEventListener(object : ValueEventListener {
+        ref2.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
                     data = snapshot.getValue(Book::class.java)!!
@@ -347,6 +369,7 @@ class BookIntroductionFragment : Fragment() {
         val AddReviewButton = view.findViewById<Button>(R.id.WriteReviewBtn)
 
         val ReadButton = view.findViewById<Button>(R.id.ReadBtn)
+        val ReadAsPDFButton = view.findViewById<Button>(R.id.ReadAsPDFBtn)
 
         val BackButton = view.findViewById<ImageButton>(R.id.backBtn)
         val LikedButton = view.findViewById<ImageButton>(R.id.LikeBtn)
@@ -382,7 +405,8 @@ class BookIntroductionFragment : Fragment() {
 //        ChaptersRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         RecommendationBooksRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
-        ReviewRV.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        ReviewRV.layoutManager =
+            LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
         val data_tags = ArrayList<TagsViewModel>()
         val data_chapters = ArrayList<ChapterViewModel>()
@@ -438,18 +462,39 @@ class BookIntroductionFragment : Fragment() {
         }
 
         ReadButton.setOnClickListener {
+            val readingFragmentBundle = Bundle()
+            readingFragmentBundle.putString("readingMode", "text")
+            readingFragmentBundle.putString("bookId", data.bookID)
+            val readingFragment = ReadingFragment()
+            readingFragment.arguments = readingFragmentBundle
             requireActivity().supportFragmentManager.commit {
-                replace<ReadingFragment>(R.id.fragment_container_view)
+                replace(R.id.fragment_container_view, readingFragment)
                 setReorderingAllowed(true)
                 addToBackStack("readFragment")
                 // Add To History, if already in history then pop it out and push it to the top
 
                 //set the user info
-                val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+                val userViewModel =
+                    ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
                 val user = userViewModel.user
                 addBookToUserList(user, data)
                 //Update user after update
 
+                //update
+            }
+        }
+
+
+        ReadAsPDFButton.setOnClickListener {
+            val readingFragmentBundle = Bundle()
+            readingFragmentBundle.putString("readingMode", "pdf")
+            readingFragmentBundle.putString("bookId", data.bookID)
+            val readingFragment = ReadingFragment()
+            readingFragment.arguments = readingFragmentBundle
+            requireActivity().supportFragmentManager.commit {
+                replace(R.id.fragment_container_view, readingFragment)
+                setReorderingAllowed(true)
+                addToBackStack("readFragment")
             }
         }
 
@@ -485,7 +530,10 @@ class BookIntroductionFragment : Fragment() {
         AddReviewButton.setOnClickListener {
             val reviewPopUp = ReviewPopupFragment()
             reviewPopUp.setTargetFragment(this, REQUEST_CODE)
-            reviewPopUp.show((this.context as AppCompatActivity).supportFragmentManager, "reviewPopup")
+            reviewPopUp.show(
+                (this.context as AppCompatActivity).supportFragmentManager,
+                "reviewPopup"
+            )
         }
     }
 

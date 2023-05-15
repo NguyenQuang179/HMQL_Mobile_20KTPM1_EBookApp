@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -65,10 +66,17 @@ class MyBooks_HistoryFragment : Fragment() {
         myBookRv.adapter = myBookRvAdapter
 
         myBookRvAdapter.onItemClick = { book ->
+            Log.i("In", "Chuyen trang")
+            val bundle = Bundle()
+            bundle.putString("bookID", book.bookID)
+
+            val fragment = BookIntroductionFragment()
+            fragment.arguments = bundle
+
             requireActivity().supportFragmentManager.commit {
-                replace<BookIntroductionFragment>(R.id.fragment_container_view)
+                replace(R.id.fragment_container_view, fragment)
                 setReorderingAllowed(true)
-                addToBackStack("bookIntroductionFragment") // name can be null
+                addToBackStack("BookIntroductionFragment")
             }
         }
     }

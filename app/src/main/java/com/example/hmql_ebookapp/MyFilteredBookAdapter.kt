@@ -14,8 +14,18 @@ import android.content.Context
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MyFilteredBookAdapter(private val books : ArrayList<Book>)
+class MyFilteredBookAdapter(private val books : ArrayList<Book>, private var categoriesToFilter : ArrayList<String> )
     : RecyclerView.Adapter<MyFilteredBookAdapter.ViewHolder>(), Filterable{
+
+    public var tempString: String = ""
+    fun setCategoriesToFilter(categories: ArrayList<String>) {
+        categoriesToFilter = categories
+        notifyDataSetChanged()
+    }
+
+    fun getCategoriesToFilter(): ArrayList<String> {
+        return categoriesToFilter
+    }
 
     var onItemClick: ((Book) -> Unit)? = null
     var filteredBooks = ArrayList<Book>()
@@ -86,14 +96,39 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>)
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val charSearch = constraint.toString()
+                tempString = charSearch
                 if (charSearch.isEmpty()) {
-                    filteredBooks = books
+                    val resultList = ArrayList<Book>()
+                    if (categoriesToFilter.size == 0){
+                        filteredBooks = books;
+                    }
+                    else{
+                        for (row in books) {
+                            toBreak@ for (category in row.categories){
+                                if (categoriesToFilter.contains(category.categoryName)){
+                                    resultList.add(row)
+                                    break@toBreak
+                                }
+                            }
+                        }
+                        filteredBooks = resultList
+                    }
                 } else {
                     val resultList = ArrayList<Book>()
                     for (row in books) {
-                        if (row.title.lowercase(Locale.getDefault()).contains(constraint.toString()
-                                .lowercase(Locale.getDefault()))) {
-                            resultList.add(row)
+                        if (row.title.toLowerCase().contains(charSearch.toLowerCase())) {
+                            if (categoriesToFilter.size > 0){
+                                Log.i("Filter size", categoriesToFilter.size.toString())
+                                for (category in row.categories){
+                                    if (categoriesToFilter.contains(category.categoryName)){
+                                        resultList.add(row)
+                                        break
+                                    }
+                                }
+                            }
+                            else{
+                                resultList.add(row)
+                            }
                         }
                     }
                     filteredBooks = resultList
