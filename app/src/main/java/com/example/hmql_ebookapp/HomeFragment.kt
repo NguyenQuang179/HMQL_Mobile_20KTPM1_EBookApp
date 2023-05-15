@@ -151,7 +151,9 @@ class HomeFragment : Fragment() {
                     }
                     Log.d("Books size", "Number of books: ${bookList.size}")
                     bookList.sortDescending();
-                    bookList = ArrayList(bookList.subList(0, 5))
+                    if (bookList.size > 5){
+                        bookList = ArrayList(bookList.subList(0, 5))
+                    }
                     favBookRvAdapter = FavouriteBookAdapter(bookList)
                     favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                     favBookRv.adapter = favBookRvAdapter

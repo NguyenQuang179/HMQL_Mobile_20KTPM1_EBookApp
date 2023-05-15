@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,10 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,13 +34,11 @@ class AdminCategoriesFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    private lateinit var listOfCategory : ArrayList<Category>
     lateinit var categoryIdList : Array<String>
     lateinit var categoryNameList : Array<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sampleDataInit()
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -58,46 +61,70 @@ class AdminCategoriesFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
-        val categoriesRv = view.findViewById<RecyclerView>(R.id.AdminCategoryRecyclerView)
-        val categoriesRvAdapter = AdminCategoryRecyclerViewAdapter(listOfCategory)
-        categoriesRv.layoutManager = LinearLayoutManager(requireContext())
-        categoriesRv.adapter = categoriesRvAdapter
-        categoriesRvAdapter.onItemClick = {category ->
-            Toast.makeText(requireContext(), category.categoryName.toString(), Toast.LENGTH_SHORT).show()
-            val bundle = Bundle()
-            bundle.putSerializable("categoryDetail", category)
-            bundle.putInt("categoryIndex", listOfCategory.indexOf(category))
-            val categoryDetailFragment = AdminCategoryDetailFragment()
-            categoryDetailFragment.arguments = bundle
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragmentContainerView2, categoryDetailFragment)
-                setReorderingAllowed(true)
-                addToBackStack("adminCategoryDetail")
-            }
-        }
+        val listOfCategory = ArrayList<Category>()
+        val ref = FirebaseDatabase.getInstance().getReference("category")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val category = child.getValue(Category::class.java)
+                        category?.let { listOfCategory.add(it) }
+                    }
+                    Log.d("Books size", "Number of books: ${listOfCategory.size}")
+                    val categoriesRv = view.findViewById<RecyclerView>(R.id.AdminCategoryRecyclerView)
+                    val categoriesRvAdapter = AdminCategoryRecyclerViewAdapter(listOfCategory)
+                    categoriesRv.layoutManager = LinearLayoutManager(requireContext())
+                    categoriesRv.adapter = categoriesRvAdapter
+                    categoriesRvAdapter.onItemClick = {category ->
+                        Toast.makeText(requireContext(), category.categoryName.toString(), Toast.LENGTH_SHORT).show()
+                        val bundle = Bundle()
+                        bundle.putSerializable("categoryDetail", category)
+                        bundle.putInt("categoryIndex", listOfCategory.indexOf(category))
+                        val categoryDetailFragment = AdminCategoryDetailFragment()
+                        categoryDetailFragment.arguments = bundle
+                        Log.i("before", listOfCategory.size.toString())
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragmentContainerView2, categoryDetailFragment)
+                            setReorderingAllowed(true)
+                            addToBackStack("adminCategoryDetail")
+                        }
+                    }
 
-        setFragmentResultListener("editCategory") { key, bundle ->
-            val newName = bundle.getString("newName")
-            val categoryIndex = bundle.getInt("categoryIndex")
-            listOfCategory[categoryIndex].categoryName = newName!!
-            categoriesRvAdapter.notifyDataSetChanged()
-        }
+                    setFragmentResultListener("editCategory") { key, bundle ->
+                        val newName = bundle.getString("newName")
+                        val categoryIndex = bundle.getInt("categoryIndex")
+                        listOfCategory[categoryIndex].categoryName = newName!!
+                        val refTemp = FirebaseDatabase.getInstance().getReference("category/${listOfCategory[categoryIndex!!].categoryID}");
+                        refTemp.setValue(listOfCategory[categoryIndex!!])
+                        categoriesRvAdapter.notifyDataSetChanged()
+                    }
 
-        val addBtn = view.findViewById<FloatingActionButton>(R.id.AdminCategoryAddBtn)
-        addBtn.setOnClickListener() {
-            requireActivity().supportFragmentManager.commit {
-                replace<AdminCategoryAddFragment>(R.id.fragmentContainerView2)
-                setReorderingAllowed(true)
-                addToBackStack("adminCategoryAdd")
+                    val addBtn = view.findViewById<FloatingActionButton>(R.id.AdminCategoryAddBtn)
+                    addBtn.setOnClickListener() {
+                        requireActivity().supportFragmentManager.commit {
+                            replace<AdminCategoryAddFragment>(R.id.fragmentContainerView2)
+                            setReorderingAllowed(true)
+                            addToBackStack("adminCategoryAdd")
+                        }
+                    }
+                    setFragmentResultListener("addCategory") { key, bundle ->
+                        val newName = bundle.getString("name")
+                        val refTemp = FirebaseDatabase.getInstance().getReference("category");
+                        val newChild = refTemp.push()
+                        val newCategory : Category? = newChild.key?.let { Category(newName.toString(), it) }
+                        newChild.setValue(newCategory)
+                        if (newCategory != null) {
+                            listOfCategory.add(newCategory)
+                        }
+                        categoriesRvAdapter.notifyDataSetChanged()
+                    }
+                }
             }
-        }
-        setFragmentResultListener("addCategory") { key, bundle ->
-            val newID = bundle.getString("id")
-            val newName = bundle.getString("name")
-            val newCategory : Category = Category(newID.toString(), newName.toString())
-            listOfCategory.add(newCategory)
-            categoriesRvAdapter.notifyDataSetChanged()
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Error", "Failed to read value.", error.toException())
+            }
+        })
     }
 
     companion object {
@@ -118,40 +145,5 @@ class AdminCategoriesFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
-    }
-
-    private fun sampleDataInit() {
-        listOfCategory = arrayListOf<Category>()
-
-        categoryIdList = arrayOf(
-            "0001",
-            "0002",
-            "0003",
-            "0004",
-            "0005",
-            "0006",
-            "0007",
-            "0008",
-            "0009",
-            "0010",
-        )
-
-        categoryNameList = arrayOf(
-            "Classics",
-            "Fantasy",
-            "Sci-fi",
-            "Adventure",
-            "Horror",
-            "Novel",
-            "Short Story",
-            "Mystery",
-            "Historical Fiction",
-            "Tragedy"
-        )
-
-        for(i in categoryIdList.indices) {
-            val category = Category(categoryIdList[i], categoryNameList[i])
-            listOfCategory.add(category)
-        }
     }
 }

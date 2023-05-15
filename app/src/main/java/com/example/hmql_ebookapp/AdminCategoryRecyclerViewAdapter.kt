@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.FirebaseDatabase
 
 class AdminCategoryRecyclerViewAdapter(private val categories : ArrayList<Category>)
     : RecyclerView.Adapter<AdminCategoryRecyclerViewAdapter.ViewHolder>() {
@@ -40,9 +41,17 @@ class AdminCategoryRecyclerViewAdapter(private val categories : ArrayList<Catego
 
         delBtn.setOnClickListener {
             Toast.makeText(holder.categoryNameTv.context, "Delete Category On Position: " + position, Toast.LENGTH_SHORT).show()
-            categories.removeAt(position)
-            this.notifyDataSetChanged()
-            Toast.makeText(holder.categoryNameTv.context, categories.count().toString(), Toast.LENGTH_SHORT).show()
+            val ref = FirebaseDatabase.getInstance().getReference("category/${categories[position].categoryID}")
+            ref.removeValue()
+                .addOnSuccessListener {
+                    // Data deleted successfully
+                    categories.removeAt(position)
+                    this.notifyDataSetChanged()
+                }
+                .addOnFailureListener {
+                    // Handle error
+                    println("Error deleting data: ${it.message}")
+                }
         }
     }
 

@@ -126,23 +126,23 @@ class MainActivity : AppCompatActivity() {
         //init the ViewModel for mainActivity
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
-        val list = arrayListOf<Book>();
-        val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
-        ref1.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()){
-                    for (child in snapshot.children){
-                        val book = child.getValue(Book::class.java)
-                        list.add(book!!);
-                    }
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
-        Log.d("Book on main activity", "Number of books: ${list.size}")
+//        val list = arrayListOf<Book>();
+//        val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
+//        ref1.addValueEventListener(object : ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                if (snapshot.exists()){
+//                    for (child in snapshot.children){
+//                        val book = child.getValue(Book::class.java)
+//                        list.add(book!!);
+//                    }
+//                }
+//            }
+//            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+//            }
+//
+//        })
+//        Log.d("Book on main activity", "Number of books: ${list.size}")
 //
 //        val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book/sadfsdfadf")
 //        ref2.addValueEventListener(object : ValueEventListener{

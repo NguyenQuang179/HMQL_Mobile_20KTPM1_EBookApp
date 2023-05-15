@@ -1,6 +1,9 @@
 package com.example.hmql_ebookapp
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Application
+import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
@@ -134,10 +137,19 @@ class RetrievePDFFromURL(pdfView: PDFView, isVertical : Boolean, curPageEt : Edi
     val pdfView: PDFView = pdfView
     val isVertical = isVertical
     val curPageEt = curPageEt
-    val curPage = curPageEt.text.toString().toInt() - 1
+    var curPage = curPageEt.text.toString().toInt() - 1
     // Text View Element
     val pages = pages
     val adapter = adapter
+
+    private val dialog = ProgressDialog(pdfView.context)
+
+    override fun onPreExecute() {
+        this.dialog.setTitle("Loading PDF View Progress")
+        this.dialog.setMessage("Loading book contents...")
+        this.dialog.setCancelable(false) //outside touch doesn't dismiss you
+        this.dialog.show()
+    }
 
     // on below line we are calling our do in background method.
     override fun doInBackground(vararg params: String?): InputStream? {
@@ -183,13 +195,14 @@ class RetrievePDFFromURL(pdfView: PDFView, isVertical : Boolean, curPageEt : Edi
             .swipeHorizontal(!isVertical)
             .defaultPage(curPage)
             .pageSnap(true)
-//            .onLongPress {
-//                Toast.makeText(pdfView.context, pdfView.currentPage.toString(), Toast.LENGTH_SHORT).show()
-//            }
             .onPageChange(OnPageChangeListener { page, pageCount ->
                 curPageEt.setText((pdfView.currentPage + 1).toString())
             })
             .load()
+
+        //Update UI
+        if (this.dialog.isShowing())
+            this.dialog.dismiss();
     }
 }
 
@@ -200,6 +213,15 @@ class UpdateTextViewFromStream(pages : ArrayList<String>, adapter: PDFReaderAdap
     val totalPageTv = totalPageTv
     var totalPageValue : Int = 0
     val spannablePages = spannablePages
+    private val dialog = ProgressDialog(totalPageTv.context)
+
+    override fun onPreExecute() {
+        this.dialog.setTitle("Loading Book View Progress")
+        this.dialog.setMessage("Loading book contents...")
+        this.dialog.setCancelable(false) //outside touch doesn't dismiss you
+        this.dialog.show()
+    }
+
     // on below line we are calling our do in background method.
     override fun doInBackground(vararg params: String?): InputStream? {
         // on below line we are creating a variable for our input stream.
@@ -236,47 +258,17 @@ class UpdateTextViewFromStream(pages : ArrayList<String>, adapter: PDFReaderAdap
         var extractedText = ""
         pages.clear()
         //Huy
-
         var spannableStringBuilder : SpannableStringBuilder;
         for (i in 0 until n) {
-//                extractedText =
-//                    """
-//                 $extractedText${
-//                        PdfTextExtractor.getTextFromPage(pdfReader, i + 1).trim { it <= ' ' }
-//                    }
-//                 """.trimIndent()
-                extractedText = PdfTextExtractor.getTextFromPage(pdfReader, i + 1)
-                pages.add(extractedText)
+
+            extractedText = PdfTextExtractor.getTextFromPage(pdfReader, i + 1)
+            extractedText = extractedText.replace(".\n", "././n")
+            extractedText = extractedText.replace("\n", "\t")
+            extractedText = extractedText.replace("././n", ".\n")
+            pages.add(extractedText)
 
                 spannableStringBuilder = SpannableStringBuilder(extractedText)
-//                //get List of NoteData from extractedText
-//                val user = FirebaseAuth.getInstance().currentUser
-//                val database = FirebaseDatabase.getInstance()
-//                val bookRef = database.getReference("/Users/${user!!.uid}/listOfBooks/0/notes/${i}")
-//                bookRef.addListenerForSingleValueEvent(object : ValueEventListener {
-//                    override fun onDataChange(snapshot: DataSnapshot) {
-//                        if (!snapshot.exists()) {
-//                            // If the reference is null or does not exist, skip further processing
-//                            //return
-//                        }
-//                        val notesList = mutableListOf<NoteData>()
-//                        //build SpannableStringBuilder with extractedText
-//                        for (noteSnapshot in snapshot.children) {
-//                            val note = noteSnapshot.getValue(NoteData::class.java)
-//
-//                            spannableStringBuilder.setSpan(
-//                                NoteClickableSpan(note!!.noteText),
-//                                note.start!!,
-//                                note.end!!,
-//                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-//                            )
-//                        }
-//
-//                    }
-//                    override fun onCancelled(error: DatabaseError) {
-//                        // Handle errors here
-//                    }
-//                })
+
 
                 spannablePages.add(spannableStringBuilder)
                 // to extract the PDF content from the different pages
@@ -324,6 +316,9 @@ class UpdateTextViewFromStream(pages : ArrayList<String>, adapter: PDFReaderAdap
         adapter.notifyDataSetChanged()
         totalPageTv.text = "/ ${totalPageValue.toString()}"
         Log.i("TOTAL PAGE", pages.size.toString())
+        //Update UI
+        if (this.dialog.isShowing())
+            this.dialog.dismiss();
     }
 }
 
@@ -338,7 +333,6 @@ class ReadingFragment : Fragment() {
                 val end = extractedTV.selectionEnd
                 val selectedText = extractedTV.text?.substring(start, end)
                 // perform translation logic here
-                //Toast.makeText(this@ReadingScreen, "Translate: $selectedText", Toast.LENGTH_SHORT).show()
                 if (selectedText != null) {
                     val translationCompleteListener = this@ReadingFragment.context?.let { it1 ->
                         MyTranslationCompleteListener(
@@ -406,6 +400,7 @@ class ReadingFragment : Fragment() {
     lateinit var extractedTV: TextView
     var isVertical : Boolean = true
     var isText : Boolean = true
+    var curPage : Int = 1
     var pages = ArrayList<String>()
     var spannablePages : MutableList<SpannableStringBuilder> = mutableListOf()
 
@@ -413,6 +408,7 @@ class ReadingFragment : Fragment() {
     lateinit var backBtn : Button
     lateinit var pagesRv : RecyclerView
     lateinit var adapter : PDFReaderAdapter
+    lateinit var pdfView : PDFView
 
     private fun extractData() {
         try {
@@ -477,7 +473,6 @@ class ReadingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //extractData()
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -496,8 +491,18 @@ class ReadingFragment : Fragment() {
         val args = this.arguments
         val bookId = args?.getString("bookId", "")
         val readingMode = args?.getString("readingMode", "text")
+        var readingSize : Float = 14.0F
+        var readingTypeface : Typeface = Typeface.DEFAULT
         Toast.makeText(requireContext(), "${bookId} - ${readingMode}", Toast.LENGTH_SHORT).show()
 
+        setFragmentResultListener("settingResult") { _, bundle ->
+            val fontFamily = bundle.getString("fontFamily")
+            val fontSize = bundle.getFloat("fontSize")
+            val newtypeface : Typeface = Typeface.createFromAsset(requireActivity().assets, fontFamily.toString())
+            readingSize = fontSize
+            readingTypeface = newtypeface
+            curPage = (pagesRv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() + 1
+        }
         val ref : DatabaseReference = FirebaseDatabase.getInstance().getReference("book/${bookId}")
         backBtn = view.findViewById<Button>(R.id.readingBackBtn)
         backBtn.setOnClickListener(){
@@ -512,31 +517,30 @@ class ReadingFragment : Fragment() {
                     Toast.makeText(requireContext(), data.pdf.toString(), Toast.LENGTH_SHORT).show()
 
                     var backBtn = view.findViewById<Button>(R.id.readingBackBtn)
-                    Toast.makeText(requireContext(), backBtn.textSize.toString(), Toast.LENGTH_SHORT).show()
 
                     var totalPageTv = view.findViewById<TextView>(R.id.totalPageTv)
                     totalPageTv.setText("/ ${pages.size.toString()}")
                     var curPageEt = view.findViewById<EditText>(R.id.curPageEt)
-                    curPageEt.setText("1")
+                    curPageEt.setText(curPage.toString())
 
                     val snapHelper = PagerSnapHelper()
                     snapHelper.attachToRecyclerView(null)
 
-                    var pdfView = view.findViewById<PDFView>(R.id.pdfview)
+                    pdfView = view.findViewById<PDFView>(R.id.pdfview)
                     pdfView.visibility = View.GONE
 
                     pagesRv = view.findViewById<RecyclerView>(R.id.pagesRv)
 
                     val userViewModel = ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
                     val user = userViewModel.user
-
                     adapter = PDFReaderAdapter(pages, user, spannablePages)
+                    adapter.fontSize = readingSize
+                    adapter.typeface = readingTypeface
                     pagesRv.adapter = adapter
                     pagesRv.layoutManager = LinearLayoutManager(requireContext())
-//                    adapter.onItemClick = { page ->
-//                        //Toast.makeText(requireContext(), (pages.indexOf(page) + 1).toString(), Toast.LENGTH_SHORT).show()
-//                    }
 
+
+                    adapter.notifyDataSetChanged()
                     // LOAD DATA TO TEXT & PDF FIRST TIME
                     UpdateTextViewFromStream(pages, adapter, totalPageTv, spannablePages).execute(data.pdf)
                     RetrievePDFFromURL(pdfView, isVertical, curPageEt, pages, adapter).execute(data.pdf)
@@ -628,6 +632,7 @@ class ReadingFragment : Fragment() {
                         else {
                             isText = true
                             pagesRv.visibility = View.VISIBLE
+                            pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
                             pdfView.visibility = View.GONE
                         }
                     }
@@ -648,19 +653,9 @@ class ReadingFragment : Fragment() {
                 TODO("Not yet implemented")
             }
         })
-        setFragmentResultListener("settingResult") { _, bundle ->
-            val fontFamily = bundle.getString("fontFamily")
-            val fontSize = bundle.getFloat("fontSize")
-            val newtypeface : Typeface = Typeface.createFromAsset(requireActivity().assets, "playfair_display.ttf")
-            backBtn.setTypeface(newtypeface)
-            val viewChildren= pagesRv.findViewHolderForAdapterPosition(1)
-            val page : TextView? = viewChildren?.itemView?.findViewById(R.id.pageTv)
-            Toast.makeText(requireContext(), page?.textSize.toString(), Toast.LENGTH_SHORT).show()
-            page?.textSize = 1.0F
-            Toast.makeText(requireContext(), page?.textSize.toString(), Toast.LENGTH_SHORT).show()
-            adapter.notifyDataSetChanged()
-            backBtn.textSize = fontSize.toFloat()
-            //Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show()
+
+        fun setAdapterSize(adapter: PDFReaderAdapter) {
+            adapter.setFontSize(20.0F)
         }
     }
 

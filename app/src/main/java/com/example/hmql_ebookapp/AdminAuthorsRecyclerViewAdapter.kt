@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.firebase.database.FirebaseDatabase
 
 class AdminAuthorsRecyclerViewAdapter(private val authors : ArrayList<Author>)
     : RecyclerView.Adapter<AdminAuthorsRecyclerViewAdapter.ViewHolder>() {
@@ -35,13 +37,24 @@ class AdminAuthorsRecyclerViewAdapter(private val authors : ArrayList<Author>)
         val authorName = holder.authorNameTv
         authorName.setText(author.name)
         val authorImg = holder.authorImgView
-        authorImg.setImageResource(author.img.toInt())
+        Glide.with(holder.authorImgView.context)
+            .load(author.img)
+            .into(authorImg);
         val delBtn = holder.delBtn
 
         delBtn.setOnClickListener {
             Toast.makeText(holder.authorNameTv.context, "Delete Clicked On Item " + position, Toast.LENGTH_SHORT).show()
-            authors.removeAt(position)
-            this.notifyDataSetChanged()
+            val ref = FirebaseDatabase.getInstance().getReference("author/${authors[position].authorID}")
+            ref.removeValue()
+                .addOnSuccessListener {
+                    // Data deleted successfully
+                    authors.removeAt(position)
+                    this.notifyDataSetChanged()
+                }
+                .addOnFailureListener {
+                    // Handle error
+                    println("Error deleting data: ${it.message}")
+                }
         }
     }
 

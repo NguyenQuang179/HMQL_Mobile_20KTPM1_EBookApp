@@ -31,15 +31,18 @@ class SettingFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     var isDark : Boolean = false
-    var fontFamily : String = ""
+    var baseIsDark : Boolean = false
+    var fontFamily : String = "sans_serif.ttf"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             //context?.setTheme(R.style.darkTheme) //when dark mode is enabled, we use the dark theme
             isDark = true
+            baseIsDark = true
         } else {
             //context?.setTheme(R.style.lightTheme)  //default app theme
             isDark = false
+            baseIsDark = false
         }
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -72,22 +75,22 @@ class SettingFragment : Fragment() {
 
         val textview = view.findViewById<TextView>(R.id.textView6)
         sansSerifBtn.setOnClickListener() {
-            fontFamily = sansSerifBtn.typeface.toString()
+            fontFamily = "sans_serif.ttf"
             textview.typeface = sansSerifBtn.typeface
         }
 
         latoBtn.setOnClickListener() {
-            fontFamily = latoBtn.typeface.toString()
+            fontFamily = "lato.ttf"
             textview.typeface = latoBtn.typeface
         }
 
         playfairDisplayBtn.setOnClickListener() {
-            fontFamily = playfairDisplayBtn.typeface.toString()
+            fontFamily = "playfair_display.ttf"
             textview.typeface = playfairDisplayBtn.typeface
         }
 
         merriWeatherBtn.setOnClickListener() {
-            fontFamily = merriWeatherBtn.typeface.toString()
+            fontFamily = "merriweather.ttf"
             textview.typeface = merriWeatherBtn.typeface
         }
 
@@ -112,23 +115,36 @@ class SettingFragment : Fragment() {
         }
 
         val saveBtn = view.findViewById<Button>(R.id.settingSaveBtn)
-        saveBtn.setOnClickListener(){
+        saveBtn.setOnClickListener() {
             val fontSizeSlider = view.findViewById<Slider>(R.id.settingFontsizeSB)
-            var fontSize : Float = fontSizeSlider.value.toFloat()
-            setFragmentResult("settingResult",
-                bundleOf("fontSize" to fontSize,
-                            "fontFamily" to playfairDisplayBtn.typeface.toString()))
+            var fontSize: Float = fontSizeSlider.value.toFloat()
+
 //            Font Family
             //Toast.makeText(requireContext(), fontFamily.toString(), Toast.LENGTH_SHORT).show()
 //            Font Size
             //Toast.makeText(requireContext(), fontSizeSlider.value.toString(), Toast.LENGTH_SHORT).show()
 //            Pop Back Stack & Change Mode
-            requireActivity().supportFragmentManager.popBackStack()
-            if(isDark) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            if (isDark != baseIsDark) {
+                requireActivity().recreate()
+                if (isDark) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+            } else {
+                setFragmentResult(
+                    "settingResult",
+                    bundleOf(
+                        "fontSize" to fontSize,
+                        "fontFamily" to fontFamily
+                    )
+                )
+                requireActivity().supportFragmentManager.popBackStack()
+                if (isDark) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
             }
         }
     }

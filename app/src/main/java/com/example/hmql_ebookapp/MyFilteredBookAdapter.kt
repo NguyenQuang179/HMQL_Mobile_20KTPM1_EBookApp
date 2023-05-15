@@ -12,13 +12,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import android.content.Context
 
-class MyFilteredBookAdapter(private val books : ArrayList<Book>)
+class MyFilteredBookAdapter(private val books : ArrayList<Book>, private var categoriesToFilter : ArrayList<String> )
     : RecyclerView.Adapter<MyFilteredBookAdapter.ViewHolder>(), Filterable{
 
-    private var categoriesToFilter = ArrayList<String>()
-
+    public var tempString: String = ""
     fun setCategoriesToFilter(categories: ArrayList<String>) {
         categoriesToFilter = categories
+        notifyDataSetChanged()
+    }
+
+    fun getCategoriesToFilter(): ArrayList<String> {
+        return categoriesToFilter
     }
 
     var onItemClick: ((Book) -> Unit)? = null
@@ -89,25 +93,43 @@ class MyFilteredBookAdapter(private val books : ArrayList<Book>)
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val charSearch = constraint.toString()
-
-                val resultList = ArrayList<Book>()
-                for (row in books) {
-                    if (row.title.toLowerCase().contains(charSearch.toLowerCase())) {
-                        if (categoriesToFilter.size > 0){
-                            Log.i("Filter size", categoriesToFilter.size.toString())
-                            for (category in row.categories){
+                tempString = charSearch
+                if (charSearch.isEmpty()) {
+                    val resultList = ArrayList<Book>()
+                    if (categoriesToFilter.size == 0){
+                        filteredBooks = books;
+                    }
+                    else{
+                        for (row in books) {
+                            toBreak@ for (category in row.categories){
                                 if (categoriesToFilter.contains(category.categoryName)){
                                     resultList.add(row)
-                                    break
+                                    break@toBreak
                                 }
                             }
                         }
-                        else{
-                            resultList.add(row)
+                        filteredBooks = resultList
+                    }
+                } else {
+                    val resultList = ArrayList<Book>()
+                    for (row in books) {
+                        if (row.title.toLowerCase().contains(charSearch.toLowerCase())) {
+                            if (categoriesToFilter.size > 0){
+                                Log.i("Filter size", categoriesToFilter.size.toString())
+                                for (category in row.categories){
+                                    if (categoriesToFilter.contains(category.categoryName)){
+                                        resultList.add(row)
+                                        break
+                                    }
+                                }
+                            }
+                            else{
+                                resultList.add(row)
+                            }
                         }
                     }
+                    filteredBooks = resultList
                 }
-                filteredBooks = resultList
                 val filterResults = FilterResults()
                 filterResults.values = filteredBooks
                 return filterResults

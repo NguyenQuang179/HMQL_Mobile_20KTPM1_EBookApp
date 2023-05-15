@@ -1,6 +1,7 @@
 package com.example.hmql_ebookapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -68,6 +69,8 @@ class AdminCategoryDetailFragment : Fragment() {
                 Toast.makeText(requireContext(), "Please fill all information before u save", Toast.LENGTH_SHORT).show()
             }
             else {
+                Log.i("index 1", categoryIndex.toString())
+                Log.i("index 2", newName)
                 setFragmentResult("editCategory",
                     bundleOf("newName" to newName,
                                     "categoryIndex" to categoryIndex)
