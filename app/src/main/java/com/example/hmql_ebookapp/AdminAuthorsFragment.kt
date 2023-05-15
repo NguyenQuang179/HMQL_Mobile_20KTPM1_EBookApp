@@ -54,7 +54,7 @@ class AdminAuthorsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val backBtn = view.findViewById<Button>(R.id.AdminAuthorBackBtn)
-        backBtn.setOnClickListener(){
+        backBtn.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
@@ -88,7 +88,7 @@ class AdminAuthorsFragment : Fragment() {
         }
 
         val addBtn = view.findViewById<FloatingActionButton>(R.id.AdminAuthorAddBtn)
-        addBtn.setOnClickListener(){
+        addBtn.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 replace<AdminAuthorAddFragment>(R.id.fragmentContainerView2)
                 setReorderingAllowed(true)

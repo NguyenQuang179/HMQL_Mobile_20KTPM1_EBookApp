@@ -48,10 +48,10 @@ class AdminBookEditFragment : Fragment() {
         val textView = view.findViewById<TextView>(R.id.AdminBookEditText)
         val agrs = this.arguments
         val receivedData = agrs?.get("dataFromBookDetail")
-        textView.setText(receivedData.toString())
+        textView.text = receivedData.toString()
 
         val sendBackBtn = view.findViewById<Button>(R.id.sendBackBtn)
-        sendBackBtn.setOnClickListener(){
+        sendBackBtn.setOnClickListener {
             val resultData = "Result send from edit book screen"
             setFragmentResult("resultFromEdit",
                 bundleOf("editResult" to resultData,

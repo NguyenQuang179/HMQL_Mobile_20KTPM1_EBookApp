@@ -88,11 +88,11 @@ class SearchBookFragment : Fragment() {
             LinearLayoutManager(this.requireContext(), LinearLayoutManager.HORIZONTAL, false)
         customRecyclerView.layoutManager = layoutManager
         categoryChoiceRecyclerView = view.findViewById<RecyclerView>(R.id.categoryChoiceRecyclerView)
-        sampleDataInit();
+        sampleDataInit()
 
-        var autoCompleteTextView = view.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView);
+        var autoCompleteTextView = view.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
         var listOfTypeSearch =  resources.getStringArray(R.array.SearchType)
-        var spinner = view.findViewById<Spinner>(R.id.searchTypeSpinner);
+        var spinner = view.findViewById<Spinner>(R.id.searchTypeSpinner)
         if (spinner != null) {
             val adapter = ArrayAdapter(
                 this.requireContext(),
@@ -120,7 +120,7 @@ class SearchBookFragment : Fragment() {
         val searchBTN = view.findViewById<ImageButton>(R.id.searchBTN)
         searchBTN.setOnClickListener {
             if (autoCompleteTextView.text.toString().length > 0) {
-                listOfSearchs.add(0, autoCompleteTextView.text.toString());
+                listOfSearchs.add(0, autoCompleteTextView.text.toString())
                 writeDataToFile()
             }
             val bundle = Bundle()
@@ -199,7 +199,7 @@ class SearchBookFragment : Fragment() {
                     }
                     Log.d("Books size", "Number of books: ${categoryList.size}")
                     categoryAdapter = MyRecyclerViewForCategoryChoice(categoryList)
-                    categoryChoiceRecyclerView!!.adapter = categoryAdapter
+                    categoryChoiceRecyclerView.adapter = categoryAdapter
                     val categoryLayoutManager = GridLayoutManager(context, 2)
                     categoryChoiceRecyclerView.layoutManager = categoryLayoutManager
                 }

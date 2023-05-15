@@ -52,7 +52,7 @@ class AdminBookDetail : Fragment() {
         Toast.makeText(requireContext(), "Selected Book Index $bookID", Toast.LENGTH_SHORT).show()
 
         val backBtn = view.findViewById<Button>(R.id.AdminBookDetailBackBtn)
-        backBtn.setOnClickListener(){
+        backBtn.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
         var book: Book
@@ -69,11 +69,11 @@ class AdminBookDetail : Fragment() {
 
                     bookName.setText(book.title)
                     bookAuthor.setText(book.author)
-                    bookDesc.setText(book.description);
+                    bookDesc.setText(book.description)
                     var categoryString: String = ""
                     for (child in book.categories){
                         if (categoryString != "")
-                            categoryString += ", ${child.categoryName}";
+                            categoryString += ", ${child.categoryName}"
                         else categoryString = child.categoryName
                     }
                     bookTag.setText(categoryString)
@@ -89,7 +89,7 @@ class AdminBookDetail : Fragment() {
 //                    }
 
                     val saveBtn = view.findViewById<Button>(R.id.AdminBookSaveBtn)
-                    saveBtn.setOnClickListener(){
+                    saveBtn.setOnClickListener {
             //            val data = "Sending Data From AdminBookDetail"
             //            val bundle = Bundle()
             //            bundle.putString("dataFromBookDetail", data)

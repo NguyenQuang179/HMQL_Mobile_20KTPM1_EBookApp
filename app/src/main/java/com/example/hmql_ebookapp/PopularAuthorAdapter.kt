@@ -29,11 +29,11 @@ class PopularAuthorAdapter(private val authorList : ArrayList<Author>)
 
     override fun onBindViewHolder(holder: PopularAuthorAdapter.ViewHolder, position: Int) {
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(authorList[position].name)
+        authorNameTv.text = authorList[position].name
         val authorImgView = holder.authorImgView
         Glide.with(holder.authorImgView.context)
             .load(authorList[position].img)
-            .into(authorImgView);
+            .into(authorImgView)
     }
 
     override fun getItemCount(): Int = authorList.size

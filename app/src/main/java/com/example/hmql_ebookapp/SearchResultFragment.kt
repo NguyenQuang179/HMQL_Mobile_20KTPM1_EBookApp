@@ -36,8 +36,8 @@ class SearchResultFragment : Fragment() {
 
     lateinit var books : ArrayList<Book>
     lateinit var searchString: String
-    lateinit var customRecyclerView: RecyclerView;
-    lateinit var adapter: MyFilteredBookAdapter;
+    lateinit var customRecyclerView: RecyclerView
+    lateinit var adapter: MyFilteredBookAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -65,14 +65,14 @@ class SearchResultFragment : Fragment() {
         sampleDataInit()
 
         var autoCompleteTV = view.findViewById<AutoCompleteTextView>(R.id.searchResultAutoCompleteTextView)
-        autoCompleteTV.setText(searchString);
+        autoCompleteTV.setText(searchString)
 
         autoCompleteTV!!.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                adapter?.filter?.filter(p0)
-                adapter.notifyDataSetChanged();
+                adapter.filter?.filter(p0)
+                adapter.notifyDataSetChanged()
                 //customRecyclerView!!.adapter = adapter
             }
         })
@@ -110,7 +110,7 @@ class SearchResultFragment : Fragment() {
                     }
                     Log.d("Books size", "Number of books: ${books.size}")
                     adapter = MyFilteredBookAdapter(books)
-                    customRecyclerView!!.adapter = adapter
+                    customRecyclerView.adapter = adapter
                     adapter.onItemClick = { book ->
                         requireActivity().supportFragmentManager.commit {
                             replace<BookIntroductionFragment>(R.id.fragment_container_view)
@@ -119,7 +119,7 @@ class SearchResultFragment : Fragment() {
                         }
                     }
                     adapter.filter.filter(searchString)
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged()
                     val layoutManager = LinearLayoutManager(context)
                     customRecyclerView.layoutManager = layoutManager
                     val itemDecoration: RecyclerView.ItemDecoration = DividerItemDecoration(context,

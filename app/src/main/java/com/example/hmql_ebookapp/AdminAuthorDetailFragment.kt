@@ -47,10 +47,10 @@ class AdminAuthorDetailFragment : Fragment() {
 
         val args = this.arguments
         val author = args?.getSerializable("authorDetail") as Author
-        val authorIndex = args?.getInt("authorIndex")
+        val authorIndex = args.getInt("authorIndex")
 
         val backBtn = view.findViewById<Button>(R.id.AdminAuthorDetailBackBtn)
-        backBtn.setOnClickListener(){
+        backBtn.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
@@ -63,7 +63,7 @@ class AdminAuthorDetailFragment : Fragment() {
         authorImgEt.setText(author.img.toString())
 
         val saveBtn = view.findViewById<Button>(R.id.AdminAuthorDetailSaveBtn)
-        saveBtn.setOnClickListener(){
+        saveBtn.setOnClickListener {
             val newName = authorNameEt.text.toString()
             val newDesc = authorDescEt.text.toString()
             val newImg = R.drawable.sampleauthor3

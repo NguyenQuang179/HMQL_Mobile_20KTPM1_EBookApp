@@ -26,12 +26,13 @@ data class Book(
 data class Review(
     var userName: String,
     var userAvatar: String,
-    var star: Int,
+    val rating : String,
     var content: String,
     var datetime: String
 ): Comparable<Review> {
     override fun compareTo(other: Review): Int = this.datetime.compareTo(other.datetime)
-    constructor() : this("", "", 0, "", "")
+    constructor() : this("", "", "0","0", "",)
+
 }
 
 @kotlinx.serialization.Serializable
@@ -41,4 +42,4 @@ data class recentSearch(
 
 
 
-data class SampleBook(var bookName: String, var authorName: String, var bookImg : Int) : java.io.Serializable
+data class SampleBook(var bookName: String, var authorName: String, var bookImg : Int) : Serializable

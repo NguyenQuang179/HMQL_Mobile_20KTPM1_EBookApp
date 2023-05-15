@@ -31,13 +31,7 @@ class SettingFragment : Fragment() {
     var fontFamily : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            //context?.setTheme(R.style.darkTheme) //when dark mode is enabled, we use the dark theme
-            isDark = true
-        } else {
-            //context?.setTheme(R.style.lightTheme)  //default app theme
-            isDark = false
-        }
+        isDark = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
@@ -58,7 +52,7 @@ class SettingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val backBtn = view.findViewById<Button>(R.id.backBtn)
-        backBtn.setOnClickListener(){
+        backBtn.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
@@ -68,22 +62,22 @@ class SettingFragment : Fragment() {
         val merriWeatherBtn = view.findViewById<Button>(R.id.merriWeatherBtn)
 
         val textview = view.findViewById<TextView>(R.id.textView6)
-        sansSerifBtn.setOnClickListener() {
+        sansSerifBtn.setOnClickListener {
             fontFamily = sansSerifBtn.typeface.toString()
             textview.typeface = sansSerifBtn.typeface
         }
 
-        latoBtn.setOnClickListener() {
+        latoBtn.setOnClickListener {
             fontFamily = latoBtn.typeface.toString()
             textview.typeface = latoBtn.typeface
         }
 
-        playfairDisplayBtn.setOnClickListener() {
+        playfairDisplayBtn.setOnClickListener {
             fontFamily = playfairDisplayBtn.typeface.toString()
             textview.typeface = playfairDisplayBtn.typeface
         }
 
-        merriWeatherBtn.setOnClickListener() {
+        merriWeatherBtn.setOnClickListener {
             fontFamily = merriWeatherBtn.typeface.toString()
             textview.typeface = merriWeatherBtn.typeface
         }
@@ -97,7 +91,7 @@ class SettingFragment : Fragment() {
         }
 
         val saveBtn = view.findViewById<Button>(R.id.settingSaveBtn)
-        saveBtn.setOnClickListener(){
+        saveBtn.setOnClickListener {
 //            Font Family
             Toast.makeText(requireContext(), fontFamily.toString(), Toast.LENGTH_SHORT).show()
 //            Font Size

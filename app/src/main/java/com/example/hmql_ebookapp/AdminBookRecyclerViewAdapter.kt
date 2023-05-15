@@ -38,13 +38,13 @@ class AdminBookRecyclerViewAdapter(private val books : ArrayList<Book>)
 //        val student: RealmStudent = listStudentFilter.get(position)
         // Set item views based on your views and data model
         val bookNameTv = holder.bookNameTv
-        bookNameTv.setText(book.title)
+        bookNameTv.text = book.title
         val authorNameTv = holder.authorNameTv
-        authorNameTv.setText(book.author)
+        authorNameTv.text = book.author
         val bookImgView = holder.bookImgView
         Glide.with(holder.bookImgView.context)
             .load(book.cover)
-            .into(bookImgView);
+            .into(bookImgView)
         val delBtn = holder.delBtn
         val editBtn = holder.editBtn
         //set on click listener for a button in a recycler View item that change into another image on click

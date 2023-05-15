@@ -24,7 +24,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [MyBooks_LikedBooksFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MyBooks_LikedBooksFragment() : Fragment() {
+class MyBooks_LikedBooksFragment : Fragment() {
     lateinit var books: List<UserBook>
 
 

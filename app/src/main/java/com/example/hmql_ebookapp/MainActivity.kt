@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var firebaseAuth: FirebaseAuth
     lateinit var listener:FirebaseAuth.AuthStateListener
     lateinit var providers:List<AuthUI.IdpConfig>
-    public fun init(){ //init login
+    fun init(){ //init login
         providers = arrayListOf(
         AuthUI.IdpConfig.EmailBuilder().setAllowNewAccounts(true).build(), //Email Builder
             AuthUI.IdpConfig.GoogleBuilder().build(), //Google Builder
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        init();
+        init()
 //        startActivityForResult(
 //            AuthUI.getInstance()
 //                .createSignInIntentBuilder()
@@ -129,14 +129,14 @@ class MainActivity : AppCompatActivity() {
         //init the ViewModel for mainActivity
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
-        val list = arrayListOf<Book>();
+        val list = arrayListOf<Book>()
         val ref1: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
         ref1.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
                     for (child in snapshot.children){
                         val book = child.getValue(Book::class.java)
-                        list.add(book!!);
+                        list.add(book!!)
                     }
                 }
             }
@@ -174,12 +174,12 @@ class MainActivity : AppCompatActivity() {
         )
 
 
-        supportFragmentManager.commit {
-            add<ReadingFragment>(R.id.fragment_container_view)
-            //add<HomeFragment>(R.id.fragment_container_view)
-//            setReorderingAllowed(true)
-//            addToBackStack("name") // name can be null
-        }
+//        supportFragmentManager.commit {
+//            add<ReadingFragment>(R.id.fragment_container_view)
+//            //add<HomeFragment>(R.id.fragment_container_view)
+////            setReorderingAllowed(true)
+////            addToBackStack("name") // name can be null
+//        }
         val navBar = findViewById<NavigationBarView>(R.id.bottom_navigation)
         //Bottom Navigation Menu
             navBar.setOnItemSelectedListener{ item ->
@@ -271,8 +271,7 @@ class MainActivity : AppCompatActivity() {
                             val newList = mutableListOf<UserBook>()
                             newList.add(book)
                             //userRef.child("listOfBooks").setValue(newList)
-
-                            val newUser = User(false,uid, email, name, newList)
+                            val newUser = User(false,uid,"This user Avatar", email, name, newList)
                             userRef.setValue(newUser)
 
                         }

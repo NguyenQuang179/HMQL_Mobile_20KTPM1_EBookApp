@@ -34,7 +34,7 @@ class MyRecyclerViewForCategoryChoice(
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.categoryCheckBox.setText(listOfCategory[position].categoryName)
+        viewHolder.categoryCheckBox.text = listOfCategory[position].categoryName
 
     }
 

@@ -123,10 +123,10 @@ class RetrievePDFFromURL(pdfView: PDFView, isVertical : Boolean, curPageEt : Edi
             // on below line we are simply printing
             // our exception and returning null
             e.printStackTrace()
-            return null;
+            return null
         }
         // on below line we are returning input stream.
-        return inputStream;
+        return inputStream
     }
 
     override fun onPostExecute(result: InputStream?) {
@@ -285,7 +285,7 @@ class ReadingFragment : Fragment() {
 //        extractedTV.customSelectionActionModeCallback = mActionModeCallback
 
         var totalPageTv = view.findViewById<TextView>(R.id.totalPageTv)
-        totalPageTv.setText("/ ${pages.size.toString()}")
+        totalPageTv.text = "/ ${pages.size}"
         var curPageEt = view.findViewById<EditText>(R.id.curPageEt)
         curPageEt.setText("1")
 
@@ -319,7 +319,7 @@ class ReadingFragment : Fragment() {
 
 //        Next Page Btn
         val nextBtn = view.findViewById<Button>(R.id.nextPageBtn)
-        nextBtn.setOnClickListener(){
+        nextBtn.setOnClickListener {
             curPageEt.setText((curPageEt.text.toString().toInt() + 1).toString())
             pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
             pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
@@ -327,7 +327,7 @@ class ReadingFragment : Fragment() {
 
 //        Prev Page Btn
         val prevBtn = view.findViewById<Button>(R.id.prevPageBtn)
-        prevBtn.setOnClickListener(){
+        prevBtn.setOnClickListener {
             curPageEt.setText((curPageEt.text.toString().toInt() - 1).toString())
             pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
             pdfView.jumpTo(curPageEt.text.toString().toInt() - 1)
@@ -350,11 +350,11 @@ class ReadingFragment : Fragment() {
         }
 
         val scrollModeBtn = view.findViewById<Button>(R.id.scrollModeBtn)
-        scrollModeBtn.setOnClickListener(){
+        scrollModeBtn.setOnClickListener {
             if(isVertical) {
                 isVertical = false
                 snapHelper.attachToRecyclerView(pagesRv)
-                scrollModeBtn.setText("\uf337")
+                scrollModeBtn.text = "\uf337"
                 pagesRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
                 if(!isText) RetrievePDFFromURL(pdfView, isVertical, curPageEt).execute("")
@@ -362,7 +362,7 @@ class ReadingFragment : Fragment() {
             else {
                 isVertical = true
                 snapHelper.attachToRecyclerView(null)
-                scrollModeBtn.setText("\uf338")
+                scrollModeBtn.text = "\uf338"
                 pagesRv.layoutManager = LinearLayoutManager(requireContext())
                 pagesRv.scrollToPosition(curPageEt.text.toString().toInt() - 1)
                 if(!isText) RetrievePDFFromURL(pdfView, isVertical, curPageEt).execute("")
@@ -372,7 +372,7 @@ class ReadingFragment : Fragment() {
         }
 
         val viewModebtn = view.findViewById<Button>(R.id.viewModeBtn)
-        viewModebtn.setOnClickListener(){
+        viewModebtn.setOnClickListener {
             if(isText) {
                 isText = false
                 pdfView.visibility = View.VISIBLE
@@ -387,7 +387,7 @@ class ReadingFragment : Fragment() {
         }
 
         val settingBtn = view.findViewById<ImageButton>(R.id.settingBtn)
-        settingBtn!!.setOnClickListener(){
+        settingBtn!!.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 replace<SettingFragment>(R.id.fragment_container_view)
                 setReorderingAllowed(true)

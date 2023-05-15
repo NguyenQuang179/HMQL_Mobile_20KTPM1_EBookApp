@@ -12,13 +12,13 @@ class MyBooksListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_books_list)
 
-        var tabLayout=findViewById<TabLayout>(R.id.myBookTabLayout);
-        var viewPager=findViewById<ViewPager>(R.id.pager);
+        var tabLayout=findViewById<TabLayout>(R.id.myBookTabLayout)
+        var viewPager=findViewById<ViewPager>(R.id.pager)
 
-        tabLayout.addTab(tabLayout.newTab().setText("Home"));
-        tabLayout.addTab(tabLayout.newTab().setText("Sport"));
-        tabLayout.addTab(tabLayout.newTab().setText("Movie"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.addTab(tabLayout.newTab().setText("Home"))
+        tabLayout.addTab(tabLayout.newTab().setText("Sport"))
+        tabLayout.addTab(tabLayout.newTab().setText("Movie"))
+        tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
 
         //val adapter = MyAdapter(this, supportFragmentManager, tabLayout.tabCount)

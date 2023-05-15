@@ -108,9 +108,9 @@ class PDFReaderAdapter(private val pages : ArrayList<String>)
         val page: String = pages.get(position)
         // Set item views based on your views and data model
         val pageTv = holder.pageTv
-        pageTv.setText(page)
+        pageTv.text = page
         extractedTV = holder.pageTv
-        extractedTV.setMovementMethod(LinkMovementMethod.getInstance());
+        extractedTV.movementMethod = LinkMovementMethod.getInstance()
         extractedTV.isClickable = true
         extractedTV.isFocusable = true
         extractedTV.isFocusableInTouchMode = true

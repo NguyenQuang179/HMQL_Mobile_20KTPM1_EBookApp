@@ -94,17 +94,17 @@ class HomeFragment : Fragment() {
             }
         }
 
-        avaBtn!!.setOnClickListener(){
+        avaBtn!!.setOnClickListener {
             Toast.makeText(context, "Avatar Button Clicked", Toast.LENGTH_SHORT).show()
         }
 
 
-        favBookMoreBtn!!.setOnClickListener(){
+        favBookMoreBtn!!.setOnClickListener {
             Toast.makeText(context, "See More Book Button Clicked", Toast.LENGTH_SHORT).show()
         }
 
 
-        popularAuthorMoreBtn!!.setOnClickListener(){
+        popularAuthorMoreBtn!!.setOnClickListener {
             Toast.makeText(context, "See More Author Button Clicked", Toast.LENGTH_SHORT).show()
         }
 
@@ -150,7 +150,7 @@ class HomeFragment : Fragment() {
                         book?.let { bookList.add(it) }
                     }
                     Log.d("Books size", "Number of books: ${bookList.size}")
-                    bookList.sortDescending();
+                    bookList.sortDescending()
                     bookList = ArrayList(bookList.subList(0, 5))
                     favBookRvAdapter = FavouriteBookAdapter(bookList)
                     favBookRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
