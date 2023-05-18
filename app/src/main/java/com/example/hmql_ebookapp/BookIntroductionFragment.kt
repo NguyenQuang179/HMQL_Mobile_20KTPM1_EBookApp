@@ -56,6 +56,7 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
         var tempBook: UserBook? = null;
         if (existingBookIndex >= 0) {
             // If the book already exists in the list, remove it
+
             tempBook = bookList[existingBookIndex]
             bookList.removeAt(existingBookIndex)
         }
@@ -69,10 +70,19 @@ fun addBookToUserList(user: User?, book: Book) { //Function to add Book to User'
             override fun onDataChange(snapshot: DataSnapshot) {
                 val userBook = snapshot.getValue(UserBook::class.java)
                 notesData = userBook?.notes
-                Log.e("PuData", "${notesData.toString()}")
 
-                bookList.add(0, UserBook(book.bookID, book.title, 1, 1,
-                    userBook?.liked, userBook?.downloaded, book.averageStar, book.cover, book.author, notesData))
+                if (userBook != null) {
+                    Log.e("PuData", notesData.toString())
+                    if(userBook.downloaded == true){
+                        bookList.add(0, UserBook(book.bookID, book.title, 1, 1,
+                            userBook.liked, userBook.downloaded, book.averageStar, book.cover, book.author, notesData))
+                    }
+                    else {
+                        bookList.add(0, UserBook(book.bookID, book.title, 1, 1,
+                            userBook.liked, false, book.averageStar, book.cover, book.author, notesData))
+                    }
+                }
+
                 //}
                 // Update the user's list of books in Firebase
                 val usersRef = FirebaseDatabase.getInstance().getReference("Users")
@@ -113,11 +123,13 @@ fun editStatus_Favorite_Download(user: User?, book: Book, favorite_status: Boole
                     val book_in_list = bookList[existingBookIndex]
                     //}
                     //Update the favorite status
-                    bookList[existingBookIndex] = UserBook(book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, book_in_list.downloaded, book.averageStar, book.cover, book.author, notesData)
+                    bookList[existingBookIndex] = UserBook(
+                        book.bookID, book.title, book_in_list.status, book_in_list.readingProgress, favorite_status, downloaded_status, book.averageStar, book.cover, book.author, notesData)
 
                 }
                 else {
-                    bookList.add(0, UserBook(book.bookID, book.title, userBook?.status, userBook?.readingProgress, favorite_status, userBook?.downloaded, book.averageStar, book.cover, book.author, notesData))
+                    bookList.add(0, UserBook(
+                        book.bookID, book.title, userBook?.status, userBook?.readingProgress, favorite_status, downloaded_status, book.averageStar, book.cover, book.author, notesData))
 
                 }
 
@@ -493,6 +505,7 @@ class BookIntroductionFragment : Fragment() {
         }
 
         ReadButton.setOnClickListener {
+
             val readingFragmentBundle = Bundle()
             readingFragmentBundle.putString("readingMode", "text")
             readingFragmentBundle.putString("bookId", data.bookID)
