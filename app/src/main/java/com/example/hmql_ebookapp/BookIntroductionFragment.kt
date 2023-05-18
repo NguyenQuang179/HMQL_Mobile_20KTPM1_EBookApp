@@ -284,7 +284,7 @@ class BookIntroductionFragment : Fragment() {
     }
     private fun recommendDataInit() {
         val ref2: DatabaseReference = FirebaseDatabase.getInstance().getReference("book")
-        ref2.addListenerForSingleValueEvent(object : ValueEventListener {
+        ref2.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     for (child in snapshot.children) {
@@ -642,6 +642,7 @@ class BookIntroductionFragment : Fragment() {
 
             reviewList.clear()
             sampleDataInit()
+            recommendDataInit()
         }
     }
 
